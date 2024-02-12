@@ -1,0 +1,8 @@
+[package]
+name = "common"
+version = "0.0.1"
+entrypoint = "lib.typ"
+authors = ["Moch. Nafkhan Alzamzami"]
+license = "MIT"
+description = "Common Typst utilities that I personally use."
+repository = "https://github.com/nafkhanzam/typst-common"
