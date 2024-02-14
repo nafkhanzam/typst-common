@@ -2,6 +2,17 @@
 #let phantom(body) = {
   place(top, scale(x: 0%, y: 0%)[#body])
 }
+#let access-field(o, ..keys, default: none) = {
+  let r = o
+  for key in keys.pos() {
+    if key in r {
+      r = r.at(key)
+    } else {
+      return default
+    }
+  }
+  return r
+}
 
 // DATES
 #let today = datetime.today()
