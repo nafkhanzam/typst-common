@@ -80,3 +80,41 @@
 }
 
 #let print-rp(num) = print-currency(num, prefix: [Rp ], comma: ",", splitter: ".")
+
+// Preprocess
+
+#let apply-defaults(v, defaults) = {
+  for (key, value) in defaults.pairs() {
+    if key not in v {
+      v.insert(key, value)
+    }
+  }
+
+  v
+}
+
+#let apply-refs(o, key, refs) = {
+  o.insert(key, access-field(o, key, default: ()))
+  for (i, v) in o.at(key).enumerate() {
+    let ref = access-field(v, "ref")
+    if ref != none {
+      for (key, value) in refs.at(ref).pairs() {
+        v.insert(key, value)
+      }
+      v.remove("ref")
+    }
+
+    let additional = access-field(v, "additional")
+    if additional != none {
+      for (key, value) in additional.pairs() {
+        v.insert(key, value)
+      }
+      v.additional = none
+      v.remove("additional")
+    }
+
+    o.at(key).at(i) = v
+  }
+
+  return o
+}
