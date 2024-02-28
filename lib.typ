@@ -118,3 +118,15 @@
 
   return o
 }
+
+#let deep-merge(a, b) = {
+  let o = a
+  for (key, value) in b.pairs() {
+    if type(a.at(key, default: none)) == "dictionary" and type(b.at(key)) == "dictionary" {
+      o.insert(key, deep-merge(a.at(key), b.at(key)))
+    } else {
+      o.insert(key, b.at(key))
+    }
+  }
+  o
+}
