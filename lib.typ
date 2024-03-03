@@ -18,6 +18,11 @@
 
   body
 }
+#let icite(key) = cite(label(key), form: "prose")
+#let i(body) = {
+    set cite(form: "prose")
+    body
+}
 
 // DATES
 #let today = datetime.today()
