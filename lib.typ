@@ -14,7 +14,7 @@
   return r
 }
 #let enable-todo-hl(body) = {
-  show "TODO": box(fill: red.darken(10%), outset: 3pt, text(fill: white)[TODO])
+  show "TODO": highlight(fill: red.darken(10%), text(fill: white)[TODO])
 
   body
 }
