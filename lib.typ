@@ -35,7 +35,7 @@
 #let ID-months = ("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November" ,"Desember");
 
 #let ID-display-year = display-year
-#let ID-display-today = today.display("[day]") + " " + ID-months.at(today.month() - 1) + " " + display-year
+#let ID-display-today = today.display("[day padding:none]") + " " + ID-months.at(today.month() - 1) + " " + display-year
 
 // CURRENCY
 #let round-fixed-str(num, d) = {
