@@ -1,5 +1,3 @@
-#import "@preview/tablex:0.0.8": *
-
 #let headz(body) = heading(numbering: none, body)
 #let phantom(body) = {
   place(top, scale(x: 0%, y: 0%)[#body])
@@ -149,7 +147,7 @@
       [#(i+1)], ..keys.map(key => if key in custom {custom.at(key)(v)} else [#v.at(key)]).flatten(),
     )).flatten()
   if arr.len() == 0 {
-    cells.push((colspanx(keys.len()+1, align(center)[Tidak ada.]), (), (), ()))
+    cells.push((table.cell(colspan: keys.len()+1, align(center)[Tidak ada.]), (), (), ()))
   }
   return cells.flatten()
 }
