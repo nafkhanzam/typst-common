@@ -1,4 +1,4 @@
-#let headz(body) = heading(numbering: none, body)
+#let headz(outlined: true, body) = heading(outlined: outlined, numbering: none, body)
 #let phantom(body) = {
   place(top, scale(x: 0%, y: 0%)[#body])
 }
@@ -20,8 +20,8 @@
 }
 #let icite(key) = cite(label(key), form: "prose")
 #let i(body) = {
-    set cite(form: "prose")
-    body
+  set cite(form: "prose")
+  body
 }
 
 // DATES
@@ -31,8 +31,21 @@
 // ID DATES
 #let ID-day = ("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min");
 #let ID-days = ("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu");
-#let ID-month = ("Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov" ,"Des");
-#let ID-months = ("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November" ,"Desember");
+#let ID-month = ("Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des");
+#let ID-months = (
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+);
 
 #let ID-display-year = display-year
 #let ID-display-today = today.display("[day padding:none]") + " " + ID-months.at(today.month() - 1) + " " + display-year
@@ -136,18 +149,18 @@
   o
 }
 
-#let gen-rows(arr, keys, max-content: none, custom: ()) = {
+#let gen-rows(arr, keys, max-content: none, custom: (), empty-message: [Tidak ada.]) = {
   if max-content == none {
     max-content = arr.len()
   }
-  let cells = arr
-    .slice(0, calc.min(arr.len(), max-content))
-    .enumerate()
-    .map(((i, v)) => (
-      [#(i+1)], ..keys.map(key => if key in custom {custom.at(key)(v)} else [#v.at(key)]).flatten(),
-    )).flatten()
+  let cells = arr.slice(0, calc.min(arr.len(), max-content)).enumerate().map(((i, v)) => (
+    [#(i + 1)],
+    ..keys.map(key => if key in custom {
+      custom.at(key)(v)
+    } else [#v.at(key)]).flatten(),
+  )).flatten()
   if arr.len() == 0 {
-    cells.push((table.cell(colspan: keys.len()+1, align(center)[Tidak ada.]), (), (), ()))
+    cells.push((table.cell(colspan: keys.len() + 1, align(center, empty-message)), (), (), ()))
   }
   return cells.flatten()
 }
