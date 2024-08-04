@@ -1,7 +1,7 @@
+//~ Style
+
 #let headz(outlined: true, body) = heading(outlined: outlined, numbering: none, body)
-#let phantom(body) = {
-  place(top, scale(x: 0%, y: 0%)[#body])
-}
+#let phantom(body) = place(top, scale(x: 0%, y: 0%, body))
 #let access-field(o, ..keys, default: none) = {
   let r = o
   for key in keys.pos() {
@@ -28,11 +28,14 @@
   body
 }
 
-// DATES
+//~ Dates
+
 #let today = datetime.today()
 #let display-year = today.display("[Year]")
 
-// ID DATES
+
+//~ Indonesian Dates
+
 #let ID-day = ("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min");
 #let ID-days = ("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu");
 #let ID-month = ("Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des");
@@ -54,7 +57,9 @@
 #let ID-display-year = display-year
 #let ID-display-today = today.display("[day padding:none]") + " " + ID-months.at(today.month() - 1) + " " + display-year
 
-// CURRENCY
+
+//~ Currency
+
 #let round-fixed-str(num, d) = {
   let res = str(calc.round(num, digits: d))
   let pad = res.split(".")
@@ -103,7 +108,8 @@
 
 #let print-rp(num) = print-currency(num, prefix: [Rp ], comma: ",", splitter: ".")
 
-// Preprocess
+
+//~ Preprocess
 
 #let apply-defaults(v, defaults) = {
   for (key, value) in defaults.pairs() {
@@ -157,14 +163,34 @@
   if max-content == none {
     max-content = arr.len()
   }
-  let cells = arr.slice(0, calc.min(arr.len(), max-content)).enumerate().map(((i, v)) => (
-    [#(i + 1)],
-    ..keys.map(key => if key in custom {
-      custom.at(key)(v)
-    } else [#v.at(key)]).flatten(),
-  )).flatten()
+  let cells = arr
+    .slice(0, calc.min(arr.len(), max-content))
+    .enumerate()
+    .map(((i, v)) => (
+        [#(i + 1)],
+        ..keys
+          .map(key => if key in custom {
+              custom.at(key)(v)
+            } else [#v.at(key)])
+          .flatten(),
+      ))
+    .flatten()
   if arr.len() == 0 {
     cells.push((table.cell(colspan: keys.len() + 1, align(center, empty-message)), (), (), ()))
   }
   return cells.flatten()
+}
+
+#let inline-list(..arr, n-format: "(1)", last-sep: [, and ], sep: [, ]) = {
+  let values = arr.pos()
+  let i = 0
+  for (iv, v) in values.enumerate() {
+    if i == values.len() - 1 {
+      last-sep
+    } else if i > 0 {
+      sep
+    }
+    i += 1
+    [#numbering(n-format, i) #v]
+  }
 }
