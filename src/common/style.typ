@@ -16,3 +16,9 @@
   set cite(form: "prose")
   body
 }
+#let entry-fields(entries, ..args) = grid(
+  columns: 3,
+  gutter: 0.65em,
+  ..args,
+  ..entries.map(v => (v.at(0), [: ], v.at(1))).flatten(),
+)
