@@ -4,7 +4,8 @@
 #import "src/common/kode.typ": *
 #import "src/common/style.typ": *
 
-#import "src/touying-themes/university.typ" as touying-theme-university
+#import "src/touying-themes/university.typ" as st-university //? st = Slide Theme
 
-#import "src/templates/formal.typ" as template-formal
-#import "src/templates/general.typ" as template-general
+#import "src/templates/formal.typ" as t-formal //? t = Template
+#import "src/templates/general.typ" as t-general //? t = Template
+#import "src/templates/drpm.typ" as t-drpm //? t = Template

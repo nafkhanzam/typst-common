@@ -22,3 +22,6 @@
   ..args,
   ..entries.map(v => (v.at(0), [: ], v.at(1))).flatten(),
 )
+
+#let hl(body) = highlight(body)
+#let red-hl(body) = highlight(fill: red, body)
