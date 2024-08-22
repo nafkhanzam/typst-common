@@ -8,6 +8,18 @@
   v
 }
 
+#let access-field(o, ..keys, default: none) = {
+  let r = o
+  for key in keys.pos() {
+    if key in r {
+      r = r.at(key)
+    } else {
+      return default
+    }
+  }
+  return r
+}
+
 #let apply-refs(o, key, refs) = {
   o.insert(key, access-field(o, key, default: ()))
   for (i, v) in o.at(key).enumerate() {
@@ -80,16 +92,4 @@
     i += 1
     [#numbering(n-format, i) #v]
   }
-}
-
-#let access-field(o, ..keys, default: none) = {
-  let r = o
-  for key in keys.pos() {
-    if key in r {
-      r = r.at(key)
-    } else {
-      return default
-    }
-  }
-  return r
 }
