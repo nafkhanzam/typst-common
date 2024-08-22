@@ -11,7 +11,7 @@
     ),
   )
   set par(justify: true, linebreaks: "optimized")
-  set text(font: "Nimbus Roman", size: 12pt, fallback: false, hyphenate: false)
+  set text(font: "FreeSerif", size: 12pt, fallback: false, hyphenate: false)
   set block(below: 1.5em)
 
   body

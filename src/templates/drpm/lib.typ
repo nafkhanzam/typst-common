@@ -1,4 +1,5 @@
-#import "../common/currency.typ": *
+#import "../../common/currency.typ": *
+#import "../../common/dates.typ": *
 
 #let outline-entry-fn(prefix-count, start-level: 1) = (
   it => {
@@ -45,7 +46,7 @@
   )
   set par(justify: true, leading: 1em, linebreaks: "optimized")
   set text(
-    font: "Nimbus Roman No9 L",
+    font: "FreeSerif",
     size: 12pt,
     fallback: false,
     hyphenate: false,
@@ -227,3 +228,130 @@
       .flatten(),
   )
 }
+
+#let cover-solid(data) = [
+  #let cl-blue = rgb(32, 64, 106)
+  #let cl-yellow = rgb(255, 210, 46)
+
+  #set text(fill: white)
+  #set page(fill: cl-blue, margin: 0em)
+  #set par(justify: false)
+  #set align(center)
+
+  #show: pad.with(x: 2em)
+
+  #v(1fr)
+
+  #[
+    #set text(weight: "bold", size: 20pt)
+
+    PROPOSAL \
+    PENGABDIAN KEPADA MASYARAKAT \
+    SKEMA #upper(data.schema) DANA #upper(data.funding-source)
+
+    #v(1fr)
+
+    #image("lambang.png", width: 2.33in)
+
+    #v(1fr)
+
+    #set text(size: 18pt)
+
+    #upper[#data.title]
+
+    Lokasi : #data.partner.address
+
+    #v(1fr)
+  ]
+
+  #let write-member-entry(member) = [#member.name (#member.department/#member.faculty)]
+
+  #[
+    #set text(size: 14pt)
+
+    #text(size: 16pt)[*Tim Pengabdi:*] \
+    #for member in data.members [
+      #write-member-entry(member) \
+    ]
+  ]
+
+  #v(1fr)
+
+  #show: pad.with(x: -2em)
+
+  #block(fill: cl-yellow, width: 100%, inset: (x: 1em, y: 3em))[
+    #set text(fill: cl-blue)
+    #set text(weight: "bold", size: 18pt)
+
+    DIREKTORAT RISET DAN PENGABDIAN KEPADA MASYARAKAT \
+    INSTITUT TEKNOLOGI SEPULUH NOPEMBER \
+    SURABAYA #display-year
+  ]
+]
+
+#let cover-white(data) = [
+  #set par(justify: false)
+  #set align(center)
+
+  #let border-width = 12pt
+
+  #show: body => {
+    set page(margin: 0pt)
+    rect(
+      width: 100%,
+      height: 100%,
+      fill: none,
+      stroke: border-width + rgb(47, 84, 150),
+      pad(3cm - border-width, body),
+    )
+  }
+
+  #[
+    #set text(weight: "bold", size: 14pt)
+
+    PROPOSAL \
+    SKEMA PENELITIAN #upper(data.schema) \
+    SUMBER DANA #upper(data.funding-source) \
+    TAHUN #display-year
+
+    #v(1fr)
+
+    #image("lambang.png", width: 2.33in)
+
+    #v(1fr)
+
+    #text(size: 16pt, upper(data.title))
+
+    #v(1fr)
+
+    Tim Peneliti:
+  ]
+
+  #let write-member-entry(member) = [#member.name / #member.department / #member.faculty / #member.institution]
+
+  #pad(x: -1cm)[
+    #grid(
+      columns: (auto, 1fr),
+      [Ketua Peneliti],[: #write-member-entry(data.members.at(0))],
+      [Anggota Peneliti],[: 1. #write-member-entry(data.members.at(1))],
+      ..(
+        data.members.slice(2).enumerate().map(((i, member)) => (
+          [],
+          [#hide[: ]#{
+              i + 2
+            }. #write-member-entry(member)],
+        )).flatten()
+      )
+    )
+  ]
+
+  #v(1fr)
+
+  #[
+    #set text(weight: "bold", size: 12pt)
+    DIREKTORAT RISET DAN PENGABDIAN KEPADA MASYARAKAT \
+    INSTITUT TEKNOLOGI SEPULUH NOPEMBER \
+    SURABAYA \
+    #display-year
+  ]
+]

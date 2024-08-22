@@ -8,4 +8,4 @@
 
 #import "src/templates/formal.typ" as t-formal //? t = Template
 #import "src/templates/general.typ" as t-general //? t = Template
-#import "src/templates/drpm.typ" as t-drpm //? t = Template
+#import "src/templates/drpm/lib.typ" as t-drpm //? t = Template
