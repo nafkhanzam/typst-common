@@ -2,7 +2,8 @@
 
 // Originally contributed by Pol Dellaiera - https://github.com/drupol
 
-#import "@preview/touying:0.4.2": *
+#import "../common/style.typ": phantom
+#import "touying.typ": *
 
 #let slide(
   self: none,
@@ -112,6 +113,8 @@
   (self.methods.focus-slide)(self: self, section: (title: title, short-title: short-title), content)
 }
 
+#let slide-title-state = state("slide-title-state", none)
+
 #let new-subsection-slide(self: none, short-title: auto, title) = {
   self = utils.empty-page(self)
   let section-title = states.current-section-title
@@ -134,7 +137,36 @@
     v(.25em)
     title
   }
-  (self.methods.touying-slide)(self: self, repeat: none, subsection: (title: title, short-title: short-title), content)
+  (self.methods.touying-slide)(
+    self: self,
+    repeat: none,
+    subsection: (title: title, short-title: short-title),
+    setting: body => {
+      slide-title-state.update(title)
+      body
+    },
+    content,
+  )
+}
+
+#let new-subsubsection-slide(self: none, short-title: auto, title) = {
+  //? Only updating the title
+  (self.methods.touying-slide)(
+    self: self,
+    repeat: 0,
+    subsubsection: (title: title, short-title: short-title),
+    setting: body => {
+      slide-title-state.update(title)
+      body
+    },
+  )
+  // slide-title-state.update(title)
+  // ""
+  // (self.methods.touying-slide)(
+  //   self: self,
+  //   repeat: none,
+  //   subsubsection: (title: title, short-title: short-title),
+  // )
 }
 
 #let focus-slide(self: none, background-color: none, background-img: none, body, ..args) = {
@@ -227,7 +259,7 @@
   )
 }
 
-#let slides(self: none, title-slide: true, slide-level: 2, ..args) = {
+#let slides(self: none, title-slide: true, slide-level: 3, ..args) = {
   if title-slide {
     (self.methods.title-slide)(self: self)
   }
@@ -247,13 +279,15 @@
   } else {
     self.info.short-title
   },
-  footer-c: self => {
-    h(1fr)
-    // utils.info-date(self)
-    // h(1fr)
-    states.slide-counter.display() + " / " + states.last-slide-number
-    h(1fr)
-  },
+  footer-c: self => (
+    context {
+      h(1fr)
+      // utils.info-date(self)
+      // h(1fr)
+      states.slide-counter.display() + " / " + states.last-slide-number
+      h(1fr)
+    }
+  ),
   color-theme: (
     primary: rgb("#04364A"),
     secondary: rgb("#176B87"),
@@ -295,28 +329,37 @@
       cell(fill: self.colors.tertiary, utils.call-or-display(self, footer-c)),
     )
   }
-  self.uni-header = self => {
-    block(
-      inset: (x: .5em),
-      grid(
-        columns: 1,
-        gutter: .3em,
+  self.uni-header = self => (
+    context {
+      block(
+        inset: (x: .5em),
         grid(
-          columns: (auto, 1fr, auto),
+          columns: 1,
           gutter: .3em,
-          if self.uni-display-current-subsection {
-            align(top + left, heading(level: 2, text(fill: self.colors.primary, states.current-subsection-title)))
-          },
-          align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
-          if self.uni-display-current-section {
-            align(top + right, text(fill: self.colors.primary.lighten(65%), states.current-section-title))
-          },
-        ),
+          grid(
+            columns: (auto, 1fr, auto),
+            gutter: .3em,
+            if self.uni-display-current-subsection {
+              // let showing-title = query(selector(heading).before(here())).last().body
+              // let showing-title = slide-title-state.get()
+              let showing-title = states.current-subsubsection-title
+              // let showing-title = self.at("stitle", default: none)
+              if showing-title == none or showing-title == [] {
+                showing-title = states.current-subsection-title
+              }
+              align(top + left, heading(level: 2, text(fill: self.colors.primary, showing-title)))
+            },
+            align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
+            if self.uni-display-current-section {
+              align(top + right, text(fill: self.colors.primary.lighten(65%), states.current-section-title))
+            },
+          ),
 
-        text(fill: self.colors.primary.lighten(65%), size: .8em, self.uni-subtitle),
-      ),
-    )
-  }
+          text(fill: self.colors.primary.lighten(65%), size: .8em, self.uni-subtitle),
+        ),
+      )
+    }
+  )
   // set page
   let header(self) = {
     set align(top)
@@ -350,6 +393,8 @@
   self.methods.touying-new-section-slide = new-section-slide
   self.methods.new-subsection-slide = new-subsection-slide
   self.methods.touying-new-subsection-slide = new-subsection-slide
+  self.methods.new-subsubsection-slide = new-subsubsection-slide
+  self.methods.touying-new-subsubsection-slide = new-subsubsection-slide
   self.methods.focus-slide = focus-slide
   self.methods.matrix-slide = matrix-slide
   self.methods.slides = slides
