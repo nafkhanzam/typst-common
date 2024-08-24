@@ -141,6 +141,7 @@
     self: self,
     repeat: none,
     subsection: (title: title, short-title: short-title),
+    subsubsection: (title: title, short-title: short-title),
     setting: body => {
       slide-title-state.update(title)
       body
