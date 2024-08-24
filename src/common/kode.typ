@@ -2,8 +2,10 @@
 #import "@preview/showybox:2.0.1": showybox
 #import "style.typ": phantom
 
+#let kode-default-filename = state("kode-default-filename", hide[a])
+
 #let kode(
-  filename: [Main.java],
+  filename: context kode-default-filename.get(),
   font-size: .7em,
   width: 35em,
   o: none,
@@ -15,7 +17,7 @@
   context {
     show: block.with(inset: -.1em)
     set text(
-      font: "JetBrainsMonoNL NFP",
+      font: "Liberation Mono",
       size: font-size,
     )
     let output-content = if o != none {
@@ -72,9 +74,9 @@
         title: [
           #phantom[~]#filename
           #if status == "success" {
-            place(right + horizon, rect(fill: green, radius: .32em, strong(sym.checkmark)))
+            place(right + horizon, rect(fill: green, radius: .32em, text(font: "Segoe UI Symbol", strong(sym.checkmark))))
           } else if status == "compile" or status == "runtime" {
-            place(right + horizon, rect(fill: red, radius: .32em, strong(sym.times)))
+            place(right + horizon, rect(fill: red, radius: .32em, text(font: "Segoe UI Symbol", strong(sym.times))))
           }
         ],
         title-style: (color: white, align: center),

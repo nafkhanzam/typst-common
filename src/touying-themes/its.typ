@@ -40,6 +40,14 @@
   )
   s
 }
+#let sl(self, title, body, ..args) = {
+  let (slide, empty-slide) = utils.slides(self)
+  if title == [] {
+    slide(body, ..args)
+  } else {
+    slide(subsubsection: (title: title), body, ..args)
+  }
+}
 
 #let init(
   s,
