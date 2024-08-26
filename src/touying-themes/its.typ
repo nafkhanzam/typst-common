@@ -40,6 +40,7 @@
   )
   s
 }
+
 #let sl(self, title, body, ..args) = {
   let (slide, empty-slide) = utils.slides(self)
   if title == [] {
@@ -59,6 +60,7 @@
     show: init
     set text(font: "FreeSerif", fallback: false)
     show strong: alert
+    set enum(full: true)
     show: slides
     body
   }
@@ -66,4 +68,11 @@
   show: init-slide
 
   body
+}
+
+#let methods(s) = {
+  let sl_(..args) = sl(s, ..args)
+  let sl2(percent, ..args) = sl(s, composer: (percent, 1fr), ..args)
+
+  (sl: sl_, sl2: sl2)
 }

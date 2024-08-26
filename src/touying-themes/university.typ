@@ -154,7 +154,7 @@
   //? Only updating the title
   (self.methods.touying-slide)(
     self: self,
-    repeat: 0,
+    repeat: none,
     subsubsection: (title: title, short-title: short-title),
     setting: body => {
       slide-title-state.update(title)
