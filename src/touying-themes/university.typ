@@ -294,6 +294,7 @@
     secondary: rgb("#176B87"),
     tertiary: rgb("#448C95"),
   ),
+  preinit: (self, body) => body,
   ..args,
 ) = {
   // color theme
@@ -311,24 +312,28 @@
   self.uni-display-current-subsection = display-current-subsection
   self.uni-title = none
   self.uni-subtitle = none
-  self.uni-footer = self => {
-    let cell(fill: none, it) = rect(
-      width: 100%,
-      height: 100%,
-      inset: 1mm,
-      outset: 0mm,
-      fill: fill,
-      stroke: none,
-      align(horizon, text(fill: white, it)),
-    )
-    show: block.with(width: 100%, height: auto, fill: self.colors.secondary)
-    grid(
-      columns: footer-columns,
-      rows: (1.5em, auto),
-      cell(fill: self.colors.primary, utils.call-or-display(self, footer-a)),
-      cell(fill: self.colors.secondary, utils.call-or-display(self, footer-b)),
-      cell(fill: self.colors.tertiary, utils.call-or-display(self, footer-c)),
-    )
+  self.uni-footer = if footer-columns.len() > 0 {
+    self => {
+      let cell(fill: none, it) = rect(
+        width: 100%,
+        height: 100%,
+        inset: 1mm,
+        outset: 0mm,
+        fill: fill,
+        stroke: none,
+        align(horizon, text(fill: white, it)),
+      )
+      show: block.with(width: 100%, height: auto, fill: self.colors.secondary)
+      grid(
+        columns: footer-columns,
+        rows: (1.5em, auto),
+        cell(fill: self.colors.primary, utils.call-or-display(self, footer-a)),
+        cell(fill: self.colors.secondary, utils.call-or-display(self, footer-b)),
+        cell(fill: self.colors.tertiary, utils.call-or-display(self, footer-c)),
+      )
+    }
+  } else {
+    none
   }
   self.uni-header = self => (
     context {
@@ -407,6 +412,7 @@
     set text(size: 25pt)
     set heading(outlined: false)
     show footnote.entry: set text(size: .6em)
+    show: preinit.with(self)
     body
   }
   self

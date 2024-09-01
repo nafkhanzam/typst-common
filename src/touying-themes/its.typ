@@ -13,19 +13,13 @@
   copyright: [
     #sym.copyright #datetime.today().year() All rights reserved
   ],
+  ..args,
 ) = {
   let s = university.register(
     aspect-ratio: "16-9",
-    // color-theme: (
-    //   primary: rgb("#04364A"),
-    //   secondary: rgb("#0078C1"),
-    //   tertiary: rgb("#82C1E2"),
-    // ),
+    ..args,
   )
-  //? ITS affiliation version
-  s = (
-    s.methods.info
-  )(
+  s = (s.methods.info)(
     self: s,
     logo: [
       #pad(x: .4em, y: .4em, image("its-logo.png", width: 4em))
@@ -34,7 +28,6 @@
     title: title,
     subtitle: subtitle,
     author: author,
-    // date: datetime.today(),
     institution: institution,
     copyright: copyright,
   )

@@ -1,4 +1,4 @@
-#import "@preview/pinit:0.1.4": *
+#import "@preview/pinit:0.2.0": *
 #import "@preview/showybox:2.0.1": showybox
 #import "style.typ": phantom
 
@@ -13,87 +13,97 @@
   status: "success",
   nextBody: [],
   body,
-) = (
-  context {
-    show: block.with(inset: -.1em)
-    set text(
-      font: "Liberation Mono",
-      size: font-size,
-    )
-    let output-content = if o != none {
-      show: pad.with(x: -1em, y: -.65em)
-      if status == "success" {
-        showybox(
-          title: [Output#pin("o-title")],
-          width: auto,
-          shadow: (offset: 3pt),
-          frame: (title-color: green.lighten(60%), body-color: green.lighten(80%)),
-          title-style: (color: black, align: center),
-          o,
-        )
-      } else if status == "compile" {
-        showybox(
-          title: [Compile-time error#pin("o-title")],
-          width: auto,
-          shadow: (offset: 3pt),
-          frame: (title-color: red.lighten(60%), body-color: red.lighten(80%)),
-          title-style: (color: black, align: center),
-          o,
-        )
-      } else if status == "runtime" {
-        showybox(
-          title: [Runtime error#pin("o-title")],
-          width: auto,
-          shadow: (offset: 3pt),
-          frame: (title-color: red.lighten(60%), body-color: red.lighten(80%)),
-          title-style: (color: black, align: center),
-          o,
-        )
-      }
-    } else {
-      ""
+) = {
+  show: block.with(inset: -.1em)
+  set text(
+    font: "Liberation Mono",
+    size: font-size,
+  )
+  //? HACKY way to make filename pinnable.
+  let anchor-hack = hide[#text(size: 0pt)[~]]
+  let output-content = if o != none {
+    o = [#anchor-hack#o#anchor-hack]
+    show: pad.with(x: -1em, y: -.65em)
+    if status == "success" {
+      showybox(
+        title: [#anchor-hack#[Output#pin("o-title")]#anchor-hack],
+        width: auto,
+        shadow: (offset: 3pt),
+        frame: (title-color: green.lighten(60%), body-color: green.lighten(80%)),
+        title-style: (color: black, align: center),
+        o,
+      )
+    } else if status == "compile" {
+      showybox(
+        title: [#anchor-hack#[Compile-time error#pin("o-title")]#anchor-hack],
+        width: auto,
+        shadow: (offset: 3pt),
+        frame: (title-color: red.lighten(60%), body-color: red.lighten(80%)),
+        title-style: (color: black, align: center),
+        o,
+      )
+    } else if status == "runtime" {
+      showybox(
+        title: [#anchor-hack#[Runtime error#pin("o-title")]#anchor-hack],
+        width: auto,
+        shadow: (offset: 3pt),
+        frame: (title-color: red.lighten(60%), body-color: red.lighten(80%)),
+        title-style: (color: black, align: center),
+        o,
+      )
     }
-    let kode-content = {
-      let body = {
-        show raw.line: it => {
-          show regex("#pin\(.*?\)"): it => pin(eval(it.text.slice(5, it.text.len() - 1)))
-          if escape-mode == "comment" {
-            show regex("(/\*|\*/)"): none
-            it
-          } else {
-            it
-          }
+  } else {
+    ""
+  }
+  let kode-content = {
+    let body = {
+      show raw.line: it => {
+        show regex("#pin\(.*?\)"): it => pin(eval(it.text.slice(5, it.text.len() - 1)))
+        if escape-mode == "comment" {
+          show regex("(/\*|\*/)"): none
+          it
+        } else {
+          it
         }
-        body
       }
-      if filename != none {
-        show: showybox.with(
+      body
+    }
+    if filename != none {
+      show: showybox.with(
         shadow: (offset: 3pt),
         width: auto,
-        //? HACKY way to make filename pinnable.
         title: [
-          #phantom[~]#filename
+          #anchor-hack#filename#anchor-hack
           #if status == "success" {
-            place(right + horizon, rect(fill: green, radius: .32em, text(font: "Segoe UI Symbol", strong(sym.checkmark))))
+            place(right + horizon)[
+              #rect(fill: green, radius: .32em)[
+                #text(font: "Segoe UI Symbol")[#sym.checkmark]
+                #place(dx: 50% + .24em, pin("kode-status"))
+              ]
+            ]
           } else if status == "compile" or status == "runtime" {
-            place(right + horizon, rect(fill: red, radius: .32em, text(font: "Segoe UI Symbol", strong(sym.times))))
+            place(right + horizon)[
+              #rect(fill: red, radius: .32em)[
+                #text(font: "Segoe UI Symbol")[#sym.times]
+                #place(dx: 50% + .24em, pin("kode-status"))
+              ]
+            ]
           }
         ],
-        title-style: (color: white, align: center),
+        title-style: (color: white, align: center + horizon),
         footer: output-content,
       )
-        body
-      } else {
-        show: showybox.with(shadow: (offset: 3pt), width: auto, footer: output-content)
-        body
-      }
+      body
+    } else {
+      show: showybox.with(shadow: (offset: 3pt), width: auto, footer: output-content)
+      body
     }
-    kode-content
-    nextBody
   }
-)
-#let kode-content(body) = rect(fill: blue.lighten(40%).transparentize(20%), radius: .36em, body)
-#let err-content(body) = rect(fill: red.transparentize(20%), radius: .36em, body)
+  kode-content
+  nextBody
+}
+#let kode-content(body) = text(fill: black, rect(fill: blue.lighten(40%).transparentize(20%), radius: .36em, body))
+#let err-content(body) = text(fill: black, rect(fill: red.transparentize(20%), radius: .36em, body))
 #let kode-arrow-to-left(..args, start, end) = pinit-arrow(
   start-dx: -4pt,
   start-dy: -4pt,
@@ -117,7 +127,7 @@
   body-dx: -10pt,
   body-dy: 0pt,
   ..args.named(),
-  target,
+  (target,),
   kode-content(body),
 )
 #let kode-to-straight(..args, target, body) = pinit-point-to(
@@ -128,7 +138,7 @@
   offset-dx: 64pt,
   offset-dy: -4pt,
   ..args.named(),
-  target,
+  (target,),
   kode-content(body),
 )
 #let kode-to-bottom(..args, target, body) = pinit-point-to(
@@ -137,7 +147,7 @@
   offset-dx: -16pt,
   offset-dy: 55pt,
   ..args.named(),
-  target,
+  (target,),
   kode-content(body),
 )
 #let kode-to-red(..args, target, body) = pinit-point-to(
@@ -145,7 +155,7 @@
   body-dx: -10pt,
   body-dy: 0pt,
   ..args.named(),
-  target,
+  (target,),
   err-content(body),
 )
 #let kode-to-red-bottom(..args, target, body) = pinit-point-to(
@@ -154,7 +164,7 @@
   offset-dx: -16pt,
   offset-dy: 55pt,
   ..args.named(),
-  target,
+  (target,),
   err-content(body),
 )
 #let kode-to-red-straight(..args, target, body) = pinit-point-to(
@@ -165,7 +175,7 @@
   offset-dx: 64pt,
   offset-dy: -4pt,
   ..args.named(),
-  target,
+  (target,),
   err-content(body),
 )
 #let kode-hl(..args, st, ed) = pinit-highlight(
