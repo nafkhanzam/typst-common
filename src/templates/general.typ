@@ -27,7 +27,7 @@
 ) = {
   // ~ Argument Validations
   let z-content = z.either(z.string(), z.content())
-  title = z.parse(title, z.string())
+  title = z.parse(title, z-content)
   logo = z.parse(logo, z.string(optional: true))
   event = z.parse(event, z-content)
   author = z.parse(author, z-content)
@@ -172,6 +172,7 @@
   body
 
   if bib != none {
+    set par(justify: false)
     bib
   }
 }
