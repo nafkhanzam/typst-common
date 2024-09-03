@@ -20,9 +20,9 @@
     size: font-size,
   )
   //? HACKY way to make filename pinnable.
-  let anchor-hack = hide[#text(size: 0pt)[~]]
+  let anchor-hack = hide[#text(size: 0em)[~]]
   let output-content = if o != none {
-    o = [#anchor-hack#o#anchor-hack]
+    o = [#o#anchor-hack]
     show: pad.with(x: -1em, y: -.65em)
     if status == "success" {
       showybox(

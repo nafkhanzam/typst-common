@@ -1,10 +1,7 @@
 #import "@preview/valkyrie:0.2.1" as z
 #import "@preview/codly:1.0.0"
 #import "@preview/drafting:0.2.0": *
-
-#let theme = (
-  main: rgb("#0079C2"),
-)
+#import "../common/style.typ": *
 
 #let template(
   title: "",
@@ -15,23 +12,31 @@
   affiliation: "",
   date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
   with-toc: false,
+  toc-title: [Table of Contents],
   with-date: false,
-  bib-file: none,
+  footer-left: none,
+  footer-right: context counter(page).display("1"),
+  bib: none,
   infinite-height: false,
   hl-todo: false,
+  theme: (
+    main: rgb("#0079C2"),
+  ),
+  font-size: 10pt,
   body,
 ) = {
   // ~ Argument Validations
+  let z-content = z.either(z.string(), z.content())
   title = z.parse(title, z.string())
   logo = z.parse(logo, z.string(optional: true))
-  event = z.parse(event, z.string())
-  author = z.parse(author, z.string())
-  author-desc = z.parse(author-desc, z.string())
-  affiliation = z.parse(affiliation, z.string())
-  date-display = z.parse(date-display, z.string())
+  event = z.parse(event, z-content)
+  author = z.parse(author, z-content)
+  author-desc = z.parse(author-desc, z-content)
+  affiliation = z.parse(affiliation, z-content)
+  date-display = z.parse(date-display, z-content)
   with-toc = z.parse(with-toc, z.boolean())
   with-date = z.parse(with-date, z.boolean())
-  bib-file = z.parse(bib-file, z.string(optional: true))
+  bib = z.parse(bib, z.content(optional: true))
 
   // ~ Setups
   set page(
@@ -43,41 +48,31 @@
     header: context {
       let page-counter = counter(page).get().at(0)
       if page-counter > 1 [
-        #set text(8pt)
+        #set text(.8em)
         #title
         #h(1fr)
         #event
         #line(length: 100%)
       ]
     },
-    footer: context [
-      #set text(8pt)
+    footer: [
+      #set text(.8em)
       #line(length: 100%)
-      #set align(right)
-      Page
-      #counter(page).display(
-        "1 of 1",
-        both: true,
-      )
+      #footer-left
+      #h(1fr)
+      #footer-right
     ],
   )
   show: it => {
     if infinite-height {
-      set page(
-        height: auto,
-        footer: context [
-          #set text(8pt)
-          #line(length: 100%)
-          #set align(right)
-        ],
-      )
+      set page(height: auto)
       it
     } else {
       it
     }
   }
   set-page-properties()
-  set text(font: "FreeSerif", size: 10pt, fallback: false, hyphenate: false)
+  set text(font: "FreeSerif", size: font-size, fallback: false, hyphenate: false)
   set par(justify: true, linebreaks: "optimized")
   set enum(indent: 2em)
   set list(indent: 2em)
@@ -99,24 +94,22 @@
   //     it.body
   //   }
   // })
-  show heading.where(level: 1): body => {
-    set text(fill: theme.main, size: 14pt)
-    body
+  show heading.where(level: 1): it => {
+    set text(fill: theme.main)
+    it
     v(0.25em)
   }
-  show heading.where(level: 2): body => {
-    set text(size: 12pt)
-    body
+  show heading.where(level: 2): it => {
+    it
     v(0.25em)
   }
-  show heading.where(level: 3): body => {
-    set text(size: 10pt)
-    body
+  show heading.where(level: 3): it => {
+    it
     v(0.25em)
   }
-  show figure.where(kind: "table"): set text(size: 8pt)
+  show figure.where(kind: "table"): set text(size: .8em)
   show figure.caption: it => [
-    #set text(size: 9pt)
+    #set text(size: .9em)
     #grid(
       columns: 2,
       gutter: .5em,
@@ -137,7 +130,7 @@
 
   let title-content = [
     #if with-date {
-      set text(size: 10pt)
+      set text(size: 1.0em)
       show: place.with(right + top, float: false)
 
       date-display
@@ -158,10 +151,10 @@
 
         title
       } \
-      #set text(size: 9pt)
+      #set text(size: .9em)
       #event
 
-      #set text(size: 10pt)
+      #set text(size: 1.0em)
       #author \
       #author-desc \
       #affiliation
@@ -173,15 +166,13 @@
   title-content
 
   if with-toc {
-    headz(outlined: false)[Table of Contents]
-    pad(left: 0em, outline(title: none, indent: true))
+    outline(title: toc-title, indent: true)
   }
 
   body
 
-  if bib-file != none {
-    headz[References]
-    bibliography(title: none, bib-file)
+  if bib != none {
+    bib
   }
 }
 
