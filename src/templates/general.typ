@@ -4,12 +4,12 @@
 #import "../common/style.typ": *
 
 #let template(
-  title: "",
+  title: [],
   logo: "res/its-logo.png",
-  event: "",
-  author: "",
-  author-desc: "",
-  affiliation: "",
+  event: [],
+  author: [],
+  author-desc: [],
+  affiliation: [],
   date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
   with-toc: false,
   toc-title: [Table of Contents],
@@ -126,9 +126,9 @@
   show: codly.codly-init.with()
   codly.codly(number-format: none)
 
-  // ~ Content
-
-  let title-content = [
+  //~ Title
+  [
+    #set par(spacing: .6em)
     #if with-date {
       set text(size: 1.0em)
       show: place.with(right + top, float: false)
@@ -150,20 +150,23 @@
         set text(size: 16pt, weight: "bold")
 
         title
-      } \
+      }
+
       #set text(size: .9em)
       #event
 
       #set text(size: 1.0em)
-      #author \
-      #author-desc \
+      #author
+
+      #author-desc
+
       #affiliation
     ]
 
     #line(length: 100%)
   ]
 
-  title-content
+  // ~ Content
 
   if with-toc {
     outline(title: toc-title, indent: true)
