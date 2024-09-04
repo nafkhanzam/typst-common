@@ -128,6 +128,7 @@
 
   //~ Title
   [
+    #set box(inset: (top: -4em))
     #set par(spacing: .6em)
     #if with-date {
       set text(size: 1.0em)
