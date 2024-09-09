@@ -1,4 +1,4 @@
-#import "@preview/truthfy:0.4.0": *
+#import "@preview/truthfy:0.4.0"
 
 #let bit-count(n) = {
   let res = 0
@@ -24,17 +24,29 @@
 
   return rev
 }
-#let gen-truth-order(N) = range(N).sorted(key: i => reverse-bits(i, max: bit-count(N)))
-#let truth-cells(header-vars: "ABCDEFG", N, ..equations) = {
-  gen-truth-order(1.bit-lshift(N))
+#let gen-truth-order(n) = range(n).sorted(key: i => reverse-bits(i, max: bit-count(n)))
+#let _always-0(a) = a + " and not " + a
+#let truth-cells(vars, ..equations) = {
+  let n = vars.len()
+  let prefix = eval("$" + vars.map(_always-0).join(" and ") + "$")
+  gen-truth-order(1.bit-lshift(n))
     .map(i => i + 1)
     .map(i => (
-        ..truth-table(eval("$not " + header-vars.at(0) + " or " + header-vars
-            .slice(0, N)
-            .split("")
-            .slice(1, -1)
-            .join(" and ") + "$")).children.slice(i * (N + 1)).slice(0, N),
-        ..equations.pos().map(v => truth-table(v).children.slice(i * (N + 1)).at(N)),
+        ..truthfy.truth-table(prefix).children.slice(i * (n + 1)).slice(0, n),
+        ..equations.pos().map(v => truthfy.truth-table($(#prefix) or (#v)$).children.slice(i * (n + 1)).at(n)),
       ))
     .flatten()
+}
+
+#let truth-table(vars, ..equation-pairs) = {
+  let headers = vars + equation-pairs.pos().map(v => v.at(0))
+  table(
+    columns: headers.len(),
+    inset: .4em,
+    table.header(..headers.map(v => [*$#v$*])),
+    ..truth-cells(
+      vars,
+      ..equation-pairs.pos().map(v => v.at(1)),
+    )
+  )
 }
