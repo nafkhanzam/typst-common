@@ -38,11 +38,12 @@
     .flatten()
 }
 
-#let truth-table(vars, ..equation-pairs) = {
+#let truth-table(table-args: (), vars, ..equation-pairs) = {
   let headers = vars + equation-pairs.pos().map(v => v.at(0))
   table(
     columns: headers.len(),
     inset: .4em,
+    ..table-args,
     table.header(..headers.map(v => [*$#v$*])),
     ..truth-cells(
       vars,
