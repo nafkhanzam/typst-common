@@ -5,29 +5,31 @@
 #let zstack(
   alignment: top + left,
   ..args,
-) = style(styles => {
-  let width = 0pt
-  let height = 0pt
-  for item in args.pos() {
-    let size = measure(item.at(0), styles)
-    width = calc.max(width, size.width)
-    height = calc.max(height, size.height)
+) = (
+  context {
+    let width = 0pt
+    let height = 0pt
+    for item in args.pos() {
+      let size = measure(item.at(0))
+      width = calc.max(width, size.width)
+      height = calc.max(height, size.height)
+    }
+    block(
+      width: width,
+      height: height,
+      {
+        for item in args.pos() {
+          place(
+            alignment,
+            dx: item.at(1),
+            dy: item.at(2),
+            item.at(0),
+          )
+        }
+      },
+    )
   }
-  block(
-    width: width,
-    height: height,
-    {
-      for item in args.pos() {
-        place(
-          alignment,
-          dx: item.at(1),
-          dy: item.at(2),
-          item.at(0),
-        )
-      }
-    },
-  )
-})
+)
 
 #let kmap-render(
   row,
@@ -41,7 +43,7 @@
   horizontal-implicants: (),
   vertical-implicants: (),
   corner-implicants: false,
-  cell-size: 40pt,
+  cell-size: 2.2em,
   stroke-width: 0.5pt,
   colors: (
     rgb(255, 0, 0, 100),
@@ -300,7 +302,6 @@
 
       y-label,
       table(
-        columns: 1,
         rows: cell-size,
         align: center + horizon,
         inset: (x: 10pt),
@@ -359,7 +360,14 @@
   let gray-at(x, y) = gray-mat.at(y).at(x)
   let pos-at(g) = gray-map.at(g)
   let cells = if terms.type == "manual" {
-    terms.values
+    terms
+      .values
+      .enumerate()
+      .sorted(key: ((i, v)) => {
+          let g = gray-map.at(i)
+          g.at(1) * cc + g.at(0)
+        })
+      .map(v => v.at(1))
   } else if terms.type == "gray" {
     gray-mat.flatten()
   } else if ("minterms", "maxterms").contains(terms.type) {
@@ -400,8 +408,8 @@
     vertical-implicants: vertical-implicants,
     horizontal-implicants: horizontal-implicants,
     implicants: implicants,
-    x-label: $z w$,
-    y-label: $x y$,
+    x-label: vars.slice(r, r + c).join([]),
+    y-label: vars.slice(0, r).join([]),
     x-headers: headers.x,
     y-headers: headers.y,
   )
