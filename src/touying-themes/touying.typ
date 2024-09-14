@@ -1,1 +1,1 @@
-#import "@nafkhanzam/touying:0.4.2": *
+#import "@preview/touying:0.5.2": *

@@ -2,51 +2,122 @@
 
 // Originally contributed by Pol Dellaiera - https://github.com/drupol
 
-#import "../common/style.typ": phantom
 #import "touying.typ": *
 
+/// Default slide function for the presentation.
+///
+/// - `config` is the configuration of the slide. You can use `config-xxx` to set the configuration of the slide. For more several configurations, you can use `utils.merge-dicts` to merge them.
+///
+/// - `repeat` is the number of subslides. Default is `auto`，which means touying will automatically calculate the number of subslides.
+///
+///   The `repeat` argument is necessary when you use `#slide(repeat: 3, self => [ .. ])` style code to create a slide. The callback-style `uncover` and `only` cannot be detected by touying automatically.
+///
+/// - `setting` is the setting of the slide. You can use it to add some set/show rules for the slide.
+///
+/// - `composer` is the composer of the slide. You can use it to set the layout of the slide.
+///
+///   For example, `#slide(composer: (1fr, 2fr, 1fr))[A][B][C]` to split the slide into three parts. The first and the last parts will take 1/4 of the slide, and the second part will take 1/2 of the slide.
+///
+///   If you pass a non-function value like `(1fr, 2fr, 1fr)`, it will be assumed to be the first argument of the `components.side-by-side` function.
+///
+///   The `components.side-by-side` function is a simple wrapper of the `grid` function. It means you can use the `grid.cell(colspan: 2, ..)` to make the cell take 2 columns.
+///
+///   For example, `#slide(composer: 2)[A][B][#grid.cell(colspan: 2)[Footer]] will make the `Footer` cell take 2 columns.
+///
+///   If you want to customize the composer, you can pass a function to the `composer` argument. The function should receive the contents of the slide and return the content of the slide, like `#slide(composer: grid.with(columns: 2))[A][B]`.
+///
+/// - `..bodies` is the contents of the slide. You can call the `slide` function with syntax like `#slide[A][B][C]` to create a slide.
 #let slide(
-  self: none,
-  title: auto,
-  subtitle: auto,
-  header: auto,
-  footer: auto,
-  display-current-section: auto,
-  display-current-subsection: auto,
-  ..args,
-) = {
-  if title != auto {
-    self.uni-title = title
+  config: (:),
+  repeat: auto,
+  setting: body => body,
+  composer: auto,
+  ..bodies,
+) = touying-slide-wrapper(self => {
+  let header(self) = {
+    set align(top)
+    grid(
+      rows: (auto, auto),
+      row-gutter: 3mm,
+      if self.store.progress-bar {
+        components.progress-bar(height: 4pt, self.colors.primary, self.colors.tertiary)
+      },
+      block(
+        inset: (x: .5em),
+        {
+          grid(
+            columns: 1,
+            gutter: .3em,
+            grid(
+              columns: (auto, 1fr, auto),
+              gutter: .3em,
+              text(
+                fill: self.colors.primary,
+                weight: "bold",
+                size: 1.2em,
+                utils.call-or-display(self, self.store.header),
+              ),
+              align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
+              text(
+                fill: self.colors.primary.lighten(65%),
+                utils.call-or-display(self, self.store.header-right),
+              ),
+            ),
+          )
+        },
+      ),
+    )
   }
-  if subtitle != auto {
-    self.uni-subtitle = subtitle
+  let footer(self) = {
+    set align(center + bottom)
+    set text(size: .4em)
+    {
+      let cell(..args, it) = components.cell(
+        ..args,
+        inset: 1mm,
+        align(horizon, text(fill: white, it)),
+      )
+      show: block.with(width: 100%, height: auto)
+      grid(
+        columns: self.store.footer-columns,
+        rows: 1.5em,
+        cell(fill: self.colors.primary, utils.call-or-display(self, self.store.footer-a)),
+        cell(fill: self.colors.secondary, utils.call-or-display(self, self.store.footer-b)),
+        cell(fill: self.colors.tertiary, utils.call-or-display(self, self.store.footer-c)),
+      )
+    }
   }
-  if header != auto {
-    self.uni-header = header
-  }
-  if footer != auto {
-    self.uni-footer = footer
-  }
-  if display-current-section != auto {
-    self.uni-display-current-section = display-current-section
-  }
-  if display-current-section != auto {
-    self.uni-display-current-subsection = display-current-subsection
-  }
-  (self.methods.touying-slide)(
-    ..args.named(),
-    self: self,
-    title: title,
-    setting: body => {
-      show: args.named().at("setting", default: body => body)
-      body
-    },
-    ..args.pos(),
+  let self = utils.merge-dicts(
+    self,
+    config-page(
+      header: header,
+      footer: footer,
+    ),
   )
-}
+  touying-slide(self: self, config: config, repeat: repeat, setting: setting, composer: composer, ..bodies)
+})
 
-#let title-slide(self: none, ..args) = {
-  self = utils.empty-page(self)
+
+/// Title slide for the presentation. You should update the information in the `config-info` function. You can also pass the information directly to the `title-slide` function.
+///
+/// Example:
+///
+/// ```typst
+/// #show: university-theme.with(
+///   config-info(
+///     title: [Title],
+///     logo: emoji.school,
+///   ),
+/// )
+///
+/// #title-slide(subtitle: [Subtitle])
+/// ```
+///
+/// - `extra` is the extra information of the slide. You can pass the extra information to the `title-slide` function.
+#let title-slide(
+  extra: none,
+  ..args,
+) = touying-slide-wrapper(self => {
   let info = self.info + args.named()
   info.authors = {
     let authors = if "authors" in info {
@@ -60,9 +131,9 @@
       (authors,)
     }
   }
-  let content = {
+  let body = {
     if info.logo != none {
-      align(right, info.logo)
+      place(right, text(fill: self.colors.primary, info.logo))
     }
     align(
       center + horizon,
@@ -83,7 +154,7 @@
           columns: (1fr,) * calc.min(info.authors.len(), 3),
           column-gutter: 1em,
           row-gutter: 1em,
-          ..info.authors.map(author => text(fill: black, author)),
+          ..info.authors.map(author => text(fill: self.colors.neutral-darkest, author))
         )
         v(1em)
         if info.institution != none {
@@ -92,187 +163,173 @@
         }
         if info.date != none {
           parbreak()
-          text(size: .8em, utils.info-date(self))
+          text(size: .8em, utils.display-info-date(self))
         }
       },
     )
-    if info.at("copyright", default: none) != none {
+    if info.copyright != none {
       show: place.with(bottom + end)
       show: text.with(size: .5em)
-      show: pad.with(x: .4em, y: .4em)
       info.copyright
     }
   }
-  (self.methods.touying-slide)(self: self, repeat: none, content)
-}
-
-#let new-section-slide(self: none, short-title: auto, title) = {
-  let content = {
-    title
-  }
-  (self.methods.focus-slide)(self: self, section: (title: title, short-title: short-title), content)
-}
-
-#let slide-title-state = state("slide-title-state", none)
-
-#let new-subsection-slide(self: none, short-title: auto, title) = {
-  self = utils.empty-page(self)
-  let section-title = states.current-section-title
-  let content(self) = {
-    set align(horizon)
-    show: pad.with(x: 20%, top: -.5em)
-    set text(
-      size: 1.5em,
-      fill: self.colors.primary,
-      weight: "bold",
-    )
-    {
-      set align(right)
-      show: pad.with(top: -1em)
-      set text(size: .5em, fill: self.colors.tertiary)
-      section-title
-    }
-    v(.25em)
-    block(height: 2pt, width: 100%, spacing: 0pt, utils.call-or-display(self, self.uni-progress-bar))
-    v(.25em)
-    title
-  }
-  (self.methods.touying-slide)(
-    self: self,
-    repeat: none,
-    subsection: (title: title, short-title: short-title),
-    subsubsection: (title: title, short-title: short-title),
-    setting: body => {
-      slide-title-state.update(title)
-      body
-    },
-    content,
+  self = utils.merge-dicts(
+    self,
+    config-common(freeze-slide-counter: true),
+    config-page(fill: self.colors.neutral-lightest),
   )
-}
+  touying-slide(self: self, body)
+})
 
-#let new-subsubsection-slide(self: none, short-title: auto, title) = {
-  //? Only updating the title
-  (self.methods.touying-slide)(
-    self: self,
-    repeat: none,
-    subsubsection: (title: title, short-title: short-title),
-    setting: body => {
-      slide-title-state.update(title)
-      body
-    },
-  )
-  // slide-title-state.update(title)
-  // ""
-  // (self.methods.touying-slide)(
-  //   self: self,
-  //   repeat: none,
-  //   subsubsection: (title: title, short-title: short-title),
-  // )
-}
 
-#let focus-slide(self: none, background-color: none, background-img: none, body, ..args) = {
+/// Focus on some content.
+///
+/// Example: `#focus-slide[Wake up!]`
+///
+/// - `background-color` is the background color of the slide. Default is the primary color.
+///
+/// - `background-img` is the background image of the slide. Default is none.
+#let _focus-slide(self: none, background-color: none, background-img: none, body) = {
   let background-color = if background-img == none and background-color == none {
     rgb(self.colors.primary)
   } else {
     background-color
   }
-  self = utils.empty-page(self)
-  self.page-args += (
-    fill: self.colors.primary-dark,
-    margin: 1em,
-    ..(
-      if background-color != none {
-        (fill: background-color)
-      }
-    ),
-    ..(
-      if background-img != none {
-        (
-          background: {
-            set image(
-              fit: "stretch",
-              width: 100%,
-              height: 100%,
-            )
-            background-img
-          },
-        )
-      }
-    ),
-  )
-  set text(
-    fill: white,
-    weight: "bold",
-    size: 2em,
-  )
-  (self.methods.touying-slide)(self: self, repeat: none, align(horizon, body), ..args)
-}
-
-#let matrix-slide(self: none, columns: none, rows: none, ..bodies) = {
-  self = utils.empty-page(self)
-  (self.methods.touying-slide)(
-    self: self,
-    composer: (..bodies) => {
-      let bodies = bodies.pos()
-      let columns = if type(columns) == int {
-        (1fr,) * columns
-      } else if columns == none {
-        (1fr,) * bodies.len()
-      } else {
-        columns
-      }
-      let num-cols = columns.len()
-      let rows = if type(rows) == int {
-        (1fr,) * rows
-      } else if rows == none {
-        let quotient = calc.quo(bodies.len(), num-cols)
-        let correction = if calc.rem(bodies.len(), num-cols) == 0 {
-          0
-        } else {
-          1
-        }
-        (1fr,) * (quotient + correction)
-      } else {
-        rows
-      }
-      let num-rows = rows.len()
-      if num-rows * num-cols < bodies.len() {
-        panic("number of rows (" + str(num-rows) + ") * number of columns (" + str(num-cols) + ") must at least be number of content arguments (" + str(
-          bodies.len(),
-        ) + ")")
-      }
-      let cart-idx(i) = (calc.quo(i, num-cols), calc.rem(i, num-cols))
-      let color-body(idx-body) = {
-        let (idx, body) = idx-body
-        let (row, col) = cart-idx(idx)
-        let color = if calc.even(row + col) {
-          white
-        } else {
-          silver
-        }
-        set align(center + horizon)
-        rect(inset: .5em, width: 100%, height: 100%, fill: color, body)
-      }
-      let content = grid(columns: columns, rows: rows, gutter: 0pt, ..bodies.enumerate().map(color-body))
-      content
-    },
-    ..bodies,
-  )
-}
-
-#let slides(self: none, title-slide: true, slide-level: 3, ..args) = {
-  if title-slide {
-    (self.methods.title-slide)(self: self)
+  let args = (:)
+  if background-color != none {
+    args.fill = background-color
   }
-  (self.methods.touying-slides)(self: self, slide-level: slide-level, ..args)
+  if background-img != none {
+    args.background = {
+      set image(fit: "stretch", width: 100%, height: 100%)
+      background-img
+    }
+  }
+  self = utils.merge-dicts(
+    self,
+    config-common(freeze-slide-counter: true),
+    config-page(margin: 1em, ..args),
+  )
+  set text(fill: self.colors.neutral-lightest, weight: "bold", size: 2em)
+  touying-slide(self: self, align(horizon, body))
 }
+#let focus-slide(background-color: none, background-img: none, body) = touying-slide-wrapper(self => _focus-slide(
+  self: self,
+  background-color: background-color,
+  background-img: background-img,
+  body,
+))
 
-#let register(
-  self: themes.default.s,
+
+// Create a slide where the provided content blocks are displayed in a grid and coloured in a checkerboard pattern without further decoration. You can configure the grid using the rows and `columns` keyword arguments (both default to none). It is determined in the following way:
+///
+/// - If `columns` is an integer, create that many columns of width `1fr`.
+/// - If `columns` is `none`, create as many columns of width `1fr` as there are content blocks.
+/// - Otherwise assume that `columns` is an array of widths already, use that.
+/// - If `rows` is an integer, create that many rows of height `1fr`.
+/// - If `rows` is `none`, create that many rows of height `1fr` as are needed given the number of co/ -ntent blocks and columns.
+/// - Otherwise assume that `rows` is an array of heights already, use that.
+/// - Check that there are enough rows and columns to fit in all the content blocks.
+///
+/// That means that `#matrix-slide[...][...]` stacks horizontally and `#matrix-slide(columns: 1)[...][...]` stacks vertically.
+#let matrix-slide(columns: none, rows: none, ..bodies) = touying-slide-wrapper(self => {
+  self = utils.merge-dicts(
+    self,
+    config-common(freeze-slide-counter: true),
+    config-page(margin: 0em),
+  )
+  touying-slide(self: self, composer: components.checkerboard.with(columns: columns, rows: rows), ..bodies)
+})
+
+
+/// New section slide for the presentation. You can update it by updating the `new-section-slide-fn` argument for `config-common` function.
+///
+/// Example: `config-common(new-section-slide-fn: new-section-slide.with(numbered: false))`
+///
+/// - `level` is the level of the heading.
+///
+/// - `numbered` is whether the heading is numbered.
+///
+/// - `title` is the title of the section. It will be pass by touying automatically.
+#let new-section-slide(level: 1, numbered: true, title) = touying-slide-wrapper(self => {
+  if level == 1 {
+    _focus-slide(self: self, title)
+  } else if level == 2 {
+    let body = {
+      set align(horizon)
+      show: pad.with(x: 20%, top: -.5em)
+      set text(
+        size: 1.5em,
+        fill: self.colors.primary,
+        weight: "bold",
+      )
+      {
+        set align(right)
+        show: pad.with(top: -1em)
+        set text(size: .5em, fill: self.colors.tertiary)
+        utils.display-current-heading(level: level - 1, numbered: numbered)
+      }
+      v(.25em)
+      block(
+        height: 2pt,
+        width: 100%,
+        spacing: 0pt,
+        components.progress-bar(height: 2pt, self.colors.primary, self.colors.primary-light),
+      )
+      v(.25em)
+      title
+    }
+    self = utils.merge-dicts(
+      self,
+      config-page(fill: self.colors.neutral-lightest),
+    )
+    touying-slide(self: self, body)
+  }
+})
+
+
+/// Touying university theme.
+///
+/// Example:
+///
+/// ```typst
+/// #show: university-theme.with(aspect-ratio: "16-9", config-colors(primary: blue))`
+/// ```
+///
+/// - `aspect-ratio` is the aspect ratio of the slides. Default is `16-9`.
+///
+/// - `progress-bar` is whether to show the progress bar. Default is `true`.
+///
+/// - `header` is the header of the slides. Default is `utils.display-current-heading(level: 2)`.
+///
+/// - `header-right` is the right part of the header. Default is `self.info.logo`.
+///
+/// - `footer-columns` is the columns of the footer. Default is `(25%, 1fr, 25%)`.
+///
+/// - `footer-a` is the left part of the footer. Default is `self.info.author`.
+///
+/// - `footer-b` is the middle part of the footer. Default is `self.info.short-title` or `self.info.title`.
+///
+/// - `footer-c` is the right part of the footer. Default is `self => h(1fr) + utils.display-info-date(self) + h(1fr) + context utils.slide-counter.display() + " / " + utils.last-slide-number + h(1fr)`.
+///
+/// ----------------------------------------
+///
+/// The default colors:
+///
+/// ```typ
+/// config-colors(
+///   primary: rgb("#04364A"),
+///   secondary: rgb("#176B87"),
+///   tertiary: rgb("#448C95"),
+///   neutral-lightest: rgb("#ffffff"),
+///   neutral-darkest: rgb("#000000"),
+/// )
+/// ```
+#let university-theme(
   aspect-ratio: "16-9",
   progress-bar: true,
-  display-current-section: true,
-  display-current-subsection: true,
+  header: utils.display-current-heading(level: auto),
+  header-right: self => utils.display-current-heading(level: 1),
   footer-columns: (25%, 1fr, 25%),
   footer-a: self => self.info.author,
   footer-b: self => if self.info.short-title == auto {
@@ -280,140 +337,61 @@
   } else {
     self.info.short-title
   },
-  footer-c: self => (
-    context {
-      h(1fr)
-      // utils.info-date(self)
-      // h(1fr)
-      states.slide-counter.display() + " / " + states.last-slide-number
-      h(1fr)
-    }
-  ),
-  color-theme: (
-    primary: rgb("#04364A"),
-    secondary: rgb("#176B87"),
-    tertiary: rgb("#448C95"),
-  ),
-  preinit: (self, body) => body,
+  footer-c: self => {
+    h(1fr)
+    utils.display-info-date(self)
+    h(1fr)
+    context utils.slide-counter.display() + " / " + utils.last-slide-number
+    h(1fr)
+  },
+  copyright: none,
   ..args,
+  body,
 ) = {
-  // color theme
-  self = (self.methods.colors)(self: self, ..color-theme)
-  // save the variables for later use
-  self.uni-enable-progress-bar = progress-bar
-  self.uni-progress-bar = self => states.touying-progress(ratio => {
-    grid(
-      columns: (ratio * 100%, 1fr),
-      rows: 2pt,
-      components.cell(fill: self.colors.primary), components.cell(fill: self.colors.tertiary),
-    )
-  })
-  self.uni-display-current-section = display-current-section
-  self.uni-display-current-subsection = display-current-subsection
-  self.uni-title = none
-  self.uni-subtitle = none
-  self.uni-footer = if footer-columns.len() > 0 {
-    self => {
-      let cell(fill: none, it) = rect(
-        width: 100%,
-        height: 100%,
-        inset: 1mm,
-        outset: 0mm,
-        fill: fill,
-        stroke: none,
-        align(horizon, text(fill: white, it)),
-      )
-      show: block.with(width: 100%, height: auto, fill: self.colors.secondary)
-      grid(
-        columns: footer-columns,
-        rows: (1.5em, auto),
-        cell(fill: self.colors.primary, utils.call-or-display(self, footer-a)),
-        cell(fill: self.colors.secondary, utils.call-or-display(self, footer-b)),
-        cell(fill: self.colors.tertiary, utils.call-or-display(self, footer-c)),
-      )
-    }
-  } else {
-    none
-  }
-  self.uni-header = self => (
-    context {
-      block(
-        inset: (x: .5em),
-        grid(
-          columns: 1,
-          gutter: .3em,
-          grid(
-            columns: (auto, 1fr, auto),
-            gutter: .3em,
-            if self.uni-display-current-subsection {
-              // let showing-title = query(selector(heading).before(here())).last().body
-              // let showing-title = slide-title-state.get()
-              let showing-title = states.current-subsubsection-title
-              // let showing-title = self.at("stitle", default: none)
-              if showing-title == none or showing-title == [] {
-                showing-title = states.current-subsection-title
-              }
-              align(top + left, heading(level: 2, text(fill: self.colors.primary, showing-title)))
-            },
-            align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
-            if self.uni-display-current-section {
-              align(top + right, text(fill: self.colors.primary.lighten(65%), states.current-section-title))
-            },
-          ),
+  show: touying-slides.with(
+    config-page(
+      paper: "presentation-" + aspect-ratio,
+      header-ascent: 0em,
+      footer-descent: 0em,
+      margin: (top: 2.5em, bottom: 1em, x: 2em),
+    ),
+    config-common(
+      slide-fn: slide,
+      new-section-slide-fn: new-section-slide.with(level: 1),
+      new-subsection-slide-fn: new-section-slide.with(level: 2),
+      slide-level: 3,
+    ),
+    config-methods(
+      init: (self: none, body) => {
+        set text(font: "FreeSerif", fallback: false)
+        set text(fill: self.colors.neutral-darkest, size: 25pt)
+        show heading: set text(fill: self.colors.primary)
+        show strong: self.methods.alert.with(self: self)
 
-          text(fill: self.colors.primary.lighten(65%), size: .8em, self.uni-subtitle),
-        ),
-      )
-    }
-  )
-  // set page
-  let header(self) = {
-    set align(top)
-    grid(
-      rows: (auto, auto),
-      row-gutter: 3mm,
-      if self.uni-enable-progress-bar {
-        utils.call-or-display(self, self.uni-progress-bar)
+        body
       },
-      utils.call-or-display(self, self.uni-header),
-    )
-  }
-  let footer(self) = {
-    set text(size: .4em)
-    set align(center + bottom)
-    utils.call-or-display(self, self.uni-footer)
-  }
-
-  self.page-args += (
-    paper: "presentation-" + aspect-ratio,
-    header: header,
-    footer: footer,
-    header-ascent: 0em,
-    footer-descent: 0em,
-    margin: (top: 2.5em, bottom: 1em, x: 2em),
+      alert: utils.alert-with-primary-color,
+    ),
+    config-colors(
+      primary: rgb("#04364A"),
+      secondary: rgb("#176B87"),
+      tertiary: rgb("#448C95"),
+      neutral-lightest: rgb("#ffffff"),
+      neutral-darkest: rgb("#000000"),
+    ),
+    // save the variables for later use
+    config-store(
+      progress-bar: progress-bar,
+      header: header,
+      header-right: header-right,
+      footer-columns: footer-columns,
+      footer-a: footer-a,
+      footer-b: footer-b,
+      footer-c: footer-c,
+      copyright: copyright,
+    ),
+    ..args,
   )
-  // register methods
-  self.methods.slide = slide
-  self.methods.title-slide = title-slide
-  self.methods.new-section-slide = new-section-slide
-  self.methods.touying-new-section-slide = new-section-slide
-  self.methods.new-subsection-slide = new-subsection-slide
-  self.methods.touying-new-subsection-slide = new-subsection-slide
-  self.methods.new-subsubsection-slide = new-subsubsection-slide
-  self.methods.touying-new-subsubsection-slide = new-subsubsection-slide
-  self.methods.focus-slide = focus-slide
-  self.methods.matrix-slide = matrix-slide
-  self.methods.slides = slides
-  self.methods.touying-outline = (self: none, enum-args: (:), ..args) => {
-    states.touying-outline(self: self, enum-args: (tight: false) + enum-args, ..args)
-  }
-  self.methods.alert = (self: none, it) => text(fill: self.colors.primary, it)
-  self.methods.init = (self: none, body) => {
-    set text(size: 25pt)
-    set heading(outlined: false)
-    show footnote.entry: set text(size: .6em)
-    show: preinit.with(self)
-    body
-  }
-  self
+
+  body
 }

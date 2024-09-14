@@ -128,41 +128,35 @@
 
   //~ Title
   [
-    #set box(inset: (top: -4em))
     #set par(spacing: .6em)
-    #if with-date {
-      set text(size: 1.0em)
-      show: place.with(right + top, float: false)
 
-      date-display
-    }
+    #grid(
+      columns: (1fr, 60%, 1fr),
+      if logo != none {
+        set align(left + top)
+        image(logo, height: 6em)
+      },
+      {
+        set align(center)
+        set par(justify: false)
+        text(size: 16pt, weight: "bold", title)
+        linebreak()
+        text(size: .9em, event)
+        linebreak()
+        set text(size: 1.0em)
+        author
+        linebreak()
+        author-desc
+        linebreak()
+        affiliation
+      },
+      if with-date {
+        set align(right + top)
+        set text(size: 1.0em)
 
-    #if logo != none {
-      show: place.with(left + top, float: false)
-      image(logo, height: 6em)
-    }
-
-    #set align(center)
-
-    #[
-      #show: box.with(width: 60%)
-
-      #{
-        set text(size: 16pt, weight: "bold")
-
-        title
-      }
-
-      #set text(size: .9em)
-      #event
-
-      #set text(size: 1.0em)
-      #author
-
-      #author-desc
-
-      #affiliation
-    ]
+        date-display
+      },
+    )
 
     #line(length: 100%)
   ]
@@ -232,3 +226,16 @@
     }
   ]
 )
+
+//~ Utilities
+#let setup-indonesian(body) = [
+  #fig-img-args.update(v => {
+    v.at("supplement") = "Gambar"
+    v
+  })
+  #fig-tab-args.update(v => {
+    v.at("supplement") = "Tabel"
+    v
+  })
+  #body
+]
