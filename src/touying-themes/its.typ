@@ -16,18 +16,23 @@
   ],
   ..args,
   body,
-) = university-theme(
-  config-info(
-    title: title,
-    subtitle: subtitle,
-    author: author,
-    institution: institution,
-    logo: logo,
-    copyright: copyright,
-  ),
-  ..args,
-  body,
-)
+) = [
+  #show: university-theme.with(
+    config-info(
+      title: title,
+      subtitle: subtitle,
+      author: author,
+      institution: institution,
+      logo: logo,
+      copyright: copyright,
+    ),
+    ..args,
+  )
+
+  #title-slide()
+
+  #body
+]
 
 #let sl(title, body, ..args) = {
   if title == [] {
