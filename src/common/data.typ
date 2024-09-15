@@ -93,3 +93,20 @@
     [#numbering(n-format, i) #v]
   }
 }
+
+#let transpose(arr) = {
+  let c = arr.at(0).len()
+  let r = arr.len()
+  let res = c * (r * (none,),)
+
+  if arr.any(v => v == none) {
+    panic(arr)
+  }
+  for i in range(c) {
+    for j in range(r) {
+      res.at(i).at(j) = arr.at(j).at(i)
+    }
+  }
+
+  res
+}
