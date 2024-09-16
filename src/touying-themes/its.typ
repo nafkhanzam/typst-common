@@ -1,3 +1,4 @@
+#import "../common/style.typ": *
 #import "touying.typ": *
 #import "university.typ": *
 
@@ -28,6 +29,8 @@
     ),
     ..args,
   )
+  #show link: text.with(fill: rgb("#176B87"))
+  #show link: underline
 
   #title-slide()
 
