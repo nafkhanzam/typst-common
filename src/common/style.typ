@@ -25,3 +25,4 @@
 
 #let hl(body) = highlight(body)
 #let red-hl(body) = highlight(fill: red, body)
+#let bl = block.with(breakable: false)
