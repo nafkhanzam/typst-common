@@ -27,9 +27,15 @@
 }
 #let comb-n(n) = 1.bit-lshift(n)
 #let gen-truth-order(n) = range(n).sorted(key: i => reverse-bits(i, max: bit-count(n)))
-#let _always-0(a) = a + " and not " + a
-#let _prefix(vars) = eval("$" + vars.map(_always-0).join(" and ") + "$")
-#let var-comb-truth-tcells(vars) = {
+#let _always-0(a) = {
+  $ #a.body and not #a.body $.body
+}
+// #let _always-0(a) = a + " and not " + a
+#let _prefix(vars) = {
+  $#vars.map(_always-0).join($" "and" "$.body)$
+}
+// #let _prefix(vars) = eval("$" + vars.map(_always-0).join(" and ") + "$")
+#let _var-comb-truth-tcells(vars) = {
   let n = vars.len()
   let prefix = _prefix(vars)
   let truthfy-children = truthfy.truth-table(prefix).children
@@ -49,9 +55,9 @@
 
   transpose(cells)
 }
-#let truth-equation-cells(vars, equation) = {
+#let _truth-equation-cells(vars, equation) = {
   let n = vars.len()
-  let prefix = eval("$" + vars.map(_always-0).join(" and ") + "$")
+  let prefix = _prefix(vars)
   let truthfy-children = truthfy.truth-table($(#prefix) or (#equation)$).children
   //? Reorder truthfy indices
   gen-truth-order(comb-n(n))
@@ -62,11 +68,11 @@
     truthfy-children.slice(i * (n + 1)).at(n)
   ))
 }
-#let truth-col-cells(vars, vv) = {
+#let _truth-col-cells(vars, vv) = {
   let n = vars.len()
   let t = type(vv)
   if t == "content" {
-    truth-equation-cells(vars, vv)
+    _truth-equation-cells(vars, vv)
   } else if t == "function" {
     range(comb-n(n)).map(i => vv(i))
   } else if t == "array" {
@@ -76,17 +82,30 @@
   }.map(v => [#v])
 }
 #let truth-table(table-args: (:), vars, ..pairs) = {
+  let var-headers = vars.map(v => if type(v) == "array" {
+    v.at(0)
+  } else {
+    v
+  })
+  vars = vars.map(v => if type(v) == "string" {
+    $#v$
+  } else if type(v) == "array" {
+    v.at(1)
+  } else {
+    v
+  })
   pairs = pairs.pos()
-  let headers = vars + pairs.map(v => v.at(0))
+  let headers = var-headers + pairs.map(v => v.at(0))
   let vvs = pairs.map(v => v.at(1))
   table(
     columns: headers.len(),
     inset: .4em,
+    align: center,
     ..table-args,
     table.header(..headers.map(v => [*$#v$*])),
     ..transpose((
-        ..var-comb-truth-tcells(vars),
-        ..vvs.map(vv => truth-col-cells(vars, vv)),
+        .._var-comb-truth-tcells(vars),
+        ..vvs.map(vv => _truth-col-cells(vars, vv)),
       )).flatten()
   )
 }
