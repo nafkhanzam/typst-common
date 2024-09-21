@@ -26,3 +26,25 @@
 #let hl(body) = highlight(body)
 #let red-hl(body) = highlight(fill: red, body)
 #let bl = block.with(breakable: false)
+#let inline-enum(
+  join-sym: [,],
+  last-join: [and],
+  suffix: none,
+  ..entries,
+) = {
+  entries = entries.pos()
+  let n = entries.len()
+  if n == 1 {
+    return entries.at(0)
+  }
+  for (i, v) in entries.enumerate() {
+    if i > 0 {
+      [#join-sym ]
+    }
+    if n != 0 and i == n - 1 and last-join != none {
+      [#last-join ]
+    }
+    [(#(i+1)) #v]
+  }
+  suffix
+}
