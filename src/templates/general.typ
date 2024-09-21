@@ -192,8 +192,8 @@
     #figure(
       img,
       kind: "image",
-      ..fig-img-args.get(),
       caption: caption,
+      ..fig-img-args.get(),
       // placement: top,
       ..args,
     ) #if lab != none {
@@ -218,8 +218,8 @@
     #figure(
       tab,
       kind: "table",
-      ..fig-tab-args.get(),
       caption: figure.caption(position: top, caption),
+      ..fig-tab-args.get(),
       // placement: top,
       ..args,
     ) #if lab != none {
