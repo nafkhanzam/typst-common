@@ -48,3 +48,9 @@
   }
   suffix
 }
+#let link-b(url, body) = {
+  show: underline
+  show: text.with(fill: rgb(0, 0, 238))
+
+  link(url, body)
+}

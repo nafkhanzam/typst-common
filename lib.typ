@@ -8,6 +8,7 @@
 #import "src/common/style.typ": *
 #import "src/common/truth-table-legacy.typ" as tt-legacy
 #import "src/common/truth-table-reimp.typ" as tt
+#import "src/common/utils.typ": *
 
 #import "src/km/lib.typ": *
 

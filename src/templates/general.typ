@@ -11,8 +11,6 @@
   author-desc: [],
   affiliation: [],
   date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
-  with-toc: false,
-  toc-title: [Table of Contents],
   with-date: false,
   footer-left: none,
   footer-right: context counter(page).display("1"),
@@ -34,7 +32,6 @@
   author-desc = z.parse(author-desc, z-content)
   affiliation = z.parse(affiliation, z-content)
   date-display = z.parse(date-display, z-content)
-  with-toc = z.parse(with-toc, z.boolean())
   with-date = z.parse(with-date, z.boolean())
   bib = z.parse(bib, z.content(optional: true))
 
@@ -80,8 +77,8 @@
   show table: set list(indent: 0pt)
   show table: set par(justify: false)
   show table: set align(left)
-  show link: underline
-  show link: text.with(fill: rgb(0, 0, 238))
+  // show link: underline
+  // show link: text.with(fill: rgb(0, 0, 238))
   // show par: set block(spacing: 2em)
   set heading(numbering: "1.", supplement: "Section")
   // show heading: it => block({
@@ -164,16 +161,21 @@
 
   // ~ Content
 
-  if with-toc {
-    outline(title: toc-title, indent: true)
-  }
-
   body
 
   if bib != none {
     set par(justify: false)
     bib
   }
+}
+
+#let toc(..args) = {
+  show outline.entry: it => link(it.element.location())[
+    #it.body #box(width: 1fr, it.fill) #it.page
+  ]
+  // show outline.entry: it => repr(it)
+  set outline(indent: true, title: [Table of Contents])
+  outline(..args)
 }
 
 #let fig-img-args = state(
