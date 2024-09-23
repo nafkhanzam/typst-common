@@ -1,6 +1,7 @@
 #import "@preview/valkyrie:0.2.1" as z
 #import "@preview/codly:1.0.0"
 #import "@preview/drafting:0.2.0": *
+#import "../common/data.typ": *
 #import "../common/style.typ": *
 
 #let template(
@@ -170,10 +171,47 @@
 }
 
 #let toc(..args) = {
-  show outline.entry: it => link(it.element.location())[
-    #it.body #box(width: 1fr, it.fill) #it.page
-  ]
+  // show outline.entry: it => {
+  //   [
+  //     #it.body.children.at(0) #it.element.body #box(width: 1fr, it.fill) #it.page
+  //   ]
+  // }
+  // show outline.entry: it => {
+  //   [
+  //     #box(width: auto, it.body.children.at(0)) #box(width: auto, it.element.body) #box(
+  //       width: 1fr,
+  //       it.fill,
+  //     ) #box(
+  //       width: auto,
+  //       it.page,
+  //     )
+  //   ]
+  // }
+  // show outline.entry: it => link(it.element.location())[
+  //   // #set box(clip: true, outset: (y: 0.5em), inset: (top: 0.125em))
+  //   // #show: pad.with(left: .75em * (it.element.depth - 1))
+  //   #grid(
+  //     columns: 3,
+  //     column-gutter: 4pt,
+  //     row-gutter: 0em,
+  //     inset: 0pt,
+  //     gutter: 0pt,
+  //     rows: 1,
+  //     [
+  //       #it.body.children.at(0)
+  //     ],
+  //     [
+  //       #it.element.body #box(width: 1fr, it.fill)
+  //     ],
+  //     [
+  //       #set align(bottom)
+  //       #it.page
+  //     ],
+  //   )
+  // ]
   // show outline.entry: it => repr(it)
+  // show outline.entry: it => it
+  show outline.entry.where(level: 1): strong
   set outline(indent: true, title: [Table of Contents])
   outline(..args)
 }

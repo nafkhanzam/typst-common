@@ -1,5 +1,5 @@
 #let headz(outlined: true, body) = heading(outlined: outlined, numbering: none, body)
-#let phantom(body) = place(top, scale(x: 0%, y: 0%, body))
+#let phantom(body) = place(top, scale(x: 0%, y: 0%, hide(body)))
 #let s-center(body) = align(center + horizon, body)
 
 #let enable-todo-hl(body) = {
