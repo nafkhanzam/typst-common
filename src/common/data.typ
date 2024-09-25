@@ -110,3 +110,5 @@
 
   res
 }
+
+#let chars-from(chars-str) = chars-str.split("").slice(1, -1)
