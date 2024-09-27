@@ -332,9 +332,9 @@
   )
   let n = vars.len()
   let r = if landscape {
-    calc.floor(n / 2)
+    int(calc.floor(n / 2))
   } else {
-    calc.ceil(n / 2)
+    int(calc.ceil(n / 2))
   }
   let c = n - r
 
