@@ -54,3 +54,7 @@
 
   link(url, body)
 }
+#let allow-table-break(body) = {
+  show figure.where(kind: "table"): set block(breakable: true)
+  body
+}
