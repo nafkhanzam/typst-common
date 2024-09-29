@@ -12,6 +12,7 @@
 
 #import "src/km/lib.typ": *
 
+#import "src/touying-themes/touying.typ"
 #import "src/touying-themes/university.typ" as st-university //? st = Slide Theme
 #import "src/touying-themes/its.typ" as st-its //? st = Slide Theme
 
