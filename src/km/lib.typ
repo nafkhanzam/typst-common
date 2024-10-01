@@ -371,10 +371,10 @@
   } else if terms.type == "gray" {
     gray-mat.flatten()
   } else if ("minterms", "maxterms").contains(terms.type) {
-    gray-mat.flatten().map(i => if int(terms.positions.contains(i)).bit-xor(int(terms.type == "maxterms")) == 1 {
-      terms.label-1
-    } else if terms.ignores.contains(i) {
+    gray-mat.flatten().map(i => if terms.ignores.contains(i) {
       terms.label-X
+    } else if int(terms.positions.contains(i)).bit-xor(int(terms.type == "maxterms")) == 1 {
+      terms.label-1
     } else {
       terms.label-0
     })
