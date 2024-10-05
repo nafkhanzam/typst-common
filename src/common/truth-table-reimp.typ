@@ -106,6 +106,6 @@
     ..transpose((
         .._var-comb-truth-tcells(vars),
         ..vvs.map(vv => _truth-col-cells(vars, vv)),
-      )).slice(..slice-args).flatten()
+      )).slice(..slice-args).flatten().filter(v => v != none and v != [])
   )
 }
