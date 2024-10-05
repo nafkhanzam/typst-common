@@ -81,7 +81,7 @@
     panic("Type " + t + " is not supported.")
   }.map(v => [#v])
 }
-#let truth-table(table-args: (:), vars, ..pairs) = {
+#let truth-table(table-args: (:), slice-args: (0,), vars, ..pairs) = {
   let var-headers = vars.map(v => if type(v) == "array" {
     v.at(0)
   } else {
@@ -100,12 +100,12 @@
   table(
     columns: headers.len(),
     inset: .4em,
-    align: center,
+    align: center + horizon,
     ..table-args,
     table.header(..headers.map(v => [*$#v$*])),
     ..transpose((
         .._var-comb-truth-tcells(vars),
         ..vvs.map(vv => _truth-col-cells(vars, vv)),
-      )).flatten()
+      )).slice(..slice-args).flatten()
   )
 }
