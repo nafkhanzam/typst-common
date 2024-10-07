@@ -16,3 +16,5 @@
   }
   n
 }
+
+#let k-bit(v, k) = (v.bit-rshift(k)).bit-and(1)

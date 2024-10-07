@@ -58,3 +58,4 @@
   show figure.where(kind: "table"): set block(breakable: true)
   body
 }
+#let important(body) = underline[*#body*]

@@ -49,6 +49,8 @@
     res = res.slice(i * (n + 1))
     //? Get variable parts
     res = res.slice(0, n)
+    //? To Equations
+    res = res.map(v => $#v$)
 
     res
   })
@@ -81,6 +83,17 @@
     panic("Type " + t + " is not supported.")
   }.map(v => [#v])
 }
+#let truth-table-rows(slice-args: (0,), vars, ..pairs) = {
+  pairs = pairs.pos()
+  let vvs = pairs.map(v => v.at(1))
+  transpose((
+      .._var-comb-truth-tcells(vars),
+      ..vvs.map(vv => _truth-col-cells(vars, vv)),
+    )).slice(..slice-args)
+}
+#let truth-table-cells(slice-args: (0,), vars, ..pairs) = {
+  truth-table-rows(slice-args: slice-args, vars, ..pairs).flatten().filter(v => v != none and v != [])
+}
 #let truth-table(table-args: (:), slice-args: (0,), vars, ..pairs) = {
   let var-headers = vars.map(v => if type(v) == "array" {
     v.at(0)
@@ -103,9 +116,6 @@
     align: center + horizon,
     ..table-args,
     table.header(..headers.map(v => [*$#v$*])),
-    ..transpose((
-        .._var-comb-truth-tcells(vars),
-        ..vvs.map(vv => _truth-col-cells(vars, vv)),
-      )).slice(..slice-args).flatten().filter(v => v != none and v != [])
+    ..truth-table-cells(slice-args: slice-args, vars, ..pairs)
   )
 }
