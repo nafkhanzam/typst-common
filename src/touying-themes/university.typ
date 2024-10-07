@@ -90,6 +90,7 @@
   let self = utils.merge-dicts(
     self,
     config-page(
+      margin: 2em,
       header: header,
       footer: footer,
     ),
