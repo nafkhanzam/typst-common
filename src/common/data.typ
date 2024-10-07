@@ -109,3 +109,21 @@
 }
 
 #let chars-from(chars-str) = chars-str.split("").slice(1, -1)
+
+#let cross-array(a, b) = {
+  let res = ()
+  for av in a {
+    for bv in b {
+      res.push((av, bv))
+    }
+  }
+  res
+}
+#let cross-arrays(..arrs) = {
+  arrs = arrs.pos()
+  if arrs.len() == 2 {
+    cross-array(..arrs)
+  } else {
+    cross-arrays(arrs.at(0), arrs.at(1), ..arrs.slice(2))
+  }
+}
