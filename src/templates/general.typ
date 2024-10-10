@@ -3,6 +3,7 @@
 #import "@preview/drafting:0.2.0": *
 #import "../common/data.typ": *
 #import "../common/style.typ": *
+#import "../common/utils.typ": *
 
 #let template(
   title: [],
@@ -13,7 +14,7 @@
   affiliation: [],
   date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
   with-date: false,
-  footer-left: none,
+  footer-left: args => [#args.author -- #args.author-desc],
   footer-right: context counter(page).display("1"),
   bib: none,
   infinite-height: false,
@@ -35,8 +36,20 @@
   date-display = z.parse(date-display, z-content)
   with-date = z.parse(with-date, z.boolean())
   bib = z.parse(bib, z.content(optional: true))
+  let args = arguments((
+    title: title,
+    logo: logo,
+    event: event,
+    author: author,
+    author-desc: author-desc,
+    affiliation: affiliation,
+    date-display: date-display,
+    with-date: with-date,
+    bib: bib,
+  ))
 
   // ~ Setups
+  set text(font: "FreeSerif", size: font-size, fallback: false, hyphenate: false)
   set page(
     paper: "a4",
     margin: (
@@ -56,9 +69,9 @@
     footer: [
       #set text(.8em)
       #line(length: 100%)
-      #footer-left
+      #call-or-value(footer-left, args)
       #h(1fr)
-      #footer-right
+      #call-or-value(footer-right, args)
     ],
   )
   show: it => {
@@ -70,7 +83,6 @@
     }
   }
   set-page-properties()
-  set text(font: "FreeSerif", size: font-size, fallback: false, hyphenate: false)
   set par(justify: true, linebreaks: "optimized")
   set enum(indent: 1em)
   set list(indent: 1em)
