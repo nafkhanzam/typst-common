@@ -73,7 +73,7 @@
     ),
     ..args,
   )
-  #set page(height: auto)
+  #set text(size: .8em)
 
   #sl[#title][
     #align(center)[*#course*]
