@@ -55,3 +55,35 @@
     #body
   ]
 }
+
+#let announcement(
+  title,
+  course,
+  lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
+  datetime: [],
+  timelimit: [],
+  ..args,
+  body,
+) = [
+  #show: university-theme.with(
+    config-store(
+      footer-a: none,
+      footer-b: none,
+      footer-c: none,
+    ),
+    ..args,
+  )
+  #set page(height: auto)
+
+  #sl[#title][
+    #align(center)[*#course*]
+
+    #entry-fields((
+      ([*Lecturer*], [#lecturer]),
+      ([*DateTime*], [#datetime]),
+      ([*Timelimit*], [#timelimit]),
+    ))
+
+    #body
+  ]
+]
