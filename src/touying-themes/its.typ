@@ -71,6 +71,7 @@
       footer-b: none,
       footer-c: none,
     ),
+    config-page(height: auto),
     ..args,
   )
   #set text(size: .8em)
