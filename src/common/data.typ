@@ -124,6 +124,6 @@
   if arrs.len() == 2 {
     cross-array(..arrs)
   } else {
-    cross-arrays(arrs.at(0), arrs.at(1), ..arrs.slice(2))
+    cross-arrays(cross-array(arrs.at(0), arrs.at(1)), ..arrs.slice(2)).flatten().chunks(arrs.len())
   }
 }
