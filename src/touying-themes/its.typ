@@ -1,41 +1,13 @@
-#import "../common/style.typ": *
 #import "touying.typ": *
-#import "university.typ": *
+#import "its-theme.typ" as its
+#import "its-mooc.typ" as mooc
 
-#let its-theme(
-  title,
-  subtitle,
-  author: [Moch. Nafkhan Alzamzami, S.T., M.T.],
-  institution: [
-    Department of Informatics \
-    Faculty of Intelligent Electrical and Informatics Technology \
-    Institut Teknologi Sepuluh Nopember
-  ],
-  logo: image("its-logo.png", width: 4em),
-  copyright: [
-    #sym.copyright #datetime.today().year() All rights reserved
-  ],
-  ..args,
-  body,
-) = [
-  #show: university-theme.with(
-    config-info(
-      title: title,
-      subtitle: subtitle,
-      author: author,
-      institution: institution,
-      logo: logo,
-      copyright: copyright,
-    ),
-    ..args,
-  )
-  #show link: text.with(fill: rgb("#176B87"))
-  #show link: underline
-
-  #title-slide()
-
-  #body
-]
+#let its-theme = if sys.inputs.at("MOOC", default: none) == "1" {
+  mooc.its-mooc-theme
+} else {
+  its.its-theme
+}
+#let announcement = its.announcement
 
 #let sl(title, body, ..args) = {
   if title == [] {

@@ -75,7 +75,7 @@
       let cell(..args, it) = components.cell(
         ..args,
         inset: 1mm,
-        align(horizon, text(fill: white, it)),
+        align(horizon, text(fill: self.colors.neutral-lightest, it)),
       )
       show: block.with(width: 100%, height: auto)
       grid(
@@ -326,6 +326,14 @@
 ///   neutral-darkest: rgb("#000000"),
 /// )
 /// ```
+#let university-init(self: none, body) = {
+  set text(font: "FreeSerif", fallback: false)
+  set text(fill: self.colors.neutral-darkest, size: 25pt)
+  show heading: set text(fill: self.colors.primary)
+  show strong: self.methods.alert.with(self: self)
+
+  body
+}
 #let university-theme(
   aspect-ratio: "16-9",
   progress-bar: true,
@@ -363,14 +371,7 @@
       slide-level: 3,
     ),
     config-methods(
-      init: (self: none, body) => {
-        set text(font: "FreeSerif", fallback: false)
-        set text(fill: self.colors.neutral-darkest, size: 25pt)
-        show heading: set text(fill: self.colors.primary)
-        show strong: self.methods.alert.with(self: self)
-
-        body
-      },
+      init: university-init,
       alert: utils.alert-with-primary-color,
     ),
     config-colors(

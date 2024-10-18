@@ -15,6 +15,7 @@
 #import "src/touying-themes/touying.typ"
 #import "src/touying-themes/university.typ" as st-university //? st = Slide Theme
 #import "src/touying-themes/its.typ" as st-its //? st = Slide Theme
+#import "src/touying-themes/its-mooc.typ" as st-its-mooc //? st = Slide Theme
 
 #import "src/templates/formal.typ" as t-formal //? t = Template
 #import "src/templates/general.typ" as t-general //? t = Template
