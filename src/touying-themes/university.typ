@@ -253,6 +253,7 @@
 ///
 /// - `title` is the title of the section. It will be pass by touying automatically.
 #let new-section-slide(level: 1, numbered: true, title) = touying-slide-wrapper(self => {
+  let title = utils.display-current-heading(level: level, numbered: numbered)
   if level == 1 {
     _focus-slide(self: self, title)
   } else if level == 2 {

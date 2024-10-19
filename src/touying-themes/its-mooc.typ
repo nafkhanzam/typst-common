@@ -45,6 +45,7 @@
     ),
     ..args,
   )
+  #set line(stroke: white)
   #show link: text.with(fill: rgb("#176B87"))
   #show link: underline
 
