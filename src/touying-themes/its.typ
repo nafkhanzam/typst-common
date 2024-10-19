@@ -15,12 +15,27 @@
 }
 #let announcement = its.announcement
 
-#let sl(title, body, ..args) = {
+#let sl(title, ..args) = {
+  let bodies = args.pos()
+  if type(bodies) != array {
+    bodies = (bodies,)
+  }
+  let setting = body => body
+  if IS-MOOC {
+    setting = body => {
+      show: place.with(
+        dx: -1em,
+        dy: -.6em,
+      )
+      show: scale.with(85%)
+      body
+    }
+  }
   if title == [] {
-    its.slide(body, ..args)
+    its.slide(..bodies, setting: setting, ..args.named())
   } else {
     heading(depth: 3)[#title]
-    its.slide(body, ..args)
+    its.slide(..bodies, setting: setting, ..args.named())
   }
 }
 
