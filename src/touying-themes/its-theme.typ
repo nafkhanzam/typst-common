@@ -15,6 +15,7 @@
   copyright: [
     #sym.copyright #datetime.today().year() All rights reserved
   ],
+  with-end: true,
   ..args,
   body,
 ) = [
@@ -35,6 +36,10 @@
   #title-slide()
 
   #body
+
+  #if with-end {
+    new-section-slide(level: 1, numbered: false)[End of #subtitle]
+  }
 ]
 
 #let announcement(
