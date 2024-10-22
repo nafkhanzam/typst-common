@@ -20,6 +20,11 @@
   if type(bodies) != array {
     bodies = (bodies,)
   }
+  //! Hacky way to prevent changing header and footer font size.
+  bodies = bodies.map(v => [
+    #place(top + left, scale(0%, hide[~]))
+    #v
+  ])
   let setting = body => body
   if IS-MOOC {
     setting = body => {
