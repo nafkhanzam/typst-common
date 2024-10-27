@@ -10,10 +10,15 @@
       y: 3cm,
     ),
   )
-  set par(justify: true, linebreaks: "optimized")
+  set par(justify: true, spacing: 1.5em, linebreaks: "optimized")
   set text(font: "FreeSerif", size: 12pt, fallback: false, hyphenate: false)
-  set block(below: 1.5em)
 
+  show heading.where(level: 1): it => {
+    set align(center)
+    set text(size: 12pt, weight: "bold")
+    it.body
+    v(1em)
+  }
   body
 }
 
