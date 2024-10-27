@@ -38,7 +38,10 @@
   #body
 
   #if with-end {
-    new-section-slide(level: 1, numbered: false)[End of #subtitle]
+    new-section-slide(level: 1, numbered: false)[
+      #set align(center)
+      End
+    ]
   }
 ]
 
