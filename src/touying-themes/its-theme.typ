@@ -15,7 +15,7 @@
   copyright: [
     #sym.copyright #datetime.today().year() All rights reserved
   ],
-  with-end: true,
+  with-end: false,
   ..args,
   body,
 ) = [
