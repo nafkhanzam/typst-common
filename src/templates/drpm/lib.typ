@@ -123,22 +123,6 @@
   }
 }
 
-#let fig-img(img, caption: none, ..args) = figure(
-  img,
-  kind: "gambar",
-  supplement: "Gambar",
-  caption: caption,
-  ..args,
-)
-
-#let fig-tab(tab, caption: none, ..args) = figure(
-  tab,
-  kind: "tabel",
-  supplement: "Tabel",
-  caption: figure.caption(position: top, caption),
-  ..args,
-)
-
 #let budget-template(data, extend: true) = [
   #for (i, bd) in data.budget.enumerate() {
     set text(size: 11pt)

@@ -1,3 +1,5 @@
+#import "../common/style.typ": *
+#import "university.typ"
 #import "touying.typ": *
 #import "its-theme.typ" as its-
 #import "its-mooc.typ" as mooc
@@ -13,7 +15,6 @@
 } else {
   its.its-theme
 }
-#let announcement = its.announcement
 
 #let sl(title, ..args) = {
   let bodies = args.pos()
@@ -53,3 +54,55 @@
     #body
   ]
 }
+
+#let announcement(
+  title,
+  course,
+  lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
+  datetime: [],
+  timelimit: [],
+  ..args,
+  body,
+) = [
+  #show: university.university-theme.with(
+    config-store(
+      footer-a: none,
+      footer-b: none,
+      footer-c: none,
+    ),
+    config-page(height: auto),
+    ..args,
+  )
+  #set text(size: .8em)
+
+  #sl[#title][
+    #align(center)[*#course*]
+
+    #entry-fields((
+      ([*Lecturer*], [#lecturer]),
+      ([*DateTime*], [#datetime]),
+      ([*Timelimit*], [#timelimit]),
+    ))
+
+    #body
+  ]
+]
+
+#let announcement-sl(
+  title,
+  course,
+  lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
+  datetime: [],
+  timelimit: [],
+  body,
+) = sl[#title][
+  #align(center)[*#course*]
+
+  #entry-fields((
+    ([*Lecturer*], [#lecturer]),
+    ([*DateTime*], [#datetime]),
+    ([*Timelimit*], [#timelimit]),
+  ))
+
+  #body
+]
