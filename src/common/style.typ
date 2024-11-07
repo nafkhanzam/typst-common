@@ -52,7 +52,14 @@
   show: underline
   show: text.with(fill: rgb(0, 0, 238))
 
-  link(url, body)
+  link(
+    url,
+    if body == [] {
+      url
+    } else {
+      body
+    },
+  )
 }
 #let allow-table-break(body) = {
   show figure.where(kind: "table"): set block(breakable: true)
