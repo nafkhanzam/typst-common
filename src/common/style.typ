@@ -66,3 +66,7 @@
   body
 }
 #let important(body) = underline[*#body*]
+#let sym_ = body => {
+  show: text.with(fallback: true)
+  body
+}

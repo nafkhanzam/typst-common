@@ -33,11 +33,6 @@
   }
 )
 
-#let sym_ = body => {
-  show: text.with(fallback: true)
-  body
-}
-
 #let template(pintorita: false, ref-style: "apa", appendices: none, body) = {
   set page(
     paper: "a4",
@@ -57,10 +52,10 @@
   set heading(numbering: (num1, ..nums) => {
     if nums.pos().len() == 0 {
       [BAB #numbering("I", num1)] + "\t"
-      h(10pt, weak: true)
+      h(10pt)
     } else {
       numbering("1.1", num1, ..nums)
-      h(7pt, weak: true)
+      h(7pt)
     }
   })
   set bibliography(style: ref-style)

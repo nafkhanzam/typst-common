@@ -1,4 +1,4 @@
-#import "@preview/showybox:2.0.1": showybox
+#import "@preview/showybox:2.0.3": showybox
 
 #let ANS = if "ANS" in sys.inputs {
   let v = lower(sys.inputs.ANS)

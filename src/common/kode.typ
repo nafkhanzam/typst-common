@@ -1,5 +1,5 @@
 #import "@preview/pinit:0.2.0": *
-#import "@preview/showybox:2.0.1": showybox
+#import "@preview/showybox:2.0.3": showybox
 #import "style.typ": phantom
 
 #let kode-default-filename = state("kode-default-filename", hide[a])
