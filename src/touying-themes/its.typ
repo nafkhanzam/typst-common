@@ -61,6 +61,7 @@
   lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
   datetime: [],
   timelimit: [],
+  additional-entries: (),
   ..args,
   body,
 ) = [
@@ -82,6 +83,7 @@
       ([*Lecturer*], [#lecturer]),
       ([*DateTime*], [#datetime]),
       ([*Timelimit*], [#timelimit]),
+      ..additional-entries,
     ))
 
     #body
