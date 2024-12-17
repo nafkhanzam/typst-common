@@ -1,5 +1,5 @@
 #import "@preview/valkyrie:0.2.1" as z
-#import "@preview/codly:1.0.0"
+#import "@preview/codly:1.1.1"
 #import "@preview/drafting:0.2.0": *
 #import "../common/data.typ": *
 #import "../common/style.typ": *
