@@ -1,4 +1,3 @@
-#import "@preview/valkyrie:0.2.1" as z
 #import "@preview/codly:1.1.1"
 #import "@preview/drafting:0.2.0": *
 #import "../common/data.typ": *
@@ -26,16 +25,16 @@
   body,
 ) = {
   // ~ Argument Validations
-  let z-content = z.either(z.string(), z.content())
-  title = z.parse(title, z-content)
-  logo = z.parse(logo, z.string(optional: true))
-  event = z.parse(event, z-content)
-  author = z.parse(author, z-content)
-  author-desc = z.parse(author-desc, z-content)
-  affiliation = z.parse(affiliation, z-content)
-  date-display = z.parse(date-display, z-content)
-  with-date = z.parse(with-date, z.boolean())
-  bib = z.parse(bib, z.content(optional: true))
+  // let z-content = z.either(z.string(), z.content())
+  // title = z.parse(title, z-content)
+  // logo = z.parse(logo, z.string(optional: true))
+  // event = z.parse(event, z-content)
+  // author = z.parse(author, z-content)
+  // author-desc = z.parse(author-desc, z-content)
+  // affiliation = z.parse(affiliation, z-content)
+  // date-display = z.parse(date-display, z-content)
+  // with-date = z.parse(with-date, z.boolean())
+  // bib = z.parse(bib, z.content(optional: true))
   let args = arguments((
     title: title,
     logo: logo,
