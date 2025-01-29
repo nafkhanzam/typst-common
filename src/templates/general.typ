@@ -6,11 +6,13 @@
 
 #let template(
   title: [],
+  title-align: center,
   logo: "res/its-logo.png",
   event: [],
   author: [],
   author-desc: [],
   affiliation: [],
+  short-desc: [],
   date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
   with-date: false,
   footer-left: args => [#args.author -- #args.author-desc],
@@ -42,6 +44,7 @@
     author: author,
     author-desc: author-desc,
     affiliation: affiliation,
+    short-desc: short-desc,
     date-display: date-display,
     with-date: with-date,
     bib: bib,
@@ -144,21 +147,35 @@
       columns: (1fr, 60%, 1fr),
       if logo != none {
         set align(left + top)
-        image(logo, height: 6em)
+        if type(logo) == str {
+          image(logo, height: 6em)
+        } else {
+          logo
+        }
       },
       {
-        set align(center)
+        set align(title-align)
         set par(justify: false)
         text(size: 16pt, weight: "bold", title)
         linebreak()
         text(size: .9em, event)
-        linebreak()
-        set text(size: 1.0em)
-        author
-        linebreak()
-        author-desc
-        linebreak()
-        affiliation
+        if author != none and author != [] and author != "" {
+          linebreak()
+          set text(size: 1.0em)
+          author
+        }
+        if author-desc != none and author-desc != [] and author-desc != "" {
+          linebreak()
+          author-desc
+        }
+        if affiliation != none and affiliation != [] and affiliation != "" {
+          linebreak()
+          affiliation
+        }
+        if short-desc != none and short-desc != [] and short-desc != "" {
+          linebreak()
+          short-desc
+        }
       },
       if with-date {
         set align(right + top)
