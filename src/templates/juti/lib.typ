@@ -1,5 +1,12 @@
 #import "../../common/style.typ": *
 
+#let JOURNAL-NAME = [JUTI: Jurnal Ilmiah Teknologi Informasi]
+#let get-align-by-page(pagei) = if calc.rem-euclid(pagei, 2) == 0 {
+  left
+} else {
+  right
+}
+
 #let template(
   title: [Preparation of Papers for JUTI (JURNAL ILMIAH TEKNOLOGI INFORMASI)],
   authors: (
@@ -33,6 +40,19 @@
   keywords: (
     [Enter key words or phrases in alphabetical order, separated by commas. The number of keywords must between 3-5 words.],
   ),
+  metadata: (
+    book: (
+      volume: 1,
+      number: 1,
+      month: datetime.today().month(),
+      year: datetime.today().year(),
+      page: (123, 234),
+    ),
+    received: datetime.today(),
+    revised: datetime.today(),
+    accepted: datetime.today(),
+    doi: "10.15676/juti.2024.16.4.1",
+  ),
   body,
   bib: none,
 ) = {
@@ -50,6 +70,31 @@
     ))
   set page(
     paper: "a4",
+    header: context {
+      let pagei = here().page()
+      set text(size: 10pt)
+      set align(get-align-by-page(pagei))
+      if calc.rem-euclid(pagei, 2) == 1 {
+        let names = authors.enumerate().map(((i, v)) => [#v.name])
+        inline-enum(prefix-fn: none, ..names)
+        [ -- ]
+        title
+      } else {
+        let month-year = datetime(
+          year: metadata.book.year,
+          month: metadata.book.month,
+          day: 1,
+        ).display("[month repr:long] [year]")
+        JOURNAL-NAME
+        [ \- Volume #metadata.book.volume, Number #metadata.book.number, #month-year: #metadata.book.page.map(v => [#v]).join([ -- ])]
+      }
+    },
+    footer: context [
+      #let pagei = here().page()
+      #set text(size: 10pt)
+      #set align(get-align-by-page(pagei))
+      #here().page()
+    ],
     margin: (
       x: 0.65in,
       y: 0.7in,
@@ -135,7 +180,11 @@
     )
     set par(justify: true)
     [*Keywords:* ]
-    inline-enum(prefix-fn: none, ..keywords)
+    inline-enum(
+      prefix-fn: none,
+      last-join: none,
+      ..keywords,
+    )
   }
 
   //? Numberings
@@ -167,6 +216,24 @@
     )
     it
   }
+
+  //? Metadata Footnote
+  figure(
+    [
+      #set align(left)
+      #set text(size: 9pt)
+      Received: #metadata.received.display("[month repr:long] [day padding:none]")#super[th], #metadata.received.display("[year]").
+      Revised: #metadata.revised.display("[month repr:long] [day padding:none]")#super[th], #metadata.revised.display("[year]").
+      Accepted: #metadata.accepted.display("[month repr:long] [day padding:none]")#super[th], #metadata.accepted.display("[year]").
+
+      #pad(y: -.65em, line(length: 100%))
+
+      DOI: #metadata.doi
+    ],
+    placement: bottom,
+    supplement: none,
+    kind: "footnote-metadata",
+  )
 
   set par(
     justify: true,
