@@ -29,7 +29,7 @@
 #let inline-enum(
   join-sym: [,],
   last-join: [and],
-  suffix: none,
+  prefix-fn: i => [(#{i+1}) ],
   ..entries,
 ) = {
   entries = entries.pos()
@@ -44,22 +44,28 @@
     if n != 0 and i == n - 1 and last-join != none {
       [#last-join ]
     }
-    [(#(i+1)) #v]
+    let prefix = if prefix-fn != none {
+      prefix-fn(i)
+    }
+    [#prefix#v]
   }
-  suffix
 }
 #let link-b(url, body) = {
   show: underline
   show: text.with(fill: rgb(0, 0, 238))
 
-  link(
-    url,
-    if body == [] {
-      url
-    } else {
-      body
-    },
-  )
+  if url != none {
+    link(
+      url,
+      if body == [] {
+        url
+      } else {
+        body
+      },
+    )
+  } else {
+    body
+  }
 }
 #let allow-table-break(body) = {
   show figure.where(kind: "table"): set block(breakable: true)

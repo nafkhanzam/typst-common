@@ -39,7 +39,11 @@
     margin: 3cm,
     number-align: right,
   )
-  set par(justify: true, leading: 1em, linebreaks: "optimized")
+  set par(
+    justify: true,
+    leading: 1em,
+    linebreaks: "optimized",
+  )
   set text(
     font: "FreeSerif",
     size: 12pt,
@@ -49,15 +53,17 @@
   )
   set enum(indent: 1em, spacing: 1.5em, tight: false)
   set block(below: 1.5em)
-  set heading(numbering: (num1, ..nums) => {
-    if nums.pos().len() == 0 {
-      [BAB #numbering("I", num1)] + "\t"
-      h(10pt)
-    } else {
-      numbering("1.1", num1, ..nums)
-      h(7pt)
-    }
-  })
+  set heading(
+    numbering: (num1, ..nums) => {
+      if nums.pos().len() == 0 {
+        [BAB #numbering("I", num1)] + "\t"
+        h(10pt)
+      } else {
+        numbering("1.1", num1, ..nums)
+        h(7pt)
+      }
+    },
+  )
   set bibliography(style: ref-style)
   show figure.caption: set text(size: 10pt)
 
@@ -150,16 +156,16 @@
         .items
         .enumerate()
         .map(((j, item)) => (
-            [#{
-                j + 1
-              }],
-            [#item.component],
-            [#item.item],
-            [#item.unit],
-            [#item.volume],
-            table.cell(breakable: false)[#print-rp(item.price)],
-            table.cell(breakable: false)[#box[#print-rp(item.total)]],
-          ))
+          [#{
+              j + 1
+            }],
+          [#item.component],
+          [#item.item],
+          [#item.unit],
+          [#item.volume],
+          table.cell(breakable: false)[#print-rp(item.price)],
+          table.cell(breakable: false)[#box[#print-rp(item.total)]],
+        ))
         .flatten(),
       table.cell(colspan: 6)[#align(center)[SUB TOTAL #title-i]],
       box[#print-rp(bd.total)],
@@ -179,11 +185,13 @@
 
   table(
     columns: 2 * (auto,) + l * (1fr,),
-    fill: (x, y) => if ranges.enumerate().any(((j, v)) => {
-      let (a, b) = v.range
-      let pos = x - 2
-      return j == y - 2 and a <= pos and pos <= b
-    }) {
+    fill: (x, y) => if ranges
+      .enumerate()
+      .any(((j, v)) => {
+        let (a, b) = v.range
+        let pos = x - 2
+        return j == y - 2 and a <= pos and pos <= b
+      }) {
       blue.lighten(20%)
     } else {
       none
@@ -198,12 +206,12 @@
     ..ranges
       .enumerate()
       .map(((i, v)) => (
-          [#{
-              i + 1
-            }],
-          table.cell(align: left)[#v.title],
-          l * ([],),
-        ))
+        [#{
+            i + 1
+          }],
+        table.cell(align: left)[#v.title],
+        l * ([],),
+      ))
       .flatten(),
   )
 }
@@ -311,15 +319,20 @@
   #pad(x: -1cm)[
     #grid(
       columns: (auto, 1fr),
-      [Ketua Peneliti],[: #write-member-entry(data.members.at(0))],
-      [Anggota Peneliti],[: 1. #write-member-entry(data.members.at(1))],
+      [Ketua Peneliti], [: #write-member-entry(data.members.at(0))],
+      [Anggota Peneliti], [: 1. #write-member-entry(data.members.at(1))],
       ..(
-        data.members.slice(2).enumerate().map(((i, member)) => (
-          [],
-          [#hide[: ]#{
-              i + 2
-            }. #write-member-entry(member)],
-        )).flatten()
+        data
+          .members
+          .slice(2)
+          .enumerate()
+          .map(((i, member)) => (
+            [],
+            [#hide[: ]#{
+                i + 2
+              }. #write-member-entry(member)],
+          ))
+          .flatten()
       )
     )
   ]
