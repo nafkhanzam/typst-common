@@ -26,14 +26,15 @@
       email: [third.author\@email.com],
     ),
   ),
+  corresponding-ref: 0,
   institutions: (
     (
-      name: [department and institution name of authors],
-      address: [address of institution],
+      name: [Department and institution name of authors],
+      address: [Address of institution],
     ),
     (
-      name: [department and institution name of authors],
-      address: [address of institution],
+      name: [Department and institution name of authors],
+      address: [Address of institution],
     ),
   ),
   abstract: [These instructions give you guidelines for preparing JUTI (Jurnal Ilmiah Teknologi Informasi) papers. Use this document as a template if you are using Microsoft Word 6.0 or later. The electronic file of your paper will be formatted further by JUTI editorial board. Paper titles should be written in uppercase. Avoid writing long formulas with subscripts in the title; short formulas that identify the elements are fine (e.g., "Nd–Fe–B"). Do not write “(Invited)” in the title. Full names of authors are preferred in the author field but are not required. If you have to shorten the author’s name, leave first name and last name unshorten. Put a space between authors’ initials. Do not cite references in the abstract. The length of abstract must between 150 – 250 words.],
@@ -153,7 +154,7 @@
   {
     set align(center)
     set text(size: 12pt, weight: "bold")
-    let names = authors.enumerate().map(((i, v)) => [#v.name#super[#{ i + 1 })]])
+    let names = authors.enumerate().map(((i, v)) => [#v.name #super[#{ i + 1 }#if corresponding-ref == i [,\*])]])
 
     inline-enum(prefix-fn: none, ..names)
   }
@@ -167,7 +168,7 @@
       let author-indices = authors.filter(v => v.institution-ref == institution._index).map(v => v._index + 1)
 
       [
-        #super[#inline-enum(last-join: none, prefix-fn: none, ..author-indices.map(v => [#v])))]#institution.name \
+        #super[#inline-enum(last-join: none, prefix-fn: none, ..author-indices.map(v => [#v])))] #institution.name \
         #institution.address
 
       ]
@@ -180,7 +181,7 @@
     set text(size: 10pt)
     let emails = authors.enumerate().map(((i, v)) => [#link-b(none, v.email)#super[#{ i + 1 })]])
 
-    [e-mail: ]
+    [E-mail: ]
     inline-enum(prefix-fn: none, ..emails)
   }
 
@@ -256,6 +257,8 @@
     pad(bottom: -1.2em)[
       #set align(left)
       #set text(size: 9pt)
+
+      \* Corresponding author. \
       Received: #metadata.received.display("[month repr:long] [day padding:none]")#super[th], #metadata.received.display("[year]").
       Revised: #metadata.revised.display("[month repr:long] [day padding:none]")#super[th], #metadata.revised.display("[year]").
       Accepted: #metadata.accepted.display("[month repr:long] [day padding:none]")#super[th], #metadata.accepted.display("[year]").
