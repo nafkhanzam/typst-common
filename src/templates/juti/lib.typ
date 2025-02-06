@@ -1,4 +1,5 @@
 #import "../../common/style.typ": *
+#import "../../common/utils.typ": nths
 
 #let JOURNAL-NAME = [JUTI: Jurnal Ilmiah Teknologi Informasi]
 #let get-align-by-page(pagei) = if calc.rem-euclid(pagei, 2) == 0 {
@@ -259,9 +260,9 @@
       #set text(size: 9pt)
 
       \* Corresponding author. \
-      Received: #metadata.received.display("[month repr:long] [day padding:none]")#super[th], #metadata.received.display("[year]").
-      Revised: #metadata.revised.display("[month repr:long] [day padding:none]")#super[th], #metadata.revised.display("[year]").
-      Accepted: #metadata.accepted.display("[month repr:long] [day padding:none]")#super[th], #metadata.accepted.display("[year]").
+      Received: #metadata.received.display("[month repr:long]") #nths(metadata.received.day()), #metadata.received.display("[year]").
+      Revised: #metadata.revised.display("[month repr:long]") #nths(metadata.revised.day()), #metadata.revised.display("[year]").
+      Accepted: #metadata.accepted.display("[month repr:long]") #nths(metadata.accepted.day()), #metadata.accepted.display("[year]").
 
       #pad(y: -.65em, line(length: 100%))
 
