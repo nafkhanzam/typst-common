@@ -71,6 +71,7 @@
   set page(
     paper: "a4",
     header: context {
+      show: pad.with(bottom: 1em)
       let pagei = here().page()
       set text(size: 10pt)
       set align(get-align-by-page(pagei))
@@ -89,15 +90,15 @@
         [ \- Volume #metadata.book.volume, Number #metadata.book.number, #month-year: #metadata.book.page.map(v => [#v]).join([ -- ])]
       }
     },
-    footer: context [
-      #let pagei = here().page()
-      #set text(size: 10pt)
-      #set align(get-align-by-page(pagei))
-      #here().page()
-    ],
+    footer: context {
+      let pagei = here().page()
+      set text(size: 10pt)
+      set align(get-align-by-page(pagei))
+      here().page()
+    },
     margin: (
       x: 0.65in,
-      y: 0.7in,
+      y: 1in,
     ),
   )
   set text(font: "Times New Roman")
@@ -106,6 +107,39 @@
     title: none,
     full: true,
   )
+
+  //? Image
+  show figure.where(kind: image): set figure(placement: auto, supplement: [Fig])
+  show figure.where(kind: image): set text(size: .8em)
+
+  //? Table
+  show figure.where(kind: table): set figure(placement: auto, supplement: [Table])
+  show table: set enum(indent: 0pt)
+  show table: set list(indent: 0pt)
+  show table: set par(justify: false)
+  set table(stroke: none)
+  show figure.where(kind: table): set text(size: .8em)
+  show figure.where(kind: table): set figure.caption(position: top)
+
+  //? Equation
+  set math.equation(numbering: "(1)")
+  show ref: it => {
+    let eq = math.equation
+    let el = it.element
+    if el != none and el.func() == eq {
+      // Override equation references.
+      link(
+        el.location(),
+        numbering(
+          el.numbering,
+          ..counter(eq).at(el.location()),
+        ),
+      )
+    } else {
+      // Other references as usual.
+      it
+    }
+  }
 
   //? Title
   {
@@ -162,7 +196,7 @@
     set text(
       size: 10pt,
       weight: "regular",
-      style: "italic",
+      // style: "italic",
     )
     set par(
       justify: true,
@@ -176,7 +210,7 @@
     set text(
       size: 10pt,
       weight: "regular",
-      style: "italic",
+      // style: "italic",
     )
     set par(justify: true)
     [*Keywords:* ]
@@ -219,7 +253,7 @@
 
   //? Metadata Footnote
   figure(
-    [
+    pad(bottom: -1.2em)[
       #set align(left)
       #set text(size: 9pt)
       Received: #metadata.received.display("[month repr:long] [day padding:none]")#super[th], #metadata.received.display("[year]").
