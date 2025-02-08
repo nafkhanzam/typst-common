@@ -35,10 +35,10 @@ Even so, this research investigating user behavior was mainly related to the use
 = Literature Review
 
 #lorem(100)
-Table example can be seen on @tab-org-keren.
-Image example can be seen on @img-org-keren.
-Schrodinger's famous equation is @eq-org-keren.
-$ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-org-keren>
+Table example can be seen on @tab-example.
+Image example can be seen on @img-example.
+The Schrodinger's famous equation can be seen on @eq-example.
+$ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
 
 #figure(
   table(
@@ -56,12 +56,12 @@ $ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-org-keren>
     table.hline(),
   ),
   caption: [Table example.],
-) <tab-org-keren>
+) <tab-example>
 
 #figure(
   image("img.jpg", width: 40%),
   caption: [Image example.],
-) <img-org-keren>
+) <img-example>
 
 #lorem(100)
 

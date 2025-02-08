@@ -77,7 +77,7 @@
       let pagei = here().page()
       set text(size: 10pt)
       set align(get-align-by-page(pagei))
-      if calc.rem-euclid(pagei, 2) == 1 {
+      if calc.rem-euclid(pagei, 2) == 0 {
         let names = authors.enumerate().map(((i, v)) => [#v.name])
         inline-enum(prefix-fn: none, ..names)
         [ -- ]
