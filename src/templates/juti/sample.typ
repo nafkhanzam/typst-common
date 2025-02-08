@@ -35,29 +35,32 @@ Even so, this research investigating user behavior was mainly related to the use
 = Literature Review
 
 #lorem(100)
-Orang-orang keren can be seen on @tab-org-keren.
-Wajahnya dapat dilihat pada @img-org-keren.
-Rumus favoritnya adalah @eq-org-keren.
-$ E = m c^2 $ <eq-org-keren>
+Table example can be seen on @tab-org-keren.
+Image example can be seen on @img-org-keren.
+Schrodinger's famous equation is @eq-org-keren.
+$ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-org-keren>
 
 #figure(
   table(
-    columns: 3,
+    columns: 4,
     table.hline(),
-    table.header([*No*], [*NIP*], [*Name*]),
+    table.header([*No*], [*Year*], [*Climate Change Event*], [*Impact*]),
     table.hline(),
-    [1], align(left)[199911222024061001], align(left)[Moch. Nafkhan Alzamzami],
-    [2], align(left)[123], align(left)[Nafkhan Alzamzami],
-    [3], align(left)[1999], align(left)[Alzamzami],
-    [4], align(left)[222024061001], align(left)[Moch. Nafkhan],
+    [1], align(left)[1988], align(left)[Establishment of the IPCC], align(left)[Increased global awareness and scientific assessments],
+    [2], align(left)[1997], align(left)[Kyoto Protocol Adopted], align(left)[Legally binding emission reduction targets for developed countries],
+    [3], align(left)[2015], align(left)[Paris Agreement Signed], align(left)[Global commitment to limit warming below 2°C],
+    [4], align(left)[2021], align(left)[COP26 Held in Glasgow], align(left)[Strengthened climate targets and financial commitments],
+    [5], align(left)[2009], align(left)[Copenhagen Accord], align(left)[Pledged climate finance of \$100 billion per year],
+    [6], align(left)[2007], align(left)[IPCC Fourth Assessment Report], align(left)[Highlighted human influence on climate change],
+    [7], align(left)[2018], align(left)[IPCC Special Report on 1.5°C], align(left)[Urgent need for emission reductions to avoid severe impacts],
     table.hline(),
   ),
-  caption: [Nama-nama orang keren.],
+  caption: [Table example.],
 ) <tab-org-keren>
 
 #figure(
   image("img.jpg", width: 40%),
-  caption: [Wajah orang keren.],
+  caption: [Image example.],
 ) <img-org-keren>
 
 #lorem(100)
