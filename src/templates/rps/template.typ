@@ -40,7 +40,7 @@
     table(
       columns: (auto, 1fr, auto),
       fill: blue-color,
-      image("logo.png", width: 80pt),
+      image("logo.png", width: 60pt),
       [
         #set text(weight: "bold")
         #show: s-center
