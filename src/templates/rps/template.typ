@@ -1,4 +1,6 @@
-#import "./lib.typ": *
+#import "./cpl.typ": *
+#import "./dosen.typ": *
+#import "../../common/style.typ": *
 
 #let bilingual(entry) = if type(entry) == array [
   #if entry.len() > 1 [
@@ -38,7 +40,7 @@
     table(
       columns: (auto, 1fr, auto),
       fill: blue-color,
-      image("logo.png"),
+      image("logo.png", width: 80pt),
       [
         #set text(weight: "bold")
         #show: s-center
