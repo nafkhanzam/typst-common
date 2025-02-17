@@ -5,19 +5,19 @@
     name: [First A. Author],
     institution-ref: 0,
     email: [first.author\@email.com],
-    contribution: [Writing – review & editing, Writing – original draft, Validation, Software, Methodology, Conceptualization.],
+    contribution: [Writing – review & editing, Writing – original draft, Validation, Software, Methodology, Conceptualization],
   ),
   (
     name: [Second B. Author],
     institution-ref: 0,
     email: [second.author\@email.com],
-    contribution: [Writing – original draft, Formal analysis, Data curation, Conceptualization.],
+    contribution: [Writing – original draft, Formal analysis, Data curation, Conceptualization],
   ),
   (
     name: [Third C. Author],
     institution-ref: 1,
     email: [third.author\@email.com],
-    contribution: [Writing – original draft, Software, Investigation.],
+    contribution: [Writing – original draft, Software, Investigation],
   ),
 )
 
