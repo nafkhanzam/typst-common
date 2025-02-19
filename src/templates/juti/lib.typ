@@ -84,7 +84,7 @@
         let names = authors.enumerate().map(((i, v)) => [#v.name])
         inline-enum(prefix-fn: none, ..names)
         [ -- ]
-        title
+        text(style: "italic", title)
       } else {
         let month-year = datetime(
           year: metadata.book.year,
@@ -112,9 +112,10 @@
     title: none,
     full: true,
   )
+  set par(linebreaks: "optimized")
 
   //? Image
-  show figure.where(kind: image): set figure(placement: auto, supplement: [Fig])
+  show figure.where(kind: image): set figure(placement: auto, supplement: [Fig.])
   show figure.where(kind: image): set text(size: .8em)
 
   //? Table
@@ -150,7 +151,7 @@
   {
     set align(center)
     set text(size: 16pt, weight: "bold")
-    show: upper
+    // show: upper
     title
   }
 
@@ -226,15 +227,22 @@
     )
   }
 
+  v(.5em)
+
   //? Numberings
   set heading(
     numbering: (num1, ..nums) => {
-      if nums.pos().len() == 0 {
+      let l = nums.pos().len()
+      if l == 0 {
         numbering("I.", num1)
         h(10pt)
-      } else {
+      } else if l == 1 {
         numbering("A.", ..nums)
         h(7pt)
+      } else if l == 2 {
+        numbering("1)", ..nums.pos().slice(1), ..nums.named())
+      } else {
+        panic("Unhandled heading 4 or more.")
       }
     },
   )
@@ -248,6 +256,15 @@
   }
   //? Heading 2
   show heading.where(level: 2): it => {
+    set text(
+      size: 11pt,
+      weight: "regular",
+      style: "italic",
+    )
+    it
+  }
+  //? Heading 3
+  show heading.where(level: 3): it => {
     set text(
       size: 11pt,
       weight: "regular",
@@ -269,7 +286,8 @@
 
       #pad(y: -.65em, line(length: 100%))
 
-      DOI: #metadata.doi
+      DOI: #metadata.doi \
+      © #datetime.today().display("[year]") JUTI: JURNAL ILMIAH TEKNOLOGI INFORMASI. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
     ],
     placement: bottom,
     supplement: none,
