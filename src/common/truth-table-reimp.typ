@@ -39,21 +39,19 @@
   let n = vars.len()
   let prefix = _prefix(vars)
   let truthfy-children = truthfy.truth-table(prefix).children
-  let cells = gen-truth-order(comb-n(n))
-    //? Skip headers
-    .map(i => i + 1)
-    //? Get collection of variable rows
+  let cells = gen-truth-order(comb-n(n)) //? Skip headers
+    .map(i => i + 1) //? Get collection of variable rows
     .map(i => {
-    let res = truthfy-children
-    //? Get corresponding row
-    res = res.slice(i * (n + 1))
-    //? Get variable parts
-    res = res.slice(0, n)
-    //? To Equations
-    res = res.map(v => $#v$)
+      let res = truthfy-children
+      //? Get corresponding row
+      res = res.slice(i * (n + 1))
+      //? Get variable parts
+      res = res.slice(0, n)
+      //? To Equations
+      res = res.map(v => $#v$)
 
-    res
-  })
+      res
+    })
 
   transpose(cells)
 }
@@ -62,13 +60,11 @@
   let prefix = _prefix(vars)
   let truthfy-children = truthfy.truth-table($(#prefix) or (#equation)$).children
   //? Reorder truthfy indices
-  gen-truth-order(comb-n(n))
-    //? Skip headers
-    .map(i => i + 1)
-    //? Get corresponding row and column
+  gen-truth-order(comb-n(n)) //? Skip headers
+    .map(i => i + 1) //? Get corresponding row and column
     .map(i => (
-    truthfy-children.slice(i * (n + 1)).at(n)
-  ))
+      truthfy-children.slice(i * (n + 1)).at(n)
+    ))
 }
 #let _truth-col-cells(vars, vv) = {
   let n = vars.len()
@@ -87,22 +83,22 @@
   pairs = pairs.pos()
   let vvs = pairs.map(v => v.at(1))
   transpose((
-      .._var-comb-truth-tcells(vars),
-      ..vvs.map(vv => _truth-col-cells(vars, vv)),
-    )).slice(..slice-args)
+    .._var-comb-truth-tcells(vars),
+    ..vvs.map(vv => _truth-col-cells(vars, vv)),
+  )).slice(..slice-args)
 }
 #let truth-table-cells(slice-args: (0,), vars, ..pairs) = {
   truth-table-rows(slice-args: slice-args, vars, ..pairs).flatten().filter(v => v != none and v != [])
 }
 #let truth-table(table-args: (:), slice-args: (0,), vars, ..pairs) = {
-  let var-headers = vars.map(v => if type(v) == "array" {
+  let var-headers = vars.map(v => if type(v) == array {
     v.at(0)
   } else {
     v
   })
-  vars = vars.map(v => if type(v) == "string" {
+  vars = vars.map(v => if type(v) == string {
     $#v$
-  } else if type(v) == "array" {
+  } else if type(v) == array {
     v.at(1)
   } else {
     v

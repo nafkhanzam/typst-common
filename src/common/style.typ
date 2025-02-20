@@ -76,3 +76,7 @@
   show: text.with(fallback: true)
   body
 }
+//! Experimental
+#let bold-table-header(..args) = {
+  table.header(..args.named(), ..args.pos().map(v => if v == table.hline() { v } else { text(weight: "bold", v) }))
+}

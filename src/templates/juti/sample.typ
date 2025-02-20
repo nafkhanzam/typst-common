@@ -3,18 +3,21 @@
 #let authors = (
   (
     name: [First A. Author],
+    short: [First A. Author],
     institution-ref: 0,
     email: [first.author\@email.com],
     contribution: [Writing -- review & editing, Writing -- original draft, Validation, Software, Methodology, Conceptualization],
   ),
   (
     name: [Second B. Author],
+    short: [Second B. Author],
     institution-ref: 0,
     email: [second.author\@email.com],
     contribution: [Writing -- original draft, Formal analysis, Data curation, Conceptualization],
   ),
   (
     name: [Third C. Author],
+    short: [Third C. Author],
     institution-ref: 1,
     email: [third.author\@email.com],
     contribution: [Writing -- original draft, Software, Investigation],
@@ -104,7 +107,7 @@ $ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
 
 = CRediT authorship contribution statement
 
-#authors.map(author => [*#author.name:* #author.contribution.]).join([ ])
+#authors.map(author => [*#author.short:* #author.contribution.]).join([ ])
 
 = Declaration of competing interest
 

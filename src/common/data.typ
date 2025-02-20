@@ -49,7 +49,7 @@
 #let deep-merge(a, b) = {
   let o = a
   for (key, value) in b.pairs() {
-    if type(a.at(key, default: none)) == "dictionary" and type(b.at(key)) == "dictionary" {
+    if type(a.at(key, default: none)) == dictionary and type(b.at(key)) == dictionary {
       o.insert(key, deep-merge(a.at(key), b.at(key)))
     } else {
       o.insert(key, b.at(key))
@@ -66,13 +66,13 @@
     .slice(0, calc.min(arr.len(), max-content))
     .enumerate()
     .map(((i, v)) => (
-        [#(i + 1)],
-        ..keys
-          .map(key => if key in custom {
-              custom.at(key)(v)
-            } else [#v.at(key)])
-          .flatten(),
-      ))
+      [#(i + 1)],
+      ..keys
+        .map(key => if key in custom {
+          custom.at(key)(v)
+        } else [#v.at(key)])
+        .flatten(),
+    ))
     .flatten()
   if arr.len() == 0 {
     cells.push((table.cell(colspan: keys.len() + 1, align(center, empty-message)), (), (), ()))

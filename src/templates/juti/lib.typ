@@ -78,11 +78,15 @@
     header: context {
       show: pad.with(bottom: 1em)
       let pagei = here().page()
-      set text(size: 10pt)
+      set text(size: 9pt)
       set align(get-align-by-page(pagei))
       if calc.rem-euclid(pagei, 2) == 0 {
-        let names = authors.enumerate().map(((i, v)) => [#v.name])
-        inline-enum(prefix-fn: none, ..names)
+        if authors.len() > 2 {
+          [#authors.at(0).short et al.]
+        } else {
+          let names = authors.enumerate().map(((i, v)) => [#v.short])
+          inline-enum(prefix-fn: none, ..names)
+        }
         [ -- ]
         text(style: "italic", title)
       } else {
@@ -92,7 +96,10 @@
           day: 1,
         ).display("[month repr:long] [year]")
         JOURNAL-NAME
-        [ \- Volume #metadata.book.volume, Number #metadata.book.number, #month-year: #metadata.book.page.map(v => [#v]).join([ -- ])]
+        [ \- ]
+        text(
+          style: "italic",
+        )[Volume #metadata.book.volume, Number #metadata.book.number, #month-year: #metadata.book.page.map(v => [#v]).join([ -- ])]
       }
     },
     footer: context {
@@ -114,15 +121,20 @@
   )
   set par(linebreaks: "optimized")
 
+  //? Figure
+  // set figure(placement: top)
+
   //? Image
-  show figure.where(kind: image): set figure(placement: auto, supplement: [Fig.])
+  show figure.where(kind: image): set figure(placement: top, supplement: [Fig.])
   show figure.where(kind: image): set text(size: .8em)
 
   //? Table
-  show figure.where(kind: table): set figure(placement: auto, supplement: [Table])
+  show figure.where(kind: table): set figure(placement: top, supplement: [Table])
+  set table(align: left)
   show table: set enum(indent: 0pt)
   show table: set list(indent: 0pt)
   show table: set par(justify: false)
+  show table.header: set text(weight: "bold")
   set table(stroke: none)
   show figure.where(kind: table): set text(size: .8em)
   show figure.where(kind: table): set figure.caption(position: top)
@@ -201,7 +213,7 @@
   {
     set text(
       size: 10pt,
-      weight: "regular",
+      // weight: "regular",
       // style: "italic",
     )
     set par(
@@ -215,7 +227,7 @@
   {
     set text(
       size: 10pt,
-      weight: "regular",
+      // weight: "regular",
       // style: "italic",
     )
     set par(justify: true)
@@ -227,39 +239,42 @@
     )
   }
 
+  line(length: 100%)
   v(.5em)
 
   //? Numberings
   set heading(
     numbering: (num1, ..nums) => {
       let l = nums.pos().len()
-      if l == 0 {
-        numbering("I.", num1)
-        h(10pt)
-      } else if l == 1 {
-        numbering("A.", ..nums)
-        h(7pt)
-      } else if l == 2 {
-        numbering("1)", ..nums.pos().slice(1), ..nums.named())
-      } else {
-        panic("Unhandled heading 4 or more.")
-      }
+      numbering("1.1.1.", num1, ..nums)
+      // if l == 0 {
+      //   numbering("I.", num1)
+      //   h(10pt)
+      // } else if l == 1 {
+      //   numbering("A.", ..nums)
+      //   h(7pt)
+      // } else if l == 2 {
+      //   numbering("1)", ..nums.pos().slice(1), ..nums.named())
+      // } else {
+      //   panic("Unhandled heading 4 or more.")
+      // }
     },
   )
-  set enum(numbering: "1)")
+  // set enum(numbering: "1)")
   //? Heading 1
   show heading.where(level: 1): it => {
-    set align(center)
-    set text(size: 11pt, weight: "regular")
-    smallcaps(it)
+    // set align(center)
+    set text(size: 11pt, weight: "bold")
+    it
+    // smallcaps(it)
     v(.5em)
   }
   //? Heading 2
   show heading.where(level: 2): it => {
     set text(
       size: 11pt,
-      weight: "regular",
-      style: "italic",
+      weight: "bold",
+      // style: "italic",
     )
     it
   }
@@ -267,8 +282,8 @@
   show heading.where(level: 3): it => {
     set text(
       size: 11pt,
-      weight: "regular",
-      style: "italic",
+      weight: "bold",
+      // style: "italic",
     )
     it
   }
