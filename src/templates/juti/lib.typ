@@ -8,6 +8,17 @@
   right
 }
 
+#let paper-idx = state("paper-idx", "single")
+#let book-state = state(
+  "book-state",
+  (
+    volume: [-],
+    number: [-],
+    month: 2,
+    year: 2025,
+  ),
+)
+
 #let template(
   title: [Preparation of Papers for JUTI (JURNAL ILMIAH TEKNOLOGI INFORMASI)],
   authors: (
@@ -45,38 +56,34 @@
   keywords: (
     [Enter key words or phrases in alphabetical order, separated by commas. The number of keywords must between 3-5 words.],
   ),
-  metadata: (
-    book: (
-      volume: 1,
-      number: 1,
-      month: datetime.today().month(),
-      year: datetime.today().year(),
-      page: (123, 234),
-    ),
+  meta: (
     received: datetime.today(),
     revised: datetime.today(),
     accepted: datetime.today(),
-    doi: "10.15676/juti.2024.16.4.1",
+    doi: [draft],
   ),
   body,
   bib: none,
-) = {
-  authors = authors
-    .enumerate()
-    .map(((i, v)) => (
-      ..v,
-      _index: i,
-    ))
-  institutions = institutions
-    .enumerate()
-    .map(((i, v)) => (
-      ..v,
-      _index: i,
-    ))
+) = context {
+  let paper-id = paper-idx.get()
+  show ref: it => if str(it.target).contains("::::") {
+    it
+  } else {
+    ref(label(str(it.target) + "::::" + paper-id))
+  }
+  let book = book-state.get()
+  counter(heading).update(0)
+  counter(figure.where(kind: image)).update(0)
+  counter(figure.where(kind: table)).update(0)
+  counter(figure.where(kind: math.equation)).update(0)
   set page(
     paper: "a4",
     header: context {
       show: pad.with(bottom: 1em)
+      let paper-page-range = (
+        query(label(paper-id + ":start")).last().location().page(),
+        query(label(paper-id + ":end")).last().location().page(),
+      )
       let pagei = here().page()
       set text(size: 9pt)
       set align(get-align-by-page(pagei))
@@ -91,15 +98,15 @@
         text(style: "italic", title)
       } else {
         let month-year = datetime(
-          year: metadata.book.year,
-          month: metadata.book.month,
+          year: book.year,
+          month: book.month,
           day: 1,
         ).display("[month repr:long] [year]")
         JOURNAL-NAME
         [ \- ]
         text(
           style: "italic",
-        )[Volume #metadata.book.volume, Number #metadata.book.number, #month-year: #metadata.book.page.map(v => [#v]).join([ -- ])]
+        )[Volume #book.volume, Number #book.number, #month-year: #paper-page-range.map(v => [#v]).join([ -- ])]
       }
     },
     footer: context {
@@ -159,6 +166,9 @@
     }
   }
 
+  //? START OF CONTENT
+  [#metadata(none)#label(paper-id + ":start")]
+
   //? Title
   {
     set align(center)
@@ -181,8 +191,15 @@
     set align(center)
     set text(size: 10pt)
 
-    for institution in institutions {
-      let author-indices = authors.filter(v => v.institution-ref == institution._index).map(v => v._index + 1)
+    for (i-institution, institution) in institutions.enumerate() {
+      let author-indices = authors
+        .enumerate()
+        .map(((i, v)) => (
+          ..v,
+          _index: i,
+        ))
+        .filter(v => v.institution-ref == i-institution)
+        .map(v => v._index + 1)
 
       [
         #super[#inline-enum(last-join: none, prefix-fn: none, ..author-indices.map(v => [#v])))] #institution.name \
@@ -196,11 +213,14 @@
   {
     set align(center)
     set text(size: 10pt)
-    let emails = authors.enumerate().map(((i, v)) => [#link-b(none, v.email)#super[#{ i + 1 })]])
+    let emails = authors.enumerate().map(((i, v)) => [#v.email#super[#{ i + 1 })]])
 
     [E-mail: ]
     inline-enum(prefix-fn: none, ..emails)
   }
+
+  v(.5em)
+  line(length: 100%)
 
   //? Abstract Title
   {
@@ -295,13 +315,13 @@
       #set text(size: 9pt)
 
       \* Corresponding author. \
-      Received: #metadata.received.display("[month repr:long]") #nths(metadata.received.day()), #metadata.received.display("[year]").
-      Revised: #metadata.revised.display("[month repr:long]") #nths(metadata.revised.day()), #metadata.revised.display("[year]").
-      Accepted: #metadata.accepted.display("[month repr:long]") #nths(metadata.accepted.day()), #metadata.accepted.display("[year]").
+      Received: #meta.received.display("[month repr:long]") #nths(meta.received.day()), #meta.received.display("[year]").
+      Revised: #meta.revised.display("[month repr:long]") #nths(meta.revised.day()), #meta.revised.display("[year]").
+      Accepted: #meta.accepted.display("[month repr:long]") #nths(meta.accepted.day()), #meta.accepted.display("[year]").
 
       #pad(y: -.65em, line(length: 100%))
 
-      DOI: #metadata.doi \
+      DOI: #meta.doi \
       © #datetime.today().display("[year]") JUTI: JURNAL ILMIAH TEKNOLOGI INFORMASI. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
     ],
     placement: bottom,
@@ -324,4 +344,6 @@
     set text(size: 8pt)
     bib
   }
+  //? END OF CONTENT
+  [#metadata(none)#label(paper-id + ":end")]
 }
