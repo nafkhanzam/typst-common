@@ -75,7 +75,9 @@
   counter(heading).update(0)
   counter(figure.where(kind: image)).update(0)
   counter(figure.where(kind: table)).update(0)
+  counter(math.equation).update(0)
   counter(figure.where(kind: math.equation)).update(0)
+  counter(figure.where(kind: raw)).update(0)
   set page(
     paper: "a4",
     header: context {
@@ -85,9 +87,10 @@
         query(label(paper-id + ":end")).last().location().page(),
       )
       let pagei = here().page()
+      let aligned-pagei = pagei + paper-page-range.at(0) + 1
       set text(size: 9pt)
-      set align(get-align-by-page(pagei))
-      if calc.rem-euclid(pagei, 2) == 0 {
+      set align(get-align-by-page(aligned-pagei))
+      if calc.rem-euclid(aligned-pagei, 2) == 0 {
         if authors.len() > 2 {
           [#authors.at(0).short et al.]
         } else {
@@ -102,11 +105,16 @@
           month: book.month,
           day: 1,
         ).display("[month repr:long] [year]")
-        JOURNAL-NAME
-        [ \- ]
-        text(
-          style: "italic",
-        )[Volume #book.volume, Number #book.number, #month-year: #paper-page-range.map(v => [#v]).join([ -- ])]
+        let right-content = [#JOURNAL-NAME -- _Volume #book.volume, Number #book.number, #month-year: #paper-page-range.map(v => [#v]).join([ -- ])_]
+        if pagei == paper-page-range.at(0) {
+          grid(
+            columns: (auto, 1fr),
+            column-gutter: 2em,
+            place(float: true, bottom, dy: .5em, image("logo.jpg", height: 1.5em)), align(right, right-content),
+          )
+        } else {
+          right-content
+        }
       }
     },
     footer: context {
@@ -148,6 +156,7 @@
 
   //? Equation
   set math.equation(numbering: "(1)")
+  show math.equation: math.italic
   show ref: it => {
     let eq = math.equation
     let el = it.element
@@ -266,18 +275,18 @@
   set heading(
     numbering: (num1, ..nums) => {
       let l = nums.pos().len()
-      numbering("1.1.1.", num1, ..nums)
-      // if l == 0 {
-      //   numbering("I.", num1)
-      //   h(10pt)
-      // } else if l == 1 {
-      //   numbering("A.", ..nums)
-      //   h(7pt)
-      // } else if l == 2 {
-      //   numbering("1)", ..nums.pos().slice(1), ..nums.named())
-      // } else {
-      //   panic("Unhandled heading 4 or more.")
-      // }
+      // numbering("1.1.1.", num1, ..nums)
+      if l == 0 {
+        numbering("1.", num1)
+        // h(10pt)
+      } else if l == 1 {
+        numbering("1.1.", num1, ..nums)
+        // h(7pt)
+      } else if l == 2 {
+        numbering("A.", ..nums.pos().slice(1), ..nums.named())
+      } else {
+        panic("Unhandled heading 4 or more.")
+      }
     },
   )
   // set enum(numbering: "1)")
@@ -293,8 +302,8 @@
   show heading.where(level: 2): it => {
     set text(
       size: 11pt,
-      weight: "bold",
-      // style: "italic",
+      weight: "regular",
+      style: "italic",
     )
     it
   }
@@ -302,8 +311,8 @@
   show heading.where(level: 3): it => {
     set text(
       size: 11pt,
-      weight: "bold",
-      // style: "italic",
+      weight: "regular",
+      style: "italic",
     )
     it
   }
