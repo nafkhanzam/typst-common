@@ -19,6 +19,24 @@
   ),
 )
 
+#let contributions = (
+  /* 0  */ [Conceptualization],
+  /* 1  */ [Methodology],
+  /* 2  */ [Software],
+  /* 3  */ [Validation],
+  /* 4  */ [Formal analysis],
+  /* 5  */ [Investigation],
+  /* 6  */ [Resources],
+  /* 7  */ [Data Curation],
+  /* 8  */ [Writing -- Original Draft],
+  /* 9  */ [Writing -- Review & Editing],
+  /* 10 */ [Visualization],
+  /* 11 */ [Supervision],
+  /* 12 */ [Project Administration],
+  /* 13 */ [Funding Acquisition],
+)
+#let get-contributions(author) = author.contribution-refs.map(i => contributions.at(i)).join([, ])
+
 #let template(
   title: [Preparation of Papers for JUTI (JURNAL ILMIAH TEKNOLOGI INFORMASI)],
   authors: (
@@ -27,18 +45,21 @@
       institution-ref: 0,
       email: [first.author\@email.com],
       contribution: [],
+      contribution-refs: range(0, 10),
     ),
     (
       name: [Second B. Author],
       institution-ref: 0,
       email: [second.author\@email.com],
       contribution: [],
+      contribution-refs: range(7, 13),
     ),
     (
       name: [Third C. Author],
       institution-ref: 1,
       email: [third.author\@email.com],
       contribution: [],
+      contribution-refs: range(7, 13),
     ),
   ),
   corresponding-ref: 0,
@@ -155,6 +176,7 @@
   show figure.where(kind: table): set figure.caption(position: top)
 
   //? Equation
+  // show math.equation: set text(font: "New Computer Modern Math")
   set math.equation(numbering: "(1)")
   show math.equation: math.italic
   show ref: it => {
@@ -184,6 +206,7 @@
     set text(size: 16pt, weight: "bold")
     // show: upper
     title
+    phantom(heading(title, bookmarked: true))
   }
 
   //? Author names
@@ -273,6 +296,7 @@
 
   //? Numberings
   set heading(
+    outlined: false,
     numbering: (num1, ..nums) => {
       let l = nums.pos().len()
       // numbering("1.1.1.", num1, ..nums)
@@ -348,7 +372,7 @@
 
   //? References
   if bib != none {
-    headz[References]
+    headz(outlined: false)[References]
 
     set text(size: 8pt)
     bib

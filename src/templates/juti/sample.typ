@@ -107,7 +107,7 @@ $ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
 
 = CRediT authorship contribution statement
 
-#authors.map(author => [*#author.short:* #author.contribution.]).join([ ])
+#authors.map(author => [*#author.short:* #t-juti.get-contributions(author).]).join([ ])
 
 = Declaration of competing interest
 
@@ -125,4 +125,6 @@ Please choose the appropriate data availability statement that applies to this s
 - The dataset was openly provided [link provided].
 - Data sharing is not applicable to this article as no datasets were generated or analyzed during the current study.
 - Data sharing is not applicable as the data are secondary data drawn from already published literature.
-- Data sharing not applicable to this article as no datasets were generated or analyzed during the current study. The datasets generated during and/or analyzed during the current study are available from the corresponding author on reasonable request.
+- The datasets generated during and/or analyzed during the current study are available from the corresponding author on reasonable request.
+- Following acceptance and before publication, all data will be provided on a public repository.
+- No data are available.
