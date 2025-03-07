@@ -1,26 +1,28 @@
 #import "@nafkhanzam/common:0.0.1": t-juti
 
+#let lab(name) = label(name + "::::single")
+
 #let authors = (
   (
     name: [First A. Author],
     short: [First A. Author],
     institution-ref: 0,
     email: [first.author\@email.com],
-    contribution: [Writing -- review & editing, Writing -- original draft, Validation, Software, Methodology, Conceptualization],
+    contribution-refs: (0, 1, 2, 5, 6, 7, 8, 10, 13),
   ),
   (
     name: [Second B. Author],
     short: [Second B. Author],
     institution-ref: 0,
     email: [second.author\@email.com],
-    contribution: [Writing -- original draft, Formal analysis, Data curation, Conceptualization],
+    contribution-refs: (6, 9, 11),
   ),
   (
     name: [Third C. Author],
     short: [Third C. Author],
     institution-ref: 1,
     email: [third.author\@email.com],
-    contribution: [Writing -- original draft, Software, Investigation],
+    contribution-refs: (3, 4, 6, 9, 11, 12),
   ),
 )
 
@@ -51,7 +53,7 @@
     [Immersion],
     [Symptom Rates],
   ),
-  bib: bibliography("references.bib", full: true),
+  bib: bibliography("references.bib"),
 )
 
 = Introduction
