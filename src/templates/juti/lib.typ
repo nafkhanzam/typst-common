@@ -78,6 +78,7 @@
     [Enter key words or phrases in alphabetical order, separated by commas. The number of keywords must between 3-5 words.],
   ),
   meta: (
+    // No need to change
     received: datetime.today(),
     revised: datetime.today(),
     accepted: datetime.today(),
@@ -87,18 +88,13 @@
   bib: none,
 ) = context {
   let paper-id = paper-idx.get()
-  show ref: it => if str(it.target).contains("::::") {
-    it
-  } else {
-    ref(label(str(it.target) + "::::" + paper-id))
-  }
   let book = book-state.get()
-  counter(heading).update(0)
-  counter(figure.where(kind: image)).update(0)
-  counter(figure.where(kind: table)).update(0)
-  counter(math.equation).update(0)
-  counter(figure.where(kind: math.equation)).update(0)
-  counter(figure.where(kind: raw)).update(0)
+  // counter(heading).update(0)
+  // counter(figure.where(kind: image)).update(0)
+  // counter(figure.where(kind: table)).update(0)
+  // counter(math.equation).update(0)
+  // counter(figure.where(kind: math.equation)).update(0)
+  // counter(figure.where(kind: raw)).update(0)
   set page(
     paper: "a4",
     header: context {
@@ -153,9 +149,10 @@
   set bibliography(
     style: "ieee",
     title: none,
-    full: true,
   )
   set par(linebreaks: "optimized")
+  set enum(indent: 2em)
+  set list(indent: 2em)
 
   //? Figure
   // set figure(placement: top)
@@ -179,23 +176,23 @@
   // show math.equation: set text(font: "New Computer Modern Math")
   set math.equation(numbering: "(1)")
   show math.equation: math.italic
-  show ref: it => {
-    let eq = math.equation
-    let el = it.element
-    if el != none and el.func() == eq {
-      // Override equation references.
-      link(
-        el.location(),
-        numbering(
-          el.numbering,
-          ..counter(eq).at(el.location()),
-        ),
-      )
-    } else {
-      // Other references as usual.
-      it
-    }
-  }
+  // show ref: it => {
+  //   let eq = math.equation
+  //   let el = it.element
+  //   if el != none and el.func() == eq {
+  //     // Override equation references.
+  //     link(
+  //       el.location(),
+  //       numbering(
+  //         el.numbering,
+  //         ..counter(eq).at(el.location()),
+  //       ),
+  //     )
+  //   } else {
+  //     // Other references as usual.
+  //     it
+  //   }
+  // }
 
   //? START OF CONTENT
   [#metadata(none)#label(paper-id + ":start")]
@@ -372,7 +369,7 @@
 
   //? References
   if bib != none {
-    headz(outlined: false)[References]
+    heading(numbering: none, outlined: false)[References]
 
     set text(size: 8pt)
     bib
