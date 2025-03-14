@@ -138,7 +138,7 @@
       let pagei = here().page()
       set text(size: 10pt)
       set align(get-align-by-page(pagei))
-      here().page()
+      pagei
     },
     margin: (
       x: 0.65in,
@@ -210,7 +210,7 @@
   {
     set align(center)
     set text(size: 12pt, weight: "bold")
-    let names = authors.enumerate().map(((i, v)) => [#v.name #super[#{ i + 1 }#if corresponding-ref == i [,\*])]])
+    let names = authors.enumerate().map(((i, v)) => box[#v.name #super[#{ i + 1 }#if corresponding-ref == i [,\*])]])
 
     inline-enum(prefix-fn: none, ..names)
   }

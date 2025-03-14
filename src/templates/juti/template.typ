@@ -1,4 +1,8 @@
 #let phantom(body) = place(top, scale(x: 0%, y: 0%, hide(body)))
+#let i(body) = {
+  set cite(form: "prose")
+  body
+}
 #let inline-enum(
   join-sym: [,],
   last-join: [and],
@@ -143,12 +147,12 @@
 ) = context {
   let paper-id = paper-idx.get()
   let book = book-state.get()
-  counter(heading).update(0)
-  counter(figure.where(kind: image)).update(0)
-  counter(figure.where(kind: table)).update(0)
-  counter(math.equation).update(0)
-  counter(figure.where(kind: math.equation)).update(0)
-  counter(figure.where(kind: raw)).update(0)
+  // counter(heading).update(0)
+  // counter(figure.where(kind: image)).update(0)
+  // counter(figure.where(kind: table)).update(0)
+  // counter(math.equation).update(0)
+  // counter(figure.where(kind: math.equation)).update(0)
+  // counter(figure.where(kind: raw)).update(0)
   set page(
     paper: "a4",
     header: context {
@@ -192,7 +196,7 @@
       let pagei = here().page()
       set text(size: 10pt)
       set align(get-align-by-page(pagei))
-      here().page()
+      pagei
     },
     margin: (
       x: 0.65in,
@@ -203,9 +207,10 @@
   set bibliography(
     style: "ieee",
     title: none,
-    full: true,
   )
   set par(linebreaks: "optimized")
+  set enum(indent: 2em)
+  set list(indent: 2em)
 
   //? Figure
   // set figure(placement: top)
@@ -229,23 +234,23 @@
   // show math.equation: set text(font: "New Computer Modern Math")
   set math.equation(numbering: "(1)")
   show math.equation: math.italic
-  show ref: it => {
-    let eq = math.equation
-    let el = it.element
-    if el != none and el.func() == eq {
-      // Override equation references.
-      link(
-        el.location(),
-        numbering(
-          el.numbering,
-          ..counter(eq).at(el.location()),
-        ),
-      )
-    } else {
-      // Other references as usual.
-      it
-    }
-  }
+  // show ref: it => {
+  //   let eq = math.equation
+  //   let el = it.element
+  //   if el != none and el.func() == eq {
+  //     // Override equation references.
+  //     link(
+  //       el.location(),
+  //       numbering(
+  //         el.numbering,
+  //         ..counter(eq).at(el.location()),
+  //       ),
+  //     )
+  //   } else {
+  //     // Other references as usual.
+  //     it
+  //   }
+  // }
 
   //? START OF CONTENT
   [#metadata(none)#label(paper-id + ":start")]
@@ -263,7 +268,7 @@
   {
     set align(center)
     set text(size: 12pt, weight: "bold")
-    let names = authors.enumerate().map(((i, v)) => [#v.name #super[#{ i + 1 }#if corresponding-ref == i [,\*])]])
+    let names = authors.enumerate().map(((i, v)) => box[#v.name #super[#{ i + 1 }#if corresponding-ref == i [,\*])]])
 
     inline-enum(prefix-fn: none, ..names)
   }
