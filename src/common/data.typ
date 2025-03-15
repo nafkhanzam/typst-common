@@ -10,6 +10,9 @@
 
 #let access-field(o, ..keys, default: none) = {
   let r = o
+  if type(r) != dictionary {
+    return r
+  }
   for key in keys.pos() {
     if key in r {
       r = r.at(key)
