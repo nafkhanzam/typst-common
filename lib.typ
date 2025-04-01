@@ -23,6 +23,5 @@
 #import "src/templates/exam.typ" as t-exam //? t = Template
 #import "src/templates/formal.typ" as t-formal //? t = Template
 #import "src/templates/general.typ" as t-general //? t = Template
-#import "src/templates/juti/lib.typ" as t-juti //? t = Template
 #import "src/templates/drpm/lib.typ" as t-drpm //? t = Template
 #import "src/templates/rps/lib.typ" as t-rps //? t = Template

@@ -3,6 +3,7 @@
 #let its-mooc-theme(
   title,
   subtitle,
+  code: none,
   author: [Moch. Nafkhan Alzamzami, S.T., M.T.],
   institution: [
     Department of Informatics \
@@ -17,6 +18,9 @@
   ..args,
   body,
 ) = [
+  #if code != none {
+    subtitle = [[#code] #subtitle]
+  }
   #show: university-theme.with(
     footer-a: none,
     footer-b: none,
@@ -31,12 +35,14 @@
       logo: logo,
       copyright: copyright,
     ),
-    config-methods(init: (self: none, body) => {
-      show: university-init.with(self: self)
-      set page(background: image("its-mooc-electics-background.jpg"))
+    config-methods(
+      init: (self: none, body) => {
+        show: university-init.with(self: self)
+        set page(background: image("its-mooc-electics-background.jpg"))
 
-      body
-    }),
+        body
+      },
+    ),
     config-colors(
       primary: white,
       secondary: white,

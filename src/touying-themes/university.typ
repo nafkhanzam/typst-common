@@ -134,10 +134,13 @@
   }
   let body = {
     if info.logo != none {
-      place(right, text(fill: self.colors.primary, info.logo))
+      place(top + end)[
+        #set text(fill: self.colors.primary, size: .7em)
+        #info.logo
+      ]
     }
     align(
-      center + horizon,
+      left + horizon,
       {
         block(
           inset: 0em,
@@ -345,9 +348,9 @@
   header: utils.display-current-heading(level: auto),
   header-right: self => utils.display-current-heading(level: 1),
   footer-columns: (25%, 1fr, 25%),
-  footer-a: self => self.info.author,
+  footer-a: self => self.info.title,
   footer-b: self => if self.info.short-title == auto {
-    [#self.info.title -- #self.info.subtitle]
+    self.info.subtitle
   } else {
     self.info.short-title
   },
