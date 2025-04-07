@@ -56,15 +56,20 @@
 }
 
 #let announcement(
+  code: none,
   title,
   course,
   lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
+  room: [],
   datetime: [],
   timelimit: [],
   additional-entries: (),
   ..args,
   body,
 ) = [
+  #if code != none {
+    course = [[#code] #course]
+  }
   #show: university.university-theme.with(
     config-store(
       footer-a: none,
@@ -81,6 +86,7 @@
 
     #entry-fields((
       ([*Lecturer*], [#lecturer]),
+      ([*Room*], [#room]),
       ([*DateTime*], [#datetime]),
       ([*Timelimit*], [#timelimit]),
       ..additional-entries,
@@ -94,6 +100,7 @@
   title,
   course,
   lecturer: [Moch. Nafkhan Alzamzami, S.T., M.T.],
+  room: [],
   datetime: [],
   timelimit: [],
   body,
@@ -102,6 +109,7 @@
 
   #entry-fields((
     ([*Lecturer*], [#lecturer]),
+    ([*Room*], [#room]),
     ([*DateTime*], [#datetime]),
     ([*Timelimit*], [#timelimit]),
   ))
