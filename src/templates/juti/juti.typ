@@ -127,16 +127,14 @@
       address: [Address of institution],
     ),
   ),
-  abstract: [These instructions give you guidelines for preparing JUTI (Jurnal Ilmiah Teknologi Informasi) papers. Use this document as a template if you are using Microsoft Word 6.0 or later. The electronic file of your paper will be formatted further by JUTI editorial board. Paper titles should be written in uppercase. Avoid writing long formulas with subscripts in the title; short formulas that identify the elements are fine (e.g., "Nd–Fe–B"). Do not write “(Invited)” in the title. Full names of authors are preferred in the author field but are not required. If you have to shorten the author’s name, leave first name and last name unshorten. Put a space between authors’ initials. Do not cite references in the abstract. The length of abstract must between 150 – 250 words.],
-  keywords: (
-    [Enter key words or phrases in alphabetical order, separated by commas. The number of keywords must between 3-5 words.],
-  ),
+  abstract: [],
+  keywords: (),
   meta: (
     // No need to change
-    received: datetime.today(),
-    revised: datetime.today(),
-    accepted: datetime.today(),
-    doi: [draft],
+    received: [will be set by the editor],
+    revised: [will be set by the editor],
+    accepted: [will be set by the editor],
+    doi: [will be set by the editor],
   ),
   body,
   bib: none,
@@ -199,11 +197,11 @@
       y: 1in,
     ),
   )
-  set text(font: "Times New Roman")
+  set text(font: "Liberation Serif", fallback: false)
+  // set text(font: "Times New Roman", fallback: false)
   set bibliography(
     style: "ieee",
     title: none,
-    full: true,
   )
   set par(linebreaks: "optimized")
 
@@ -391,6 +389,13 @@
     it
   }
 
+  let format-date(d) = {
+    if (
+      type(d) == datetime
+    ) [
+      #meta.received.display("[month repr:long]") #nths(meta.received.day()), #meta.received.display("[year]")] else [
+      #d]
+  }
   //? Metadata Footnote
   figure(
     pad(bottom: -1.2em)[
@@ -398,9 +403,9 @@
       #set text(size: 9pt)
 
       \* Corresponding author. \
-      Received: #meta.received.display("[month repr:long]") #nths(meta.received.day()), #meta.received.display("[year]").
-      Revised: #meta.revised.display("[month repr:long]") #nths(meta.revised.day()), #meta.revised.display("[year]").
-      Accepted: #meta.accepted.display("[month repr:long]") #nths(meta.accepted.day()), #meta.accepted.display("[year]").
+      Received: #format-date(meta.received).
+      Revised: #format-date(meta.revised).
+      Accepted: #format-date(meta.accepted).
 
       #pad(y: -.65em, line(length: 100%))
 

@@ -1,4 +1,4 @@
-#import "template.typ": *
+#import "@preview/juti:0.0.1"
 
 #let authors = (
   (
@@ -24,7 +24,7 @@
   ),
 )
 
-#show: template.with(
+#show: juti.template.with(
   title: [
     Preparation of Papers for JUTI (JURNAL ILMIAH TEKNOLOGI INFORMASI)
   ],
@@ -41,7 +41,7 @@
     ),
   ),
   abstract: [
-    These instructions give you guidelines for preparing JUTI (Jurnal Ilmiah Teknologi Informasi) papers. Use this document as a template if you are using Microsoft Word 6.0 or later. The electronic file of your paper will be formatted further by JUTI editorial board. Paper titles should be written in uppercase. Avoid writing long formulas with subscripts in the title; short formulas that identify the elements are fine (e.g., "Nd–Fe–B"). Do not write “(Invited)” in the title. Full names of authors are preferred in the author field but are not required. If you have to shorten the author’s name, leave first name and last name unshorten. Put a space between authors’ initials. Do not cite references in the abstract. The length of abstract must between 150 – 250 words.
+    These instructions give you guidelines for preparing JUTI (Jurnal Ilmiah Teknologi Informasi) papers. Use this document as a template if you are using Microsoft Word 6.0 or later. The electronic file of your paper will be formatted further by JUTI editorial board. Paper titles should be written in uppercase. Avoid writing long formulas with subscripts in the title; short formulas that identify the elements are fine (e.g., "Nd--Fe--B"). Do not write “(Invited)” in the title. Full names of authors are preferred in the author field but are not required. If you have to shorten the author’s name, leave first name and last name unshorten. Put a space between authors’ initials. Do not cite references in the abstract. The length of abstract must between 150 -- 250 words.
   ],
   keywords: (
     [Keyword1],
@@ -62,7 +62,9 @@ Example of citation @abbas2009automatic, or multiple citations @abbas2009automat
 Table example can be seen on @tab-example.
 Image example can be seen on @img-example.
 The Schrodinger's famous equation can be seen on @eq-example.
-$ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
+
+#let hbar = (sym.wj, move(dy: -0.08em, strike(offset: -0.55em, extent: -0.05em, sym.planck)), sym.wj).join()
+$ i hbar (diff Psi(x, t)) / (diff t) = -frac(hbar^2, 2m) nabla^2 Psi(x, t) + V(x) Psi(x, t) $ <eq-example>
 
 #figure(
   table(
@@ -83,7 +85,7 @@ $ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
 ) <tab-example>
 
 #figure(
-  image("logo.jpg", width: 40%),
+  image("figure1.jpg", width: 40%),
   caption: [Logo of JUTI: Jurnal Ilmiah Teknologi Informasi. Note that #quote[Fig.] is abbreviated. There is a period after the figure number, followed by two spaces. It is good practice to explain the significance of the figure in the caption.],
 ) <img-example>
 
@@ -97,13 +99,13 @@ $ i ħ (∂ψ) / (∂t) = - (ħ^2) / (2m) ∇^2ψ + V ψ $ <eq-example>
 
 = CRediT authorship contribution statement
 
-#authors.map(author => [*#author.short:* #get-contributions(author).]).join([ ])
+#authors.map(author => [*#author.short:* #juti.get-contributions(author).]).join([ ])
 
 = Declaration of competing interest
 
 The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
 
-= Acknowledgement
+= Acknowledgement (optional)
 
 This research was funded by ...
 
