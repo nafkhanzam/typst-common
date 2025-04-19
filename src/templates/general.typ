@@ -1,4 +1,5 @@
-#import "@preview/codly:1.1.1"
+#import "@preview/gentle-clues:1.2.0": *
+#import "@preview/codly:1.3.0"
 #import "@preview/drafting:0.2.0": *
 #import "../common/data.typ": *
 #import "../common/style.typ": *
@@ -51,7 +52,12 @@
   ))
 
   // ~ Setups
-  set text(font: "FreeSerif", size: font-size, fallback: false, hyphenate: false)
+  set text(
+    font: "Liberation Serif",
+    size: font-size,
+    fallback: false,
+    // hyphenate: false,
+  )
   set page(
     paper: "a4",
     margin: (
@@ -87,7 +93,7 @@
   set-page-properties()
   set par(justify: true, linebreaks: "optimized")
   set enum(indent: 1em)
-  set list(indent: 1em)
+  set list(indent: 1em, marker: ([-], [#sym.arrow]))
   show table: set enum(indent: 0pt)
   show table: set list(indent: 0pt)
   show table: set par(justify: false)
@@ -134,9 +140,20 @@
       it.body,
     )
   ]
-  show raw: set block(above: .65em)
+  show raw.where(block: true): set block(above: .65em)
+  show raw.where(block: true): set text(size: .8em)
+  show raw.where(block: false): it => {
+    set text(font: "Noto Sans Mono", fallback: false)
+    show: highlight.with(
+      extent: .1em,
+      fill: none,
+      stroke: .5pt + blue,
+    )
+    // set text(size: .95em)
+    it
+  }
   show: enable-todo-hl
-  show: codly.codly-init.with()
+  show: codly.codly-init
   codly.codly(number-format: none)
 
   //~ Title
