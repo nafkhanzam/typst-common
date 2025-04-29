@@ -30,7 +30,7 @@
       page(
         paper: "a4",
         margin: 3cm,
-        footer: align(right)[
+        footer: context align(right)[
           Page
           #counter(page).display(
             "1 of 1",
