@@ -1,5 +1,7 @@
-#import "../../common/currency.typ": *
-#import "../../common/dates.typ": *
+#import "common/currency.typ": *
+#import "common/data.typ": *
+#import "common/dates.typ": *
+#import "common/style.typ": *
 
 #let outline-entry-fn(prefix-count, start-level: 1) = (
   it => {
@@ -33,7 +35,7 @@
   }
 )
 
-#let template(pintorita: false, ref-style: "apa", appendices: none, body) = {
+#let template(pintorita: false, ref-style: "common/apa-id.csl", appendices: none, body) = {
   set page(
     paper: "a4",
     margin: 3cm,
@@ -83,7 +85,7 @@
     set align(left)
     it
   }
-  show outline.entry: outline-entry-fn(1)
+  // show outline.entry: outline-entry-fn(1)
   show heading: it => {
     if it.level == 1 {
       set align(center)
@@ -216,12 +218,77 @@
   )
 }
 
-#let cover-solid(data) = [
+#let spec(data) = (
+  "proposal": (
+    cover-title: [
+      PROPOSAL \
+      SKEMA PENELITIAN #upper(data.schema) \
+      SUMBER DANA #upper(data.funding-source) \
+      TAHUN #display-year
+    ],
+  ),
+  "progress": (
+    cover-title: [
+      LAPORAN KEMAJUAN \
+      SKEMA PENELITIAN #upper(data.schema) \
+      SUMBER DANA #upper(data.funding-source) \
+      TAHUN #display-year
+    ],
+  ),
+  "logbook": (
+    cover-title: [
+      #text(size: 24pt)[CATATAN HARIAN] \
+      PENELITIAN #upper(data.schema) \
+      DANA #upper(data.funding-source) \
+      TAHUN #display-year
+    ],
+  ),
+).at(data.entry)
+
+#let BUDGET-KEYS = (
+  "one-time-materials",
+  "assets",
+  "data-colletions",
+  "reportings",
+)
+
+#let preprocess-data(d) = {
+  // member defaults
+  let member-default = access-field(d, "defaults", "member", default: ())
+  d.members = d.members.map(member => apply-defaults(member, member-default))
+
+  // ref defaults
+  let apply-entries(members, ref-key) = members.map(member => apply-refs(
+    member,
+    ref-key,
+    access-field(d, "entries", ref-key, default: ()),
+  ))
+  d.members = apply-entries(d.members, "abmas-history")
+  d.members = apply-entries(d.members, "publication-history")
+  d.members = apply-entries(d.members, "intellectual-property-history")
+
+  // calculate budget
+  d.budget-total = 0
+  for (i, value) in d.budget.enumerate() {
+    let sub-total = 0
+    for (j, item) in value.items.enumerate() {
+      let sub-sub-total = int(item.price * item.volume)
+      d.budget.at(i).items.at(j).total = sub-sub-total
+      sub-total += sub-sub-total
+    }
+    d.budget.at(i).insert("total", sub-total)
+    d.budget-total += sub-total
+  }
+
+  d
+}
+
+#let cover-blue(data) = [
   #let cl-blue = rgb(32, 64, 106)
   #let cl-yellow = rgb(255, 210, 46)
 
-  #set text(fill: white)
   #set page(fill: cl-blue, margin: 0em)
+  #set text(fill: white)
   #set par(justify: false)
   #set align(center)
 
@@ -232,9 +299,7 @@
   #[
     #set text(weight: "bold", size: 20pt)
 
-    PROPOSAL \
-    PENGABDIAN KEPADA MASYARAKAT \
-    SKEMA #upper(data.schema) DANA #upper(data.funding-source)
+    #spec(data).cover-title
 
     #v(1fr)
 
@@ -242,11 +307,7 @@
 
     #v(1fr)
 
-    #set text(size: 18pt)
-
-    #upper[#data.title]
-
-    Lokasi : #data.partner.address
+    #text(size: 16pt, upper(data.title))
 
     #v(1fr)
   ]
@@ -256,8 +317,8 @@
   #[
     #set text(size: 14pt)
 
-    #text(size: 16pt)[*Tim Pengabdi:*] \
-    #for member in data.members [
+    #text(size: 16pt)[*Tim Peneliti:*] \
+    #for member in data.members.filter(v => not v.at("exclude-from-cover", default: false)) [
       #write-member-entry(member) \
     ]
   ]
@@ -296,10 +357,7 @@
   #[
     #set text(weight: "bold", size: 14pt)
 
-    PROPOSAL \
-    SKEMA PENELITIAN #upper(data.schema) \
-    SUMBER DANA #upper(data.funding-source) \
-    TAHUN #display-year
+    #spec(data).cover-title
 
     #v(1fr)
 
@@ -325,8 +383,11 @@
         data
           .members
           .slice(2)
+          .filter(v => not v.at("exclude-from-cover", default: false))
           .enumerate()
-          .map(((i, member)) => (
+          .map((
+            (i, member),
+          ) => (
             [],
             [#hide[: ]#{
                 i + 2
@@ -346,4 +407,19 @@
     SURABAYA \
     #display-year
   ]
+]
+
+#let bib-page(ref-file) = [
+  #headz[DAFTAR PUSTAKA]
+
+  #bibliography(ref-file, title: none)
+]
+
+#let outline-page() = [
+  #headz[DAFTAR ISI]
+
+  #outline(
+    title: none,
+    depth: 4,
+  )
 ]
