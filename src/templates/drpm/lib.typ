@@ -1,3 +1,4 @@
+#import "@preview/codly:1.3.0"
 #import "common/currency.typ": *
 #import "common/data.typ": *
 #import "common/dates.typ": *
@@ -35,25 +36,27 @@
   }
 )
 
-#let template(pintorita: false, ref-style: "common/apa-id.csl", appendices: none, body) = {
+#let template(ref-style: "common/apa-id.csl", appendices: none, body) = {
   set page(
     paper: "a4",
     margin: 3cm,
     number-align: right,
   )
-  set par(
-    justify: true,
-    leading: 1em,
-    linebreaks: "optimized",
-  )
   set text(
-    font: "FreeSerif",
+    font: "Liberation Serif",
     size: 12pt,
     fallback: false,
-    hyphenate: false,
+    hyphenate: true,
     lang: "id",
   )
-  set enum(indent: 1em, spacing: 1.5em, tight: false)
+  set par(justify: true, linebreaks: "optimized")
+  set enum(indent: 1em)
+  set list(indent: 1em, marker: ([-], [#sym.arrow]))
+  show table: set enum(indent: 0pt)
+  show table: set list(indent: 0pt)
+  show table: set par(justify: false)
+  show table: set align(left)
+  set enum(indent: 1em)
   set block(below: 1.5em)
   set heading(
     numbering: (num1, ..nums) => {
@@ -68,11 +71,8 @@
   )
   set bibliography(style: ref-style)
   show figure.caption: set text(size: 10pt)
+  show figure.where(kind: table): set figure.caption(position: top)
 
-  if pintorita {
-    import "@preview/pintorita:0.1.0"
-    show raw.where(lang: "pintora"): it => pintorita.render(it.text)
-  }
   show table: it => {
     set par(justify: false)
     set text(size: 10pt)
@@ -99,6 +99,21 @@
       v(1.5em, weak: true)
     }
   }
+  show raw.where(block: true): set block(above: .65em)
+  show raw.where(block: true): set text(size: .8em)
+  show raw.where(block: false): it => {
+    set text(font: "Noto Sans Mono", fallback: false)
+    show: highlight.with(
+      extent: .1em,
+      fill: none,
+      stroke: .5pt + blue,
+    )
+    // set text(size: .95em)
+    it
+  }
+  show: enable-todo-hl
+  show: codly.codly-init
+  codly.codly(number-format: none)
 
   body
 
@@ -422,4 +437,329 @@
     title: none,
     depth: 4,
   )
+]
+
+#let bio-page(data) = [
+  #headz[BIODATA]
+
+  #let bio(index, member, show-on-zero: true, extend: true) = [
+    #let label = if index == 0 {
+      [Ketua]
+    } else {
+      [Anggota #numbering("I", index)]
+    }
+
+    == #label
+
+    #[
+      Identitas Peneliti
+
+      #{
+        show table.cell.where(x: 0): strong
+        table(
+          columns: (auto, 1fr),
+          [Nama Lengkap], [#member.name],
+          [Jenis Kelamin], [#member.gender],
+          [NIP/NIK], [#member.id-number],
+          [NIDN (jika ada)], [#member.nidn],
+          [Tempat dan Tanggal Lahir], [#member.birth],
+          [E-mail], [#member.email],
+          [Nomor Telepon/HP], [#member.phone],
+          [Nama Institusi Tempat Kerja], [#member.institution-long],
+          [Alamat Kantor], [#member.address],
+        )
+      }
+
+      #show table.cell.where(y: 0): strong
+
+      Riwayat Pendidikan
+
+      #{
+        let s-keys = ("s1", "s2", "s3")
+        let counter = 0
+        for key in s-keys {
+          if access-field(member, "education-history", key) != none {
+            counter += 1
+          }
+        }
+
+        show table.cell.where(x: 0): strong
+        table(
+          columns: counter + 1,
+          table.header(
+            ..(
+              [],
+              [S-1],
+              [S-2],
+              [S-3],
+            ).slice(0, counter + 1),
+          ),
+          ..(
+            (
+              ([Nama Perguruan Tinggi], "instition-name"),
+              ([Bidang Ilmu], "major"),
+              ([Tahun Masuk-Lulus], "start-end-year"),
+              ([Judul Skripsi / \ Tesis / Disertasi], "thesis-title"),
+              ([Nama Pembimbing/Promotor], "supervisor-name"),
+            )
+              .map(((title, field)) => (
+                title,
+                ..(s-keys.slice(0, counter).map(v => [#access-field(member, "education-history", v, field)])),
+              ))
+              .flatten()
+          ),
+        )
+      }
+
+      #let rest-args = (:)
+      #let empty-message = access-field(member, "empty-message")
+      #if empty-message != none {
+        rest-args += (empty-message: empty-message)
+      }
+
+      #let arr = member.at("research-history", default: ())
+      #let col-n = 5
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Pengalaman Penelitian dalam 5 Tahun Terakhir (Bukan Skripsi, Tesis, dan Disertasi)
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Tahun],
+            [Judul Penelitian],
+            [Sumber Dana],
+            [Jumlah Dana],
+          ),
+          ..gen-rows(
+            custom: (
+              "funding-amount": v => {
+                let value = access-field(v, "funding-amount")
+                if value != none {
+                  print-rp(value)
+                } else {
+                  [--]
+                }
+              },
+            ),
+            arr,
+            ("year", "title", "funding-source", "funding-amount"),
+            ..rest-args,
+          ),
+        )
+      ]
+
+      #let arr = member.at("publication-history", default: ())
+      #let col-n = 4
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Publikasi Artikel Ilmiah Jurnal yang Relevan Dalam 5 Tahun Terakhir
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Judul Artikel Ilmiah],
+            [Nama Jurnal],
+            [Volume / Nomor / Tahun],
+          ),
+          ..gen-rows(arr, ("title", "journal-name", "number"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("seminar-history", default: ())
+      #let col-n = 4
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Pemakalah Seminar Ilmiah (_Oral Presentation_) yang Relevan Dalam 5 Tahun Terakhir
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Judul],
+            [Pemakalah Seminar Ilmiah],
+            [Waktu dan Tempat],
+          ),
+          ..gen-rows(arr, ("title", "seminar-name", "date-time"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("book-history", default: ())
+      #let col-n = 5
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Karya Buku dalam 5 Tahun Terakhir
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Judul Buku],
+            [Tahun],
+            [Jumlah Halaman],
+            [Penerbit],
+          ),
+          ..gen-rows(arr, ("title", "year", "total-page", "publisher"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("intellectual-property-history", default: ())
+      #let col-n = 5
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        HKI dalam 10 Tahun Terakhir
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Judul/Tema HKI],
+            [Tahun],
+            [Jenis],
+            [Nomor P/ID],
+          ),
+          ..gen-rows(arr, ("title", "year", "type", "number"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("policy-history", default: ())
+      #let col-n = 5
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Pengalaman Merumuskan Kebijakan Publik/Rekayasa Sosial Lainnya dalam 10 Tahun Terakhir
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Judul/Tema/Jenis Rekayasa Sosial Lainnya yang Telah Diterapkan],
+            [Tahun],
+            [Tempat Penerapan],
+            [Respon Masyarakat],
+          ),
+          ..gen-rows(arr, ("title", "year", "place", "response"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("reward-history", default: ())
+      #let col-n = 4
+      #if arr.len() > 0 or show-on-zero [
+        #show: block.with(breakable: false)
+        Penghargaan dalam 10 tahun Terakhir (dari pemerintah, asosiasi atau institusi lainnya)
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header(
+            [No],
+            [Jenis Penghargaan],
+            [Institusi Pemberi Penghargaan],
+            [Tahun],
+          ),
+          ..gen-rows(arr, ("name", "institution", "year"), ..rest-args),
+        )
+      ]
+    ]
+
+    #show: text.with(weight: "bold")
+
+    Semua data yang saya isikan dan tercantum dalam biodata ini adalah benar dan dapat dipertanggungjawabkan secara hukum.
+    Apabila di kemudian hari ternyata dijumpai ketidaksesuaian dengan kenyataan, saya sanggup menerima sanksi.
+    Demikian biodata ini saya buat dengan sebenarnya untuk memenuhi salah satu persyaratan dalam pengajuan.
+
+    #grid(
+      columns: (1fr, auto),
+      [],
+      [
+        #member.sign-city, #ID-display-today \
+        #label
+
+        #{
+          show: pad.with(y: -1em)
+          align(center, image(member.sign, height: 5em))
+        }
+
+        (#member.name)
+      ],
+    )
+
+    // #pagebreak(weak: true)
+  ]
+
+  #let show-on-zero = access-field(data, "show-bio-on-zero", default: true)
+  #for (i, member) in data.members.enumerate().slice(0, 2) {
+    bio(i, member, show-on-zero: show-on-zero)
+  }
+]
+
+#let budget-page(data) = [
+  = RENCANA ANGGARAN DAN BIAYA
+
+  Adapun total rencana anggaran belanja untuk penelitian adalah #print-rp(data.budget-total) dan rincian ditunjukkan pada tabel berikut ini.
+
+  #budget-template(data)
+]
+
+#let timeline-page(data) = [
+  = JADWAL KEGIATAN
+
+  Jadwal detil kegiatan penelitian ditunjukkan pada @tab-schedule.
+
+  #figure(
+    timeline-template(data),
+    caption: [Jadwal kegiatan penelitian.],
+  ) <tab-schedule>
+]
+
+#let team-page(data) = [
+  #headz[TIM RISET]
+
+  Bagan organisasi tim peneliti bisa dilihat pada @tab-team.
+
+  #figure(
+    kind: table,
+    {
+      show table.cell.where(y: 0): strong
+      table(
+        columns: 5,
+        [No.], [Nama], [Departemen / \ Fakultas], [Posisi di \ Tim Riset], [Uraian Tugas],
+        ..(
+          data
+            .members
+            .enumerate()
+            .map(((i, member)) => (
+              [#{ i + 1 }],
+              [#member.name],
+              [#member.department / \ #member.faculty],
+              [#member.position],
+              enum(..member.tasks.map(v => [#v])),
+            ))
+            .flatten()
+        )
+      )
+    },
+    caption: [Organisasi Tim Peneliti.],
+  ) <tab-team>
 ]
