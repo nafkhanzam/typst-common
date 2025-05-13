@@ -8,7 +8,7 @@
 }
 
 #let answer(body) = {
-  if ANS {
+  answer-raw({
     v(-.5em)
     showybox(
       frame: (
@@ -22,5 +22,11 @@
       body,
     )
     v(1em)
+  })
+}
+
+#let answer-raw(body) = {
+  if ANS {
+    body
   }
 }
