@@ -13,9 +13,10 @@
     Institut Teknologi Sepuluh Nopember
   ],
   logo: image("its-logo.png", width: 4em),
-  copyright: [
-    #sym.copyright #datetime.today().year() All rights reserved
-  ],
+  copyright: image("nz-logo.svg", width: 4em),
+  // copyright: [
+  //   #sym.copyright #datetime.today().year() All rights reserved
+  // ],
   with-end: false,
   ..args,
   body,

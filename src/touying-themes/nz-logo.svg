@@ -1,0 +1,51 @@
+<svg class="typst-doc" viewBox="0 0 175 175" width="175pt" height="175pt"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:h5="http://www.w3.org/1999/xhtml">
+    <g>
+        <g transform="translate(16.633858267716544 16.633858267716544)">
+            <g class="typst-group">
+                <g>
+                    <g transform="translate(0 0)">
+                        <path class="typst-shape" fill="none" stroke="black" stroke-width="8" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 0 C 0 0 0 141.73228 0 141.73228 C 0 141.73228 141.73228 141.73228 141.73228 141.73228 C 141.73228 141.73228 141.73228 0 141.73228 0 C 141.73228 0 0 0 0 0 C 0 0 0 0 0 0 Z "/>
+                    </g>
+                    <g transform="translate(11.338582677165354 11.338582677165364)">
+                        <path class="typst-shape" fill="none" stroke="black" stroke-width="8" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" d="M 0 119.055115 C 0 119.055115 45.354332 59.527557 45.354332 59.527557 C 45.354332 59.527557 0 0 0 0 "/>
+                    </g>
+                    <g transform="translate(56.69291338582677 70.86614173228347)">
+                        <g class="typst-group">
+                            <g>
+                                <g transform="translate(0 0)">
+                                    <g class="typst-group">
+                                        <g>
+                                            <g transform="translate(0 0)">
+                                                <g class="typst-group">
+                                                    <g>
+                                                        <g transform="translate(9.71939207062008 17.7734375)">
+                                                            <g class="typst-text" transform="scale(1, -1)">
+                                                                <use xlink:href="#gDF808761A74D9D5C02750EC187012D80" x="0" fill="black" fill-rule="nonzero"/>
+                                                                <use xlink:href="#g980A06E3EBD54835A9BBF30FAA3FF083" x="35.107421875" fill="black" fill-rule="nonzero"/>
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs id="glyph">
+        <symbol id="gDF808761A74D9D5C02750EC187012D80" overflow="visible">
+            <path d="M 32.373047 0 L 23.85254 0 L 11.254883 22.11914 L 11.254883 0 L 2.6855469 0 L 2.6855469 35.546875 L 11.254883 35.546875 L 23.828125 13.427734 L 23.828125 35.546875 L 32.373047 35.546875 L 32.373047 0 Z "/>
+        </symbol>
+        <symbol id="g980A06E3EBD54835A9BBF30FAA3FF083" overflow="visible">
+            <path d="M 12.3046875 6.591797 L 29.296875 6.591797 L 29.296875 0 L 1.6113281 0 L 1.6113281 4.5166016 L 18.554688 28.930664 L 1.5136719 28.930664 L 1.5136719 35.546875 L 29.125977 35.546875 L 29.125977 31.152344 L 12.3046875 6.591797 Z "/>
+        </symbol>
+    </defs>
+</svg>
