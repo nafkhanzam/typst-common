@@ -133,6 +133,19 @@
     }
   }
   let body = {
+    let b-size = .65em
+    set page(
+      background: rect(
+        stroke: self.colors.secondary + b-size,
+        width: 100%,
+        height: 100%,
+        rect(
+          stroke: self.colors.primary + .25em,
+          width: 100% - b-size + .25em,
+          height: 100% - b-size + .25em,
+        ),
+      ),
+    )
     if info.logo != none {
       place(top + end)[
         #set text(fill: self.colors.primary, size: .7em)
