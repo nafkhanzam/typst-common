@@ -475,24 +475,19 @@
       Riwayat Pendidikan
 
       #{
-        let s-keys = ("s1", "s2", "s3")
-        let counter = 0
-        for key in s-keys {
-          if access-field(member, "education-history", key) != none {
-            counter += 1
-          }
-        }
+        let s-keys = (
+          ("s1", [S-1]),
+          ("s2", [S-2]),
+          ("s3", [S-3]),
+        ).filter(((key, _)) => access-field(member, "education-history", key) != none)
+        let counter = s-keys.len()
 
         show table.cell.where(x: 0): strong
         table(
           columns: counter + 1,
           table.header(
-            ..(
-              [],
-              [S-1],
-              [S-2],
-              [S-3],
-            ).slice(0, counter + 1),
+            [],
+            ..s-keys.map(((_, col)) => [#col]),
           ),
           ..(
             (
@@ -504,7 +499,7 @@
             )
               .map(((title, field)) => (
                 title,
-                ..(s-keys.slice(0, counter).map(v => [#access-field(member, "education-history", v, field)])),
+                ..(s-keys.map(((key, _)) => [#access-field(member, "education-history", key, field)])),
               ))
               .flatten()
           ),
@@ -709,7 +704,7 @@
   ]
 
   #let show-on-zero = access-field(data, "show-bio-on-zero", default: true)
-  #for (i, member) in data.members.enumerate().slice(0, 2) {
+  #for (i, member) in data.members.enumerate() {
     bio(i, member, show-on-zero: show-on-zero)
   }
 ]
