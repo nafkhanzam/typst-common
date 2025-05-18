@@ -130,3 +130,9 @@
     cross-arrays(cross-array(arrs.at(0), arrs.at(1)), ..arrs.slice(2)).flatten().chunks(arrs.len())
   }
 }
+
+#let render-if(if-value, if-true, if-false) = if if-value {
+  if-true
+} else {
+  if-false
+}
