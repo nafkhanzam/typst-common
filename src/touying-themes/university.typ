@@ -168,7 +168,8 @@
         )
         set text(size: .8em)
         grid(
-          columns: (1fr,) * calc.min(info.authors.len(), 3),
+          columns: 1,
+          // columns: (1fr,) * calc.min(info.authors.len(), 3),
           column-gutter: 1em,
           row-gutter: 1em,
           ..info.authors.map(author => text(fill: self.colors.neutral-darkest, author))

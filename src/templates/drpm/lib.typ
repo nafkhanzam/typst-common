@@ -4,6 +4,14 @@
 #import "common/dates.typ": *
 #import "common/style.typ": *
 
+// #let is-abmas = lower(sys.inputs.at("TYPE", default: "research")) == "abmas"
+#let drpm-type = state("type", "abmas") // "abmas"
+#let if-abmas(a, b) = context if drpm-type.get() == "abmas" { a } else { b }
+#let peneliti = if-abmas([peneliti], [pengabdi])
+#let Peneliti = if-abmas([Peneliti], [Pengabdi])
+#let penelitian = if-abmas([penelitian], [pengabdian])
+#let Penelitian = if-abmas([Penelitian], [Pengabdian])
+
 #let outline-entry-fn(prefix-count, start-level: 1) = (
   it => {
     let loc = it.element.location()
@@ -233,29 +241,35 @@
   )
 }
 
+#let spec-suffix(data) = if-abmas(
+  [
+    PENGABDIAN KEPADA MASYARAKAT \
+    SKEMA #upper(data.schema) DANA #upper(data.funding-source)
+  ],
+  [
+    SKEMA PENELITIAN #upper(data.schema) \
+    SUMBER DANA #upper(data.funding-source) \
+    TAHUN #display-year
+  ],
+)
+
 #let spec(data) = (
   "proposal": (
     cover-title: [
       PROPOSAL \
-      SKEMA PENELITIAN #upper(data.schema) \
-      SUMBER DANA #upper(data.funding-source) \
-      TAHUN #display-year
+      #spec-suffix(data)
     ],
   ),
   "progress": (
     cover-title: [
       LAPORAN KEMAJUAN \
-      SKEMA PENELITIAN #upper(data.schema) \
-      SUMBER DANA #upper(data.funding-source) \
-      TAHUN #display-year
+      #spec-suffix(data)
     ],
   ),
   "logbook": (
     cover-title: [
       #text(size: 24pt)[CATATAN HARIAN] \
-      PENELITIAN #upper(data.schema) \
-      DANA #upper(data.funding-source) \
-      TAHUN #display-year
+      #spec-suffix(data)
     ],
   ),
 ).at(data.entry)
@@ -332,7 +346,7 @@
   #[
     #set text(size: 14pt)
 
-    #text(size: 16pt)[*Tim Peneliti:*] \
+    #text(size: 16pt)[*Tim #Peneliti:*] \
     #for member in data.members.filter(v => not v.at("exclude-from-cover", default: false)) [
       #write-member-entry(member) \
     ]
@@ -384,7 +398,7 @@
 
     #v(1fr)
 
-    Tim Peneliti:
+    Tim #Peneliti:
   ]
 
   #let write-member-entry(member) = [#member.name / #member.department / #member.faculty / #member.institution]
@@ -392,8 +406,8 @@
   #pad(x: -1cm)[
     #grid(
       columns: (auto, 1fr),
-      [Ketua Peneliti], [: #write-member-entry(data.members.at(0))],
-      [Anggota Peneliti], [: 1. #write-member-entry(data.members.at(1))],
+      [Ketua #Peneliti], [: #write-member-entry(data.members.at(0))],
+      [Anggota #Peneliti], [: 1. #write-member-entry(data.members.at(1))],
       ..(
         data
           .members
@@ -452,7 +466,7 @@
     == #label
 
     #[
-      Identitas Peneliti
+      Identitas #Peneliti
 
       #{
         show table.cell.where(x: 0): strong
@@ -515,7 +529,7 @@
       #let arr = member.at("research-history", default: ())
       #let col-n = 5
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Pengalaman Penelitian dalam 5 Tahun Terakhir (Bukan Skripsi, Tesis, dan Disertasi)
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -551,7 +565,7 @@
       #let arr = member.at("publication-history", default: ())
       #let col-n = 4
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Publikasi Artikel Ilmiah Jurnal yang Relevan Dalam 5 Tahun Terakhir
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -572,7 +586,7 @@
       #let arr = member.at("seminar-history", default: ())
       #let col-n = 4
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Pemakalah Seminar Ilmiah (_Oral Presentation_) yang Relevan Dalam 5 Tahun Terakhir
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -593,7 +607,7 @@
       #let arr = member.at("book-history", default: ())
       #let col-n = 5
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Karya Buku dalam 5 Tahun Terakhir
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -615,7 +629,7 @@
       #let arr = member.at("intellectual-property-history", default: ())
       #let col-n = 5
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         HKI dalam 10 Tahun Terakhir
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -637,7 +651,7 @@
       #let arr = member.at("policy-history", default: ())
       #let col-n = 5
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Pengalaman Merumuskan Kebijakan Publik/Rekayasa Sosial Lainnya dalam 10 Tahun Terakhir
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -659,7 +673,7 @@
       #let arr = member.at("reward-history", default: ())
       #let col-n = 4
       #if arr.len() > 0 or show-on-zero [
-        #show: block.with(breakable: false)
+        // #show: block.with(breakable: false)
         Penghargaan dalam 10 tahun Terakhir (dari pemerintah, asosiasi atau institusi lainnya)
         #table(
           columns: if (extend and arr.len() == 0) {
@@ -704,7 +718,12 @@
   ]
 
   #let show-on-zero = access-field(data, "show-bio-on-zero", default: true)
-  #for (i, member) in data.members.enumerate() {
+  #for (i, member) in (
+    data
+      .members
+      .filter(v => access-field(v, "exclude-from-cover") == none or access-field(v, "exclude-from-cover") == false)
+      .enumerate()
+  ) {
     bio(i, member, show-on-zero: show-on-zero)
   }
 ]
@@ -712,7 +731,7 @@
 #let budget-page(data) = [
   = RENCANA ANGGARAN DAN BIAYA
 
-  Adapun total rencana anggaran belanja untuk penelitian adalah #print-rp(data.budget-total) dan rincian ditunjukkan pada tabel berikut ini.
+  Adapun total rencana anggaran belanja untuk #penelitian adalah #print-rp(data.budget-total) dan rincian ditunjukkan pada tabel berikut ini.
 
   #budget-template(data)
 ]
@@ -720,19 +739,20 @@
 #let timeline-page(data) = [
   = JADWAL KEGIATAN
 
-  Jadwal detil kegiatan penelitian ditunjukkan pada @tab-schedule.
+  Jadwal detil kegiatan #penelitian ditunjukkan pada @tab-schedule.
 
   #figure(
     timeline-template(data),
-    caption: [Jadwal kegiatan penelitian.],
+    caption: [Jadwal kegiatan #penelitian.],
   ) <tab-schedule>
 ]
 
 #let team-page(data) = [
   #headz[TIM RISET]
 
-  Bagan organisasi tim peneliti bisa dilihat pada @tab-team.
+  Bagan organisasi tim #peneliti bisa dilihat pada @tab-team.
 
+  #show figure: set block(breakable: true)
   #figure(
     kind: table,
     {
@@ -755,6 +775,6 @@
         )
       )
     },
-    caption: [Organisasi Tim Peneliti.],
+    caption: [Organisasi Tim #Peneliti.],
   ) <tab-team>
 ]
