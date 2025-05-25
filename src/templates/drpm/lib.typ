@@ -721,11 +721,34 @@
   #for (i, member) in (
     data
       .members
-      .filter(v => access-field(v, "exclude-from-cover") == none or access-field(v, "exclude-from-cover") == false)
+      .filter(v => (
+        (access-field(v, "exclude-from-cover") == none or access-field(v, "exclude-from-cover") == false)
+          and (access-field(v, "exclude-from-bio") == none or access-field(v, "exclude-from-bio") == false)
+      ))
       .enumerate()
   ) {
     bio(i, member, show-on-zero: show-on-zero)
   }
+
+  #if-abmas(
+    [
+      == Mahasiswa
+
+      Daftar mahasiswa yang terlibat dalam pengabdian masyarakat ini adalah sebagai berikut:
+
+      #show table.cell.where(y: 0): strong
+
+      #table(
+        columns: 2,
+        table.header(
+          [NRP],
+          [Nama],
+        ),
+        ..data.students.map(v => ([#v.id], [#v.name])).flatten(),
+      )
+    ],
+    [],
+  )
 ]
 
 #let budget-page(data) = [

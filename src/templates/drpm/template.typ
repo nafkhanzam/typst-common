@@ -72,5 +72,7 @@
   #output-page; #pagebreak(weak: true);
   #budget-page(data); #pagebreak(weak: true);
   #timeline-page(data); #pagebreak(weak: true);
-  #bib-page(bibliography-file); #pagebreak(weak: true);
+  #if bibliography-file != none [
+    #bib-page(bibliography-file); #pagebreak(weak: true);
+  ]
 ]
