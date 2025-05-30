@@ -6,11 +6,11 @@
 
 // #let is-abmas = lower(sys.inputs.at("TYPE", default: "research")) == "abmas"
 #let drpm-type = state("type", "abmas") // "abmas"
-#let if-abmas(a, b) = context if drpm-type.get() == "abmas" { a } else { b }
-#let peneliti = if-abmas([peneliti], [pengabdi])
-#let Peneliti = if-abmas([Peneliti], [Pengabdi])
-#let penelitian = if-abmas([penelitian], [pengabdian])
-#let Penelitian = if-abmas([Penelitian], [Pengabdian])
+#let if-abmas(a, b) = context call-or-value(if drpm-type.get() == "abmas" { a } else { b })
+#let peneliti = if-abmas([pengabdi], [peneliti])
+#let Peneliti = if-abmas([Pengabdi], [Peneliti])
+#let penelitian = if-abmas([pengabdian], [penelitian])
+#let Penelitian = if-abmas([Pengabdian], [Penelitian])
 
 #let outline-entry-fn(prefix-count, start-level: 1) = (
   it => {
@@ -731,7 +731,7 @@
   }
 
   #if-abmas(
-    [
+    () => [
       == Mahasiswa
 
       Daftar mahasiswa yang terlibat dalam pengabdian masyarakat ini adalah sebagai berikut:

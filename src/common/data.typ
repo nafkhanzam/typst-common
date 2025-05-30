@@ -136,3 +136,11 @@
 } else {
   if-false
 }
+
+#let call-or-value(v) = {
+  if type(v) == function {
+    v()
+  } else {
+    v
+  }
+}
