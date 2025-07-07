@@ -13,12 +13,10 @@
   #drpm-type.update("research")
   #set document(title: data.title)
   #show: enable-todo-hl
-  #show: template.with(
-    appendices: [
-      #team-page(data); #pagebreak(weak: true);
-      #bio-page(data); #pagebreak(weak: true);
-    ],
-  )
+  #show: template.with(appendices: [
+    #team-page(data); #pagebreak(weak: true);
+    #bio-page(data); #pagebreak(weak: true);
+  ])
 
   #cover-white(data); #pagebreak(weak: true);
   #set page(numbering: "i")
@@ -51,14 +49,12 @@
   #drpm-type.update("abmas")
   #set document(title: data.title)
   #show: enable-todo-hl
-  #show: template.with(
-    appendices: [
-      #statement-letter-page; #pagebreak(weak: true);
-      #tech-imagery-page; #pagebreak(weak: true);
-      #location-page; #pagebreak(weak: true);
-      #bio-page(data); #pagebreak(weak: true);
-    ],
-  )
+  #show: template.with(appendices: [
+    #statement-letter-page; #pagebreak(weak: true);
+    #tech-imagery-page; #pagebreak(weak: true);
+    #location-page; #pagebreak(weak: true);
+    #bio-page(data); #pagebreak(weak: true);
+  ])
 
   #cover-blue(data); #pagebreak(weak: true);
   #set page(numbering: "i")
@@ -70,6 +66,48 @@
   #solution-page; #pagebreak(weak: true);
   #method-page; #pagebreak(weak: true);
   #output-page; #pagebreak(weak: true);
+  #budget-page(data); #pagebreak(weak: true);
+  #timeline-page(data); #pagebreak(weak: true);
+  #if bibliography-file != none [
+    #bib-page(bibliography-file); #pagebreak(weak: true);
+  ]
+]
+
+#let drpm-abmas-progress(
+  abstract-page: [],
+  introduction-page: [],
+  solution-page: [],
+  method-page: [],
+  output-page: [],
+  bibliography-file: none,
+  statement-letter-page: [],
+  tech-imagery-page: [],
+  location-page: [],
+  additional-progress: [],
+  data,
+) = [
+  #{ data.entry = "progress" }
+  #drpm-type.update("abmas")
+  #set document(title: data.title)
+  #show: enable-todo-hl
+  #show: template.with(appendices: [
+    #statement-letter-page; #pagebreak(weak: true);
+    #tech-imagery-page; #pagebreak(weak: true);
+    #location-page; #pagebreak(weak: true);
+    #bio-page(data); #pagebreak(weak: true);
+  ])
+
+  #cover-blue(data); #pagebreak(weak: true);
+  #set page(numbering: "i")
+  #outline-page(); #pagebreak(weak: true);
+  #abstract-page; #pagebreak(weak: true);
+  #set page(numbering: "1")
+  #counter(page).update(1)
+  #introduction-page; #pagebreak(weak: true);
+  #solution-page; #pagebreak(weak: true);
+  #method-page; #pagebreak(weak: true);
+  #output-page; #pagebreak(weak: true);
+  #abmas-target-progress(data); #additional-progress; #pagebreak(weak: true);
   #budget-page(data); #pagebreak(weak: true);
   #timeline-page(data); #pagebreak(weak: true);
   #if bibliography-file != none [

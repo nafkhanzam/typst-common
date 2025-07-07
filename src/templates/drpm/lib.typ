@@ -21,26 +21,21 @@
     if prefixed {
       body = it.body.at("children").slice(1 + prefix-count).join()
     }
-    link(
-      loc,
-      box(
-        grid(
-          columns: 3,
-          gutter: 0pt,
-          {
-            for _ in range(it.level - start-level) {
-              box(width: 1em)
-            }
-            if prefixed {
-              it.body.at("children").slice(0, 1 + prefix-count).join()
-              h(4pt)
-            }
-          },
-          [#body#box(width: 1fr)[#it.fill]],
-          align(bottom)[#num],
-        ),
-      ),
-    )
+    link(loc, box(grid(
+      columns: 3,
+      gutter: 0pt,
+      {
+        for _ in range(it.level - start-level) {
+          box(width: 1em)
+        }
+        if prefixed {
+          it.body.at("children").slice(0, 1 + prefix-count).join()
+          h(4pt)
+        }
+      },
+      [#body#box(width: 1fr)[#it.fill]],
+      align(bottom)[#num],
+    )))
   }
 )
 
@@ -66,17 +61,15 @@
   show table: set align(left)
   set enum(indent: 1em)
   set block(below: 1.5em)
-  set heading(
-    numbering: (num1, ..nums) => {
-      if nums.pos().len() == 0 {
-        [BAB #numbering("I", num1)] + "\t"
-        h(10pt)
-      } else {
-        numbering("1.1", num1, ..nums)
-        h(7pt)
-      }
-    },
-  )
+  set heading(numbering: (num1, ..nums) => {
+    if nums.pos().len() == 0 {
+      [BAB #numbering("I", num1)] + "\t"
+      h(10pt)
+    } else {
+      numbering("1.1", num1, ..nums)
+      h(7pt)
+    }
+  })
   set bibliography(style: ref-style)
   show figure.caption: set text(size: 10pt)
   show figure.where(kind: table): set figure.caption(position: top)
@@ -129,19 +122,16 @@
     set page(numbering: "1")
     counter(heading).update(0)
 
-    set heading(
-      supplement: "Lampiran",
-      numbering: (..nums) => {
-        let arr = nums.pos()
-        if arr.len() == 0 {
-          []
-        } else if arr.len() == 1 {
-          [LAMPIRAN #numbering("1", ..arr).] + "\t"
-        } else {
-          numbering("1.", ..arr.slice(1))
-        }
-      },
-    )
+    set heading(supplement: "Lampiran", numbering: (..nums) => {
+      let arr = nums.pos()
+      if arr.len() == 0 {
+        []
+      } else if arr.len() == 1 {
+        [LAMPIRAN #numbering("1", ..arr).] + "\t"
+      } else {
+        numbering("1.", ..arr.slice(1))
+      }
+    })
 
     show heading.where(level: 2): set heading(outlined: false)
 
@@ -287,11 +277,12 @@
   d.members = d.members.map(member => apply-defaults(member, member-default))
 
   // ref defaults
-  let apply-entries(members, ref-key) = members.map(member => apply-refs(
-    member,
+  let apply-entries(members, ref-key) = members.map(member => apply-refs(member, ref-key, access-field(
+    d,
+    "entries",
     ref-key,
-    access-field(d, "entries", ref-key, default: ()),
-  ))
+    default: (),
+  )))
   d.members = apply-entries(d.members, "abmas-history")
   d.members = apply-entries(d.members, "publication-history")
   d.members = apply-entries(d.members, "intellectual-property-history")
@@ -374,13 +365,7 @@
 
   #show: body => {
     set page(margin: 0pt)
-    rect(
-      width: 100%,
-      height: 100%,
-      fill: none,
-      stroke: border-width + rgb(47, 84, 150),
-      pad(3cm - border-width, body),
-    )
+    rect(width: 100%, height: 100%, fill: none, stroke: border-width + rgb(47, 84, 150), pad(3cm - border-width, body))
   }
 
   #[
@@ -418,12 +403,10 @@
             (i, member),
           ) => (
             [],
-            [#hide[: ]#{
-                i + 2
-              }. #write-member-entry(member)],
+            [#hide[: ]#{ i + 2 }. #write-member-entry(member)],
           ))
           .flatten()
-      )
+      ),
     )
   ]
 
@@ -499,10 +482,7 @@
         show table.cell.where(x: 0): strong
         table(
           columns: counter + 1,
-          table.header(
-            [],
-            ..s-keys.map(((_, col)) => [#col]),
-          ),
+          table.header([], ..s-keys.map(((_, col)) => [#col])),
           ..(
             (
               ([Nama Perguruan Tinggi], "instition-name"),
@@ -537,13 +517,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Tahun],
-            [Judul Penelitian],
-            [Sumber Dana],
-            [Jumlah Dana],
-          ),
+          table.header([No], [Tahun], [Judul Penelitian], [Sumber Dana], [Jumlah Dana]),
           ..gen-rows(
             custom: (
               "funding-amount": v => {
@@ -573,12 +547,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Judul Artikel Ilmiah],
-            [Nama Jurnal],
-            [Volume / Nomor / Tahun],
-          ),
+          table.header([No], [Judul Artikel Ilmiah], [Nama Jurnal], [Volume / Nomor / Tahun]),
           ..gen-rows(arr, ("title", "journal-name", "number"), ..rest-args),
         )
       ]
@@ -594,12 +563,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Judul],
-            [Pemakalah Seminar Ilmiah],
-            [Waktu dan Tempat],
-          ),
+          table.header([No], [Judul], [Pemakalah Seminar Ilmiah], [Waktu dan Tempat]),
           ..gen-rows(arr, ("title", "seminar-name", "date-time"), ..rest-args),
         )
       ]
@@ -615,13 +579,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Judul Buku],
-            [Tahun],
-            [Jumlah Halaman],
-            [Penerbit],
-          ),
+          table.header([No], [Judul Buku], [Tahun], [Jumlah Halaman], [Penerbit]),
           ..gen-rows(arr, ("title", "year", "total-page", "publisher"), ..rest-args),
         )
       ]
@@ -637,13 +595,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Judul/Tema HKI],
-            [Tahun],
-            [Jenis],
-            [Nomor P/ID],
-          ),
+          table.header([No], [Judul/Tema HKI], [Tahun], [Jenis], [Nomor P/ID]),
           ..gen-rows(arr, ("title", "year", "type", "number"), ..rest-args),
         )
       ]
@@ -681,12 +633,7 @@
           } else {
             col-n
           },
-          table.header(
-            [No],
-            [Jenis Penghargaan],
-            [Institusi Pemberi Penghargaan],
-            [Tahun],
-          ),
+          table.header([No], [Jenis Penghargaan], [Institusi Pemberi Penghargaan], [Tahun]),
           ..gen-rows(arr, ("name", "institution", "year"), ..rest-args),
         )
       ]
@@ -740,10 +687,7 @@
 
       #table(
         columns: 2,
-        table.header(
-          [NRP],
-          [Nama],
-        ),
+        table.header([NRP], [Nama]),
         ..data.students.map(v => ([#v.id], [#v.name])).flatten(),
       )
     ],
@@ -764,10 +708,7 @@
 
   Jadwal detil kegiatan #penelitian ditunjukkan pada @tab-schedule.
 
-  #figure(
-    timeline-template(data),
-    caption: [Jadwal kegiatan #penelitian.],
-  ) <tab-schedule>
+  #figure(timeline-template(data), caption: [Jadwal kegiatan #penelitian.]) <tab-schedule>
 ]
 
 #let team-page(data) = [
@@ -795,9 +736,61 @@
               enum(..member.tasks.map(v => [#v])),
             ))
             .flatten()
-        )
+        ),
       )
     },
     caption: [Organisasi Tim #Peneliti.],
   ) <tab-team>
+]
+
+#let abmas-target-progress(data) = [
+  = CAPAIAN LUARAN KEGIATAN
+
+  *Program Pengabdian kepada Masyarakat Tematik Dana Unit Tahun Anggaran #data.year*
+
+  #let check = sym_(sym.checkmark)
+  #let check-if(i, real) = {
+    if i == real {
+      check
+    }
+  }
+  #let o = data.output
+
+  #grid(
+    columns: 3,
+    [Judul Abmas], [:], [#data.title],
+    [Ketua Pengabdi], [:], [#data.members.at(0).name],
+    [Departemen], [:], [#data.members.at(0).department],
+  )
+
+  #table(
+    columns: 2,
+    [*1. PUBLIKASI JURNAL ILMIAH PENGABDIAN KEPADA MASYARAKAT*], [Keterangan],
+    [Nama jurnal yang dituju], [#o.journal.name],
+    [Judul artikel], [#data.title],
+    [Status naskah (diberi tanda #check)], [],
+    [- Draf artikel], [#check-if(o.journal.status, 0)],
+    [- Submitted], [#check-if(o.journal.status, 1)],
+    [- Under Reviewed], [#check-if(o.journal.status, 2)],
+    [- Accepted], [#check-if(o.journal.status, 3)],
+    [- Published], [#check-if(o.journal.status, 4)],
+    [*2. PUBLIKASI DI MEDIA MASSA*], [Keterangan],
+    [Judul artikel], [],
+    [URL artikel], [],
+    [Nama Media Massa], [],
+    [Terdaftar di Dewan Pers? #link("https://www.dewanpers.or.id/data/perusahaanpers")[https://www.dewanpers.or.id/data/perusahaanpers]],
+    [],
+
+    [Status naskah (diberi tanda #check)], [],
+    [- Draf artikel], [#check-if(o.media.status, 0)],
+    [- Submitted], [#check-if(o.media.status, 1)],
+    [- Published], [#check-if(o.media.status, 2)],
+    [*3. HAK KEKAYAAN INTELEKTUAL*], [Keterangan],
+    [Nomor dan tanggal permohonan], [#o.hki.number, #o.hki.date],
+    [Jenis Ciptaan], [#o.hki.type],
+    [Judul Ciptaan], [#o.hki.title],
+    [Tanggal dan tempat diumumkan], [#o.hki.publish.location, #o.hki.publish.date],
+    [Nomor pencatatan], [#o.hki.written-number],
+  )
+  #o.progress-reason
 ]
