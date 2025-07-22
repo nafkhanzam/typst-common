@@ -42,41 +42,32 @@
       if self.store.progress-bar {
         components.progress-bar(height: 4pt, self.colors.primary, self.colors.tertiary)
       },
-      block(
-        inset: (x: .5em),
-        {
+      block(inset: (x: .5em), {
+        grid(
+          columns: 1,
+          gutter: .3em,
           grid(
-            columns: 1,
+            columns: (auto, 1fr, auto),
             gutter: .3em,
-            grid(
-              columns: (auto, 1fr, auto),
-              gutter: .3em,
-              text(
-                fill: self.colors.primary,
-                weight: "bold",
-                size: 1.2em,
-                utils.call-or-display(self, self.store.header),
-              ),
-              align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
-              text(
-                fill: self.colors.primary.lighten(65%),
-                utils.call-or-display(self, self.store.header-right),
-              ),
-            ),
-          )
-        },
-      ),
+            text(fill: self.colors.primary, weight: "bold", size: 1.2em, utils.call-or-display(
+              self,
+              self.store.header,
+            )),
+            align(center + horizon, line(length: 100%, stroke: self.colors.primary)),
+            text(fill: self.colors.primary.lighten(65%), utils.call-or-display(self, self.store.header-right)),
+          ),
+        )
+      }),
     )
   }
   let footer(self) = {
     set align(center + bottom)
-    set text(size: .4em)
+    set text(size: .46em)
     {
-      let cell(..args, it) = components.cell(
-        ..args,
-        inset: 1mm,
-        align(horizon, text(fill: self.colors.neutral-lightest, it)),
-      )
+      let cell(..args, it) = components.cell(..args, inset: 1mm, align(horizon, text(
+        fill: self.colors.neutral-lightest,
+        it,
+      )))
       show: block.with(width: 100%, height: auto)
       grid(
         columns: self.store.footer-columns,
@@ -87,14 +78,12 @@
       )
     }
   }
-  let self = utils.merge-dicts(
-    self,
-    config-page(
-      margin: 2em,
-      header: header,
-      footer: footer,
-    ),
-  )
+  let self = utils.merge-dicts(self, config-page(
+    margin: 2em,
+    header: header,
+    footer: footer,
+  ))
+
   touying-slide(self: self, config: config, repeat: repeat, setting: setting, composer: composer, ..bodies)
 })
 
@@ -134,68 +123,52 @@
   }
   let body = {
     let b-size = .65em
-    set page(
-      background: rect(
-        stroke: self.colors.secondary + b-size,
-        width: 100%,
-        height: 100%,
-        rect(
-          stroke: self.colors.primary + .25em,
-          width: 100% - b-size + .25em,
-          height: 100% - b-size + .25em,
-        ),
-      ),
-    )
+    set page(background: rect(stroke: self.colors.secondary + b-size, width: 100%, height: 100%, rect(
+      stroke: self.colors.primary + .25em,
+      width: 100% - b-size + .25em,
+      height: 100% - b-size + .25em,
+    )))
     if info.logo != none {
       place(top + end)[
         #set text(fill: self.colors.primary, size: .7em)
         #info.logo
       ]
     }
-    align(
-      left + horizon,
-      {
-        block(
-          inset: 0em,
-          breakable: false,
-          {
-            text(size: 2em, fill: self.colors.primary, strong(info.title))
-            if info.subtitle != none {
-              parbreak()
-              text(size: 1.2em, fill: self.colors.primary, info.subtitle)
-            }
-          },
-        )
-        set text(size: .8em)
-        grid(
-          columns: 1,
-          // columns: (1fr,) * calc.min(info.authors.len(), 3),
-          column-gutter: 1em,
-          row-gutter: 1em,
-          ..info.authors.map(author => text(fill: self.colors.neutral-darkest, author))
-        )
-        v(1em)
-        if info.institution != none {
+    align(left + horizon, {
+      block(inset: 0em, breakable: false, {
+        text(size: 2em, fill: self.colors.primary, strong(info.title))
+        if info.subtitle != none {
           parbreak()
-          text(size: .9em, info.institution)
+          text(size: 1.2em, fill: self.colors.primary, info.subtitle)
         }
-        if info.date != none {
-          parbreak()
-          text(size: .8em, utils.display-info-date(self))
-        }
-      },
-    )
+      })
+      set text(size: .8em)
+      grid(
+        columns: 1,
+        // columns: (1fr,) * calc.min(info.authors.len(), 3),
+        column-gutter: 1em,
+        row-gutter: 1em,
+        ..info.authors.map(author => text(fill: self.colors.neutral-darkest, author))
+      )
+      v(1em)
+      if info.institution != none {
+        parbreak()
+        text(size: .9em, info.institution)
+      }
+      if info.date != none {
+        parbreak()
+        text(size: .8em, utils.display-info-date(self))
+      }
+    })
     if info.copyright != none {
       show: place.with(bottom + end)
       show: text.with(size: .5em)
       info.copyright
     }
   }
-  self = utils.merge-dicts(
-    self,
-    config-common(freeze-slide-counter: true),
-    config-page(fill: self.colors.neutral-lightest),
-  )
+  self = utils.merge-dicts(self, config-common(freeze-slide-counter: true), config-page(
+    fill: self.colors.neutral-lightest,
+  ))
   touying-slide(self: self, body)
 })
 
@@ -223,11 +196,7 @@
       background-img
     }
   }
-  self = utils.merge-dicts(
-    self,
-    config-common(freeze-slide-counter: true),
-    config-page(margin: 1em, ..args),
-  )
+  self = utils.merge-dicts(self, config-common(freeze-slide-counter: true), config-page(margin: 1em, ..args))
   set text(fill: self.colors.neutral-lightest, weight: "bold", size: 2em)
   touying-slide(self: self, align(horizon, body))
 }
@@ -251,11 +220,7 @@
 ///
 /// That means that `#matrix-slide[...][...]` stacks horizontally and `#matrix-slide(columns: 1)[...][...]` stacks vertically.
 #let matrix-slide(columns: none, rows: none, ..bodies) = touying-slide-wrapper(self => {
-  self = utils.merge-dicts(
-    self,
-    config-common(freeze-slide-counter: true),
-    config-page(margin: 0em),
-  )
+  self = utils.merge-dicts(self, config-common(freeze-slide-counter: true), config-page(margin: 0em))
   touying-slide(self: self, composer: components.checkerboard.with(columns: columns, rows: rows), ..bodies)
 })
 
@@ -293,19 +258,15 @@
         utils.display-current-heading(level: level - 1, numbered: numbered)
       }
       v(.25em)
-      block(
+      block(height: 2pt, width: 100%, spacing: 0pt, components.progress-bar(
         height: 2pt,
-        width: 100%,
-        spacing: 0pt,
-        components.progress-bar(height: 2pt, self.colors.primary, self.colors.primary-light),
-      )
+        self.colors.primary,
+        self.colors.primary-light,
+      ))
       v(.25em)
       title
     }
-    self = utils.merge-dicts(
-      self,
-      config-page(fill: self.colors.neutral-lightest),
-    )
+    self = utils.merge-dicts(self, config-page(fill: self.colors.neutral-lightest))
     touying-slide(self: self, body)
   }
 })
@@ -351,6 +312,8 @@
 #let university-init(self: none, body) = {
   set text(font: ("FreeSerif", "Noto Color Emoji"), fallback: false)
   set text(fill: self.colors.neutral-darkest, size: 25pt)
+  set text(size: 22pt)
+  show raw: set text(size: .8em)
   show heading: set text(fill: self.colors.primary)
   show strong: self.methods.alert.with(self: self)
 
@@ -380,12 +343,11 @@
   body,
 ) = {
   show: touying-slides.with(
-    config-page(
-      paper: "presentation-" + aspect-ratio,
-      header-ascent: 0em,
-      footer-descent: 0em,
-      margin: (top: 2.5em, bottom: 1em, x: 2em),
-    ),
+    config-page(paper: "presentation-" + aspect-ratio, header-ascent: 0em, footer-descent: 0em, margin: (
+      top: 2.5em,
+      bottom: 1em,
+      x: 2em,
+    )),
     config-common(
       slide-fn: slide,
       new-section-slide-fn: new-section-slide.with(level: 1),

@@ -91,10 +91,10 @@
   #set document(title: data.title)
   #show: enable-todo-hl
   #show: template.with(appendices: [
-    #statement-letter-page; #pagebreak(weak: true);
-    #tech-imagery-page; #pagebreak(weak: true);
-    #location-page; #pagebreak(weak: true);
-    #bio-page(data); #pagebreak(weak: true);
+    // #statement-letter-page; #pagebreak(weak: true);
+    // #tech-imagery-page; #pagebreak(weak: true);
+    // #location-page; #pagebreak(weak: true);
+    // #bio-page(data); #pagebreak(weak: true);
   ])
 
   #cover-blue(data); #pagebreak(weak: true);

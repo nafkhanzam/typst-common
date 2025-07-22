@@ -6,7 +6,7 @@
   title,
   subtitle,
   code: none,
-  author: [Moch. Nafkhan Alzamzami, S.T., M.T. \ 199911222024061001],
+  author: [Moch. Nafkhan Alzamzami, S.T., M.T.],
   institution: [
     Department of Informatics \
     Faculty of Intelligent Electrical and Informatics Technology \
@@ -21,6 +21,7 @@
   ..args,
   body,
 ) = [
+  #set document(title: [#title - #subtitle])
   #if code != none {
     subtitle = [[#code] #subtitle]
   }

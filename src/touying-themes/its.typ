@@ -50,7 +50,9 @@
 #let slc(..args, body) = {
   sl(..args)[
     #set align(center + horizon)
-    #show: pad.with(top: -2em)
+    #show: block
+    #set align(left + top)
+    // #show: pad.with(top: -2em)
     #body
   ]
 }
