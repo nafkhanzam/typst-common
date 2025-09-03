@@ -53,7 +53,7 @@
 
   // ~ Setups
   set text(
-    font: "Liberation Serif",
+    font: "FreeSerif",
     size: font-size,
     fallback: false,
     // hyphenate: false,
@@ -98,8 +98,9 @@
   show table: set list(indent: 0pt)
   show table: set par(justify: false)
   show table: set align(left)
-  // show link: underline
-  // show link: text.with(fill: rgb(0, 0, 238))
+  show table: set text(size: .8em)
+  show link: underline
+  show link: text.with(fill: rgb(0, 0, 238))
   // show par: set block(spacing: 2em)
   set heading(numbering: "1.", supplement: "Section")
   // show heading: it => block({
@@ -126,7 +127,7 @@
     it
     v(0.25em)
   }
-  show figure.where(kind: "table"): set text(size: .8em)
+  // show figure.where(kind: "table"): set text(size: .8em)
   show figure.caption: it => [
     #set text(size: .9em)
     #grid(
@@ -140,6 +141,7 @@
       it.body,
     )
   ]
+  show figure.where(kind: table): set figure.caption(position: top)
   show raw.where(block: true): set block(above: .65em)
   show raw.where(block: true): set text(size: .8em)
   show raw.where(block: false): it => {

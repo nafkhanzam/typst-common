@@ -3,6 +3,7 @@
 #import "src/common/currency.typ": *
 #import "src/common/data.typ": *
 #import "src/common/dates.typ": *
+#import "src/common/exam.typ": *
 #import "src/common/figures.typ": *
 #import "src/common/gray.typ": *
 #import "src/common/kode.typ": *

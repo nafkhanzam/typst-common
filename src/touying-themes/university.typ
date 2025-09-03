@@ -313,7 +313,7 @@
   set text(font: ("FreeSerif", "Noto Color Emoji"), fallback: false)
   set text(fill: self.colors.neutral-darkest, size: 25pt)
   set text(size: 22pt)
-  show raw: set text(size: .8em)
+  // show raw: set text(size: .8em)
   show heading: set text(fill: self.colors.primary)
   show strong: self.methods.alert.with(self: self)
 
