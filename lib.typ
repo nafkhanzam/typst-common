@@ -1,3 +1,5 @@
+#import "@preview/gentle-clues:1.2.0" as clues
+
 #import "src/common/answer.typ": *
 #import "src/common/binary.typ": *
 #import "src/common/currency.typ": *
