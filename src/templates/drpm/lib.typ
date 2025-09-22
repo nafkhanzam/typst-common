@@ -172,8 +172,8 @@
         .enumerate()
         .map(((j, item)) => (
           [#{
-              j + 1
-            }],
+            j + 1
+          }],
           [#item.component],
           [#item.item],
           [#item.unit],
@@ -216,14 +216,14 @@
     table.cell(colspan: l)[#unit ke],
     ..(() * (l - 1)),
     ..range(l).map(i => [#{
-        i + 1
-      }]),
+      i + 1
+    }]),
     ..ranges
       .enumerate()
       .map(((i, v)) => (
         [#{
-            i + 1
-          }],
+          i + 1
+        }],
         table.cell(align: left)[#v.title],
         l * ([],),
       ))
@@ -793,4 +793,96 @@
     [Nomor pencatatan], [#o.hki.written-number],
   )
   #o.progress-reason
+]
+
+#let research-target-progress(data) = [
+  = TABEL DAFTAR CAPAIAN LUARAN
+
+  #let o = data.output
+
+  #grid(
+    columns: 3,
+    [Skema Penelitian], [:], [#upper(data.schema) DANA #upper(data.funding-source)],
+    [Nama Ketua Tim], [:], [#data.members.at(0).name],
+    [Judul], [:], [#data.title],
+  )
+
+  #let sections = (
+    (
+      "journals",
+      [Artikel Jurnal],
+      (
+        ("title", [Judul Artikel]),
+        ("journal", [Nama Jurnal]),
+        ("status", [Status Kemajuan]), // Persiapan, submitted, under review, accepted, published
+      ),
+    ),
+    (
+      "conferences",
+      [Artikel Seminar],
+      (
+        ("title", [Judul Artikel]),
+        ("journal", [Detil Konferensi]),
+        ("status", [Status Kemajuan]), // Persiapan, submitted, under review, accepted, presented
+      ),
+    ),
+    (
+      "intellectual-property",
+      [Kekayaan Intelektual],
+      (
+        ("title", [Judul Usulan KI]),
+        ("status", [Status Kemajuan]), // Persiapan, Terdaftar, Granted
+      ),
+    ),
+    (
+      "books",
+      [Buku (ISBN)],
+      (
+        ("title", [Judul Usulan KI]),
+        ("publisher", [Penerbit]),
+        ("status", [Status Kemajuan]), // Persiapan, under review, published
+      ),
+    ),
+    (
+      "others",
+      [Hasil Lain berupa Software, Inovasi Teknologi, Business Plan, Dokumen Feasibility Study, Naskah akademik],
+      (
+        ("title", [Nama Output]),
+        ("detail", [Detil Output]),
+        ("status", [Status Kemajuan]), // Cantumkan status kemajuan sesuai kondisi saat ini
+      ),
+    ),
+    (
+      "thesis",
+      [Disertasi/Tesis/Tugas Akhir/Program Kreativitas Mahasiswa yang dihasilkan],
+      (
+        ("student-name", [Nama Mahasiswa]),
+        ("student-nrp", [NRP]),
+        ("title", [Judul]),
+        ("status", [Status Kemajuan]), // Cantumkan lulus (dan tahun kelulusan) atau in progress
+      ),
+    ),
+  )
+
+  #enum(
+    ..sections.map(((key1, heading-title, kvs)) => [
+      #heading-title
+
+      #let values = access-field(o, key1, default: ()).map(v => kvs.map(((key2, _)) => v.at(key2))).flatten()
+
+      #table(
+        columns: if values.len() == 0 {
+          (2fr, 1fr, ..(kvs.len() - 2) * (auto,))
+        } else {
+          (auto, ..(kvs.len() - 1) * (auto,))
+        },
+        table.header(..kvs.map(v => v.at(1)).map(v => table.cell(align: center, strong[#v]))),
+        ..if values.len() == 0 {
+          (table.cell(colspan: kvs.len(), align: center)[Tidak ada.],)
+        } else {
+          values
+        },
+      )
+    ]),
+  )
 ]

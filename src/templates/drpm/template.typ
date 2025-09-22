@@ -33,6 +33,38 @@
   #bib-page(bibliography-file); #pagebreak(weak: true);
 ]
 
+#let drpm-research-progress(
+  abstract-page: [],
+  research-result: [],
+  output-status: [],
+  mitra-role: [],
+  research-constraint: [],
+  next-plan: [],
+  bibliography-file: none,
+  data,
+) = [
+  #{ data.entry = "progress" }
+  #drpm-type.update("research")
+  #set document(title: data.title)
+  #show: enable-todo-hl
+  #show: template.with(appendices: [
+    #research-target-progress(data)
+  ])
+
+  #cover-white(data); #pagebreak(weak: true);
+  #set page(numbering: "i")
+  #outline-page(); #pagebreak(weak: true);
+  #abstract-page; #pagebreak(weak: true);
+  #set page(numbering: "1")
+  #counter(page).update(1)
+  #research-result; #pagebreak(weak: true)
+  #output-status; #pagebreak(weak: true)
+  #mitra-role; #pagebreak(weak: true)
+  #research-constraint; #pagebreak(weak: true)
+  #next-plan; #pagebreak(weak: true)
+  #bib-page(bibliography-file); #pagebreak(weak: true);
+]
+
 #let drpm-abmas-proposal(
   abstract-page: [],
   introduction-page: [],
