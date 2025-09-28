@@ -146,3 +146,41 @@
     #bib-page(bibliography-file); #pagebreak(weak: true);
   ]
 ]
+
+#let drpm-research-logbook(
+  entries: (),
+  data,
+) = [
+  #{ data.entry = "progress" }
+  #drpm-type.update("research")
+  #set document(title: data.title)
+  #show: enable-todo-hl
+  #show: template
+
+  #cover-blue(data); #pagebreak(weak: true);
+  #set page(numbering: "1")
+  #table(
+    columns: 3,
+    [*No*], [*Tanggal*], [*Kegiatan*],
+    ..entries.enumerate().map(((i, (d, ev))) => ([#{ i + 1 }], [#d], [#ev])).flatten(),
+  )
+]
+
+#let drpm-abmas-logbook(
+  entries: (),
+  data,
+) = [
+  #{ data.entry = "progress" }
+  #drpm-type.update("abmas")
+  #set document(title: data.title)
+  #show: enable-todo-hl
+  #show: template
+
+  #cover-blue(data); #pagebreak(weak: true);
+  #set page(numbering: "1")
+  #table(
+    columns: 3,
+    [*No*], [*Tanggal*], [*Kegiatan*],
+    ..entries.enumerate().map(((i, (d, ev))) => ([#{ i + 1 }], [#d], [#ev])).flatten(),
+  )
+]

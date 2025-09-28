@@ -69,11 +69,11 @@
 #let _truth-col-cells(vars, vv) = {
   let n = vars.len()
   let t = type(vv)
-  if t == "content" {
+  if t == content {
     _truth-equation-cells(vars, vv)
-  } else if t == "function" {
+  } else if t == function {
     range(comb-n(n)).map(i => vv(i))
-  } else if t == "array" {
+  } else if t == array {
     vv
   } else {
     panic("Type " + t + " is not supported.")
@@ -96,7 +96,7 @@
   } else {
     v
   })
-  vars = vars.map(v => if type(v) == string {
+  vars = vars.map(v => if type(v) == str {
     $#v$
   } else if type(v) == array {
     v.at(1)
