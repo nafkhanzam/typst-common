@@ -7,7 +7,7 @@
 
 #let template(
   title: [],
-  title-align: center,
+  title-align: left,
   logo: "res/its-logo.png",
   event: [],
   author: [],
@@ -25,6 +25,7 @@
     main: rgb("#0079C2"),
   ),
   font-size: 10pt,
+  fill-defaults: false,
   body,
 ) = {
   // ~ Argument Validations
@@ -38,6 +39,11 @@
   // date-display = z.parse(date-display, z-content)
   // with-date = z.parse(with-date, z.boolean())
   // bib = z.parse(bib, z.content(optional: true))
+  if fill-defaults {
+    author = if author != [] { author } else [Moch. Nafkhan Alzamzami, S.T., M.T.]
+    author-desc = if author-desc != [] { author-desc } else [Department of Informatics]
+    affiliation = if affiliation != [] { affiliation } else [Institut Teknologi Sepuluh Nopember]
+  }
   let args = arguments((
     title: title,
     logo: logo,

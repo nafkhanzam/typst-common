@@ -309,6 +309,7 @@
 ///   neutral-darkest: rgb("#000000"),
 /// )
 /// ```
+#let ternary(c, a, b) = if c { a } else { b }
 #let university-init(self: none, body) = {
   set text(font: ("FreeSerif", "Noto Color Emoji"), fallback: false)
   set text(fill: self.colors.neutral-darkest, size: 25pt)
@@ -317,7 +318,12 @@
   show heading: set text(fill: self.colors.primary)
   show strong: self.methods.alert.with(self: self)
 
-  body
+  if self.at("self-init", default: none) != none {
+    show: self.self-init
+    body
+  } else {
+    body
+  }
 }
 #let university-theme(
   aspect-ratio: "16-9",
@@ -343,11 +349,16 @@
   body,
 ) = {
   show: touying-slides.with(
-    config-page(paper: "presentation-" + aspect-ratio, header-ascent: 0em, footer-descent: 0em, margin: (
-      top: 2.5em,
-      bottom: 1em,
-      x: 2em,
-    )),
+    config-page(
+      paper: "presentation-" + aspect-ratio,
+      header-ascent: 0em,
+      footer-descent: 0em,
+      margin: (
+        top: 2.5em,
+        bottom: 1em,
+        x: 2em,
+      ),
+    ),
     config-common(
       slide-fn: slide,
       new-section-slide-fn: new-section-slide.with(level: 1),
