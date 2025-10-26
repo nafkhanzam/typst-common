@@ -59,7 +59,7 @@
 
   // ~ Setups
   set text(
-    font: "FreeSerif",
+    font: ("FreeSerif", "Noto Color Emoji"),
     size: font-size,
     fallback: false,
     // hyphenate: false,
