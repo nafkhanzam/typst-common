@@ -14,7 +14,7 @@
   author-desc: [],
   affiliation: [],
   short-desc: [],
-  date-display: datetime.today().display("[day] [month repr:long] [year]"), // date
+  date-display: datetime.today().display("[day padding:space] [month repr:long] [year]"), // date
   with-date: false,
   footer-left: args => [#args.author -- #args.author-desc],
   footer-right: context counter(page).display("1"),
@@ -98,7 +98,7 @@
   }
   set-page-properties()
   set par(justify: true, linebreaks: "optimized")
-  set enum(indent: 1em)
+  set enum(indent: 1em, full: true)
   set list(indent: 1em, marker: ([-], [#sym.arrow]))
   show table: set enum(indent: 0pt)
   show table: set list(indent: 0pt)
