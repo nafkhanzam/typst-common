@@ -262,6 +262,12 @@
       #spec-suffix(data)
     ],
   ),
+  "final": (
+    cover-title: [
+      LAPORAN AKHIR \
+      #spec-suffix(data)
+    ],
+  ),
 ).at(data.entry)
 
 #let BUDGET-KEYS = (
@@ -798,7 +804,7 @@
 #let research-target-progress(data) = [
   = TABEL DAFTAR CAPAIAN LUARAN
 
-  #let o = data.output
+  #let o = if data.entry == "progress" { data.progress } else { data.output }
 
   #grid(
     columns: 3,
