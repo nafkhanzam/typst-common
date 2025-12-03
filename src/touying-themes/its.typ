@@ -1,3 +1,4 @@
+#import "../common/data.typ": *
 #import "../common/style.typ": *
 #import "university.typ"
 #import "touying.typ": *
@@ -90,9 +91,9 @@
       ([*Lecturer*], [#lecturer]),
       ([*Room*], [#room]),
       ([*DateTime*], [#datetime]),
-      ([*Timelimit*], [#timelimit]),
+      render-if(timelimit != [], ([*Timelimit*], [#timelimit]), none),
       ..additional-entries,
-    ))
+    ).filter(v => v != none))
 
     #body
   ]
