@@ -190,6 +190,14 @@
   *TOTAL BIAYA #print-rp(data.budget-total)*
 ]
 
+#let logbook-table(entries) = {
+  table(
+    columns: 3,
+    [*No*], [*Tanggal*], [*Kegiatan*],
+    ..entries.enumerate().map(((i, (d, ev))) => ([#{ i + 1 }], [#d], [#ev])).flatten(),
+  )
+}
+
 #let timeline-template(data) = {
   set text(size: 11pt)
   let (unit, length, ranges) = data.timeline
@@ -771,16 +779,16 @@
 
   #table(
     columns: 2,
-    [*1. PUBLIKASI JURNAL ILMIAH PENGABDIAN KEPADA MASYARAKAT*], [Keterangan],
+    [*1. PUBLIKASI JURNAL ILMIAH PENGABDIAN KEPADA MASYARAKAT*], [*Keterangan*],
     [Nama jurnal yang dituju], [#o.journal.name],
-    [Judul artikel], [#data.title],
+    [Judul artikel], [#o.journal.title],
     [Status naskah (diberi tanda #check)], [],
     [- Draf artikel], [#check-if(o.journal.status, 0)],
     [- Submitted], [#check-if(o.journal.status, 1)],
     [- Under Reviewed], [#check-if(o.journal.status, 2)],
     [- Accepted], [#check-if(o.journal.status, 3)],
     [- Published], [#check-if(o.journal.status, 4)],
-    [*2. PUBLIKASI DI MEDIA MASSA*], [Keterangan],
+    [*2. PUBLIKASI DI MEDIA MASSA*], [*Keterangan*],
     [Judul artikel], [#o.media.title],
     [URL artikel], [#o.media.url],
     [Nama Media Massa], [#o.media.media-name],
@@ -791,7 +799,7 @@
     [- Draf artikel], [#check-if(o.media.status, 0)],
     [- Submitted], [#check-if(o.media.status, 1)],
     [- Published], [#check-if(o.media.status, 2)],
-    [*3. HAK KEKAYAAN INTELEKTUAL*], [Keterangan],
+    [*3. HAK KEKAYAAN INTELEKTUAL*], [*Keterangan*],
     [Nomor dan tanggal permohonan], [#o.hki.number, #o.hki.date],
     [Jenis Ciptaan], [#o.hki.type],
     [Judul Ciptaan], [#o.hki.title],
@@ -890,5 +898,144 @@
         },
       )
     ]),
+  )
+]
+
+#let abmas-budget-recapitulation(data) = [
+  = REKAPITULASI PENGGUNAAN ANGGARAN
+
+  #v(1em)
+
+  #set text(size: 12pt)
+  Program Pengabdian kepada Masyarakat Tematik Dana Unit \
+  Tahun Anggaran #data.year
+
+  #v(2em)
+
+  #set align(left)
+  #grid(
+    columns: (auto, auto, 1fr),
+    gutter: 1em,
+    [Judul Abmas], [:], [#data.title],
+    [Ketua Pengabdi], [:], [#data.members.at(0).name],
+    [NIDN], [:], [#data.members.at(0).nidn],
+    [Departemen], [:], [#data.members.at(0).department],
+  )
+
+  #v(2em)
+
+  *Uang yang diterima*
+
+  #let used = data.budget-received.items.map(v => v.amount).sum()
+  #grid(
+    columns: (auto, auto, 1fr),
+    gutter: 1em,
+    [Jumlah], [:], [#print-rp(data.budget-received.total)],
+    [Penggunaan], [:], [#print-rp(used)],
+    [Sisa], [:], [#print-rp(data.budget-received.total - used)],
+  )
+
+  #v(2em)
+
+  *Rekapitulasi Biaya Yang Disetujui*
+
+  // "BAHAN HABIS" → "Bahan Habis Pakai"
+  // "PENGUMPULAN DATA" → "Perjalanan"
+  // "ALAT PENUNJANG (ASET)" → "Sewa"
+  // "PELAPORAN/LUARAN WAJIB/TAMBAHAN" → "Honorarium"
+
+  #v(1em)
+
+  #{
+    let items = data.budget-received.items
+    let total-amount = items.fold(0, (sum, item) => sum + item.amount)
+
+    table(
+      columns: (auto, 1fr, auto, auto),
+      align: (center, left, right, right),
+      table.header(
+        table.cell(rowspan: 2)[*No*], table.cell(rowspan: 2)[*Uraian*],
+        table.cell(colspan: 2)[*Jumlah*], [*Rupiah*], [*%*],
+      ),
+      ..items
+        .enumerate()
+        .map(((i, item)) => {
+          let percentage = if total-amount > 0 {
+            calc.round((item.amount / total-amount) * 100, digits: 2)
+          } else {
+            0
+          }
+          (
+            [#{ i + 1 }],
+            [#item.description],
+            [#print-rp(item.amount)],
+            [#{ percentage }%],
+          )
+        })
+        .flatten(),
+      table.cell(colspan: 2, align: center, strong[Jumlah]),
+      strong[#print-rp(total-amount)],
+      strong[100%],
+    )
+  }
+
+  #let member = data.members.at(0)
+  #grid(
+    columns: (1fr, auto),
+    [],
+    [
+      #member.sign-city, #ID-display-today \
+      Ketua Pengabdi,
+
+      #{
+        show: pad.with(y: -1em)
+        align(center, image(member.sign, height: 5em))
+      }
+
+      (#member.name) \
+      NIP. #member.nip
+    ],
+  )
+]
+
+#let abmas-partner-benefits(data) = [
+  = KEBERMANFAATAN UNTUK MITRA
+
+  Kebermanfaatan bagi mitra harus diukur secara kuantitatif melalui survei. Mohon untuk mengirimkan formulir #link-b("https://intip.in/KuisionerMitraAbmas")[] kepada mitra. Screenshot halaman terakhir dari pengisian formulir dicantumkan sebagai bukti.
+
+  #table(
+    columns: 3,
+    stroke: 0.5pt,
+    align: (left, left, left),
+
+    // Header
+    table.cell(rowspan: 1)[*No*],
+    table.cell(rowspan: 1)[*Judul*],
+    table.cell(rowspan: 1)[*Keterangan*],
+
+    // Row 1
+    [1], [Identitas Mitra], [],
+
+    // Row 2 - Nama Mitra
+    [], [#h(1em) a. Nama Mitra], [#data.partner.institution],
+
+    // Row 3 - Jenis Mitra
+    [], [#h(1em) b. Jenis Mitra], [#data.partner.type],
+
+    // Row 4 - Bidang persoalan
+    [], [#h(1em) c. Bidang persoalan yang dihadapi mitra], [#data.partner.topic],
+
+    // Row 5 - Screenshot with large space
+    [2],
+    [Bukti pengisian kuisioner mitra (screenshot)],
+    table.cell(rowspan: 1)[
+      #render-if(
+        access-field(data.partner, "questionnaire-image") != none,
+        () => image(
+          data.partner.questionnaire-image,
+        ),
+        none,
+      )
+    ],
   )
 ]

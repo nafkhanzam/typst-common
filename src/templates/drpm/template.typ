@@ -159,11 +159,7 @@
 
   #cover-blue(data); #pagebreak(weak: true);
   #set page(numbering: "1")
-  #table(
-    columns: 3,
-    [*No*], [*Tanggal*], [*Kegiatan*],
-    ..entries.enumerate().map(((i, (d, ev))) => ([#{ i + 1 }], [#d], [#ev])).flatten(),
-  )
+  #logbook-table(entries)
 ]
 
 #let drpm-abmas-logbook(
@@ -178,11 +174,7 @@
 
   #cover-blue(data); #pagebreak(weak: true);
   #set page(numbering: "1")
-  #table(
-    columns: 3,
-    [*No*], [*Tanggal*], [*Kegiatan*],
-    ..entries.enumerate().map(((i, (d, ev))) => ([#{ i + 1 }], [#d], [#ev])).flatten(),
-  )
+  #logbook-table(entries)
 ]
 
 #let drpm-research-final(
@@ -214,5 +206,47 @@
   #mitra-role; #pagebreak(weak: true)
   #research-constraint; #pagebreak(weak: true)
   #next-plan; #pagebreak(weak: true)
-  #bib-page(bibliography-file); #pagebreak(weak: true);
+
+  #if bibliography-file != none [
+    #bib-page(bibliography-file); #pagebreak(weak: true);
+  ]
+]
+
+#let drpm-abmas-final(
+  abstract-page: [],
+  introduction-page: [],
+  solution-page: [],
+  method-page: [],
+  additional-progress: [],
+  logbook-page: [],
+  conclusions-page: [],
+  bibliography-file: none,
+  data,
+) = [
+  #{ data.entry = "final" }
+  #drpm-type.update("abmas")
+  #set document(title: data.title)
+  #show: enable-todo-hl
+  #show: template.with(appendices: [
+  ])
+
+  #cover-blue(data); #pagebreak(weak: true);
+  #set page(numbering: "i")
+  #outline-page(); #pagebreak(weak: true);
+  #abstract-page; #pagebreak(weak: true);
+  #set page(numbering: "1")
+  #counter(page).update(1)
+  #introduction-page; #pagebreak(weak: true);
+  #solution-page; #pagebreak(weak: true);
+  #method-page; #pagebreak(weak: true);
+  #abmas-target-progress(data); #additional-progress; #pagebreak(weak: true);
+  #abmas-budget-recapitulation(data); #pagebreak(weak: true);
+
+  #logbook-page; #pagebreak(weak: true);
+  #abmas-partner-benefits(data); #pagebreak(weak: true);
+  #conclusions-page; #pagebreak(weak: true);
+
+  #if bibliography-file != none [
+    #bib-page(bibliography-file); #pagebreak(weak: true);
+  ]
 ]

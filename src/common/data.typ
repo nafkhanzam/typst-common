@@ -1,3 +1,11 @@
+#let call-or-value(v) = {
+  if type(v) == function {
+    v()
+  } else {
+    v
+  }
+}
+
 #let apply-defaults(v, defaults) = {
   for (key, value) in defaults.pairs() {
     if key not in v {
@@ -132,15 +140,7 @@
 }
 
 #let render-if(if-value, if-true, if-false) = if if-value {
-  if-true
+  call-or-value(if-true)
 } else {
-  if-false
-}
-
-#let call-or-value(v) = {
-  if type(v) == function {
-    v()
-  } else {
-    v
-  }
+  call-or-value(if-false)
 }
