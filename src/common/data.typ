@@ -139,8 +139,16 @@
   }
 }
 
-#let render-if(if-value, if-true, if-false) = if if-value {
+#let truthify(v) = v != "" and v != false and v != [] and v != none;
+
+#let render-if(if-value, if-true, if-false) = if truthify(if-value) {
   call-or-value(if-true)
 } else {
   call-or-value(if-false)
+}
+
+#let entry-if(if-value, if-true) = if truthify(if-value) {
+  (call-or-value(if-true),)
+} else {
+  ()
 }

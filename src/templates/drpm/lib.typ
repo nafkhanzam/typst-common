@@ -140,17 +140,8 @@
 }
 
 #let budget-template(data, extend: true) = [
-  #for (i, bd) in data.budget.enumerate() {
-    set text(size: 11pt)
-    let title-i = numbering("A", i + 1)
-    show: block.with(breakable: false)
-    show table.cell: it => {
-      if it.y <= 1 or it.y >= bd.items.len() + 2 {
-        strong(it)
-      } else {
-        it
-      }
-    }
+  #{
+    set text(size: 10pt)
 
     table(
       columns: if extend {
@@ -158,36 +149,46 @@
       } else {
         7
       },
-      [#title-i],
-      table.cell(colspan: 6)[#bd.title],
-      [No],
-      [Komponen],
-      [Item],
-      [Satuan],
-      [Volume],
-      [Biaya satuan],
-      [Jumlah],
-      ..bd
-        .items
+      ..data
+        .budget
         .enumerate()
-        .map(((j, item)) => (
-          [#{
-            j + 1
-          }],
-          [#item.component],
-          [#item.item],
-          [#item.unit],
-          [#item.volume],
-          table.cell(breakable: false)[#print-rp(item.price)],
-          table.cell(breakable: false)[#box[#print-rp(item.total)]],
-        ))
+        .map(
+          ((i, bd)) => (
+            [*#numbering("A", i + 1)*],
+            table.cell(colspan: 6)[*#bd.title*],
+            [*No*],
+            [*Komponen*],
+            [*Item*],
+            [*Volume*],
+            [*Satuan*],
+            [*Harga satuan*],
+            [*Jumlah*],
+            ..(
+              bd
+                .items
+                .enumerate()
+                .map(((j, item)) => (
+                  [#{
+                    j + 1
+                  }],
+                  [#item.component],
+                  [#item.item],
+                  [#item.volume],
+                  [#item.unit],
+                  table.cell(breakable: false)[#print-rp(item.price)],
+                  table.cell(breakable: false)[#box[#print-rp(item.total)]],
+                ))
+            ),
+            table.cell(colspan: 6)[*#align(right)[SUBTOTAL]*],
+            box[*#print-rp(bd.total)*],
+          ),
+        )
         .flatten(),
-      table.cell(colspan: 6)[#align(center)[SUB TOTAL #title-i]],
-      box[#print-rp(bd.total)],
+      table.cell(colspan: 7)[#hide[-]],
+      table.cell(colspan: 6)[*#align(right)[TOTAL BIAYA KESELURUHAN]*],
+      [*#print-rp(data.budget-total)*],
     )
   }
-
-  *TOTAL BIAYA #print-rp(data.budget-total)*
 ]
 
 #let logbook-table(entries) = {
@@ -245,8 +246,10 @@
     SKEMA #upper(data.schema) DANA #upper(data.funding-source)
   ],
   [
-    SKEMA PENELITIAN #upper(data.schema) \
-    SUMBER DANA #upper(data.funding-source) \
+    #let schema-t = access-field(data, "templates", "schema")
+    #render-if(schema-t, schema-t, [SKEMA PENELITIAN #upper(data.schema)]) \
+    #let funding-source-t = access-field(data, "templates", "funding-source")
+    #render-if(funding-source-t, funding-source-t, [SUMBER DANA #upper(data.funding-source)]) \
     TAHUN #display-year
   ],
 )
@@ -331,7 +334,7 @@
   #v(1fr)
 
   #[
-    #set text(weight: "bold", size: 20pt)
+    #set text(weight: "bold", size: 16pt)
 
     #spec(data).cover-title
 
@@ -395,6 +398,18 @@
 
     #text(size: 16pt, upper(data.title))
 
+    #let pusdi-t = access-field(data, "pusdi")
+    #let frontiers-t = access-field(data, "frontiers")
+    #render-if(truthify(pusdi-t) or truthify(frontiers-t))[
+      #set text(size: 10pt)
+      #v(.5fr)
+      #show: block
+      #entry-fields((
+        ..entry-if(pusdi-t, ([PUSDI], [#pusdi-t])),
+        ..entry-if(frontiers-t, ([BIDANG TOPIK FRONTIERS PUSDI], [#frontiers-t])),
+      ))
+    ][]
+
     #v(1fr)
 
     Tim #Peneliti:
@@ -402,25 +417,20 @@
 
   #let write-member-entry(member) = [#member.name / #member.department / #member.faculty / #member.institution]
 
-  #pad(x: -1cm)[
-    #grid(
-      columns: (auto, 1fr),
-      [Ketua #Peneliti], [: #write-member-entry(data.members.at(0))],
-      [Anggota #Peneliti], [: 1. #write-member-entry(data.members.at(1))],
-      ..(
-        data
-          .members
-          .slice(2)
-          .filter(v => not v.at("exclude-from-cover", default: false))
-          .enumerate()
-          .map((
-            (i, member),
-          ) => (
-            [],
-            [#hide[: ]#{ i + 2 }. #write-member-entry(member)],
-          ))
-          .flatten()
-      ),
+  #[
+    #set align(left)
+    Ketua #Peneliti: \
+    #list(
+      marker: none,
+      write-member-entry(data.members.at(0)),
+    )
+    Anggota #Peneliti: \
+    #enum(
+      ..data
+        .members
+        .slice(1)
+        .filter(v => not v.at("exclude-from-cover", default: false))
+        .map(member => write-member-entry(member)),
     )
   ]
 
@@ -736,18 +746,21 @@
     {
       show table.cell.where(y: 0): strong
       table(
-        columns: 5,
-        [No.], [Nama], [Departemen / \ Fakultas], [Posisi di \ Tim Riset], [Uraian Tugas],
+        columns: 4,
+        [No.], [Nama], [Departemen / \ Fakultas], [Posisi di \ Tim Riset],
         ..(
           data
             .members
             .enumerate()
             .map(((i, member)) => (
-              [#{ i + 1 }],
+              table.cell(rowspan: 2)[#{ i + 1 }],
               [#member.name],
               [#member.department / \ #member.faculty],
               [#member.position],
-              enum(..member.tasks.map(v => [#v])),
+              table.cell(colspan: 3)[
+                *Uraian Tugas:*
+                #enum(..member.tasks.map(v => [#v]))
+              ],
             ))
             .flatten()
         ),
