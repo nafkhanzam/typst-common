@@ -246,10 +246,12 @@
     SKEMA #upper(data.schema) DANA #upper(data.funding-source)
   ],
   [
-    #let schema-t = access-field(data, "templates", "schema")
-    #render-if(schema-t, schema-t, [SKEMA PENELITIAN #upper(data.schema)]) \
-    #let funding-source-t = access-field(data, "templates", "funding-source")
-    #render-if(funding-source-t, funding-source-t, [SUMBER DANA #upper(data.funding-source)]) \
+    #render-if(data.is-srg, [NON KONSORSIUM RISET PENUGASAN ITS], [SKEMA PENELITIAN #upper(data.schema)]) \
+    #render-if(
+      data.is-srg,
+      [SKEMA STRATEGIC RESEARCH GRANT (SRG) TIPE #data.srg.type],
+      [SUMBER DANA #upper(data.funding-source)],
+    ) \
     TAHUN #display-year
   ],
 )
@@ -289,6 +291,8 @@
 )
 
 #let preprocess-data(d) = {
+  d.is-srg = truthify(access-field(d, "srg", "type"))
+
   // member defaults
   let member-default = access-field(d, "defaults", "member", default: ())
   d.members = d.members.map(member => apply-defaults(member, member-default))
@@ -316,6 +320,12 @@
     d.budget.at(i).insert("total", sub-total)
     d.budget-total += sub-total
   }
+
+  // Members
+  d.leader = d.members.at(0)
+  d.non-leader-members = d.members.slice(1)
+  d.cover-members = d.members.filter(v => not v.at("exclude-from-cover", default: false))
+  d.bio-members = d.cover-members.filter(v => not v.at("exclude-from-bio", default: false))
 
   d
 }
@@ -355,7 +365,7 @@
     #set text(size: 14pt)
 
     #text(size: 16pt)[*Tim #Peneliti:*] \
-    #for member in data.members.filter(v => not v.at("exclude-from-cover", default: false)) [
+    #for member in data.cover-members [
       #write-member-entry(member) \
     ]
   ]
@@ -398,9 +408,9 @@
 
     #text(size: 16pt, upper(data.title))
 
-    #let pusdi-t = access-field(data, "pusdi")
-    #let frontiers-t = access-field(data, "frontiers")
-    #render-if(truthify(pusdi-t) or truthify(frontiers-t))[
+    #let pusdi-t = access-field(data, "srg", "pusdi")
+    #let frontiers-t = access-field(data, "srg", "frontiers")
+    #render-if(data.is-srg)[
       #set text(size: 10pt)
       #v(.5fr)
       #show: block
@@ -426,11 +436,7 @@
     )
     Anggota #Peneliti: \
     #enum(
-      ..data
-        .members
-        .slice(1)
-        .filter(v => not v.at("exclude-from-cover", default: false))
-        .map(member => write-member-entry(member)),
+      ..data.cover-members.slice(1).map(member => write-member-entry(member)),
     )
   ]
 
@@ -690,13 +696,7 @@
 
   #let show-on-zero = access-field(data, "show-bio-on-zero", default: true)
   #for (i, member) in (
-    data
-      .members
-      .filter(v => (
-        (access-field(v, "exclude-from-cover") == none or access-field(v, "exclude-from-cover") == false)
-          and (access-field(v, "exclude-from-bio") == none or access-field(v, "exclude-from-bio") == false)
-      ))
-      .enumerate()
+    data.bio-members.enumerate()
   ) {
     bio(i, member, show-on-zero: show-on-zero)
   }

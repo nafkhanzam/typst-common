@@ -1,5 +1,120 @@
 #import "lib.typ": *
 
+#let srg-identity-page(data) = {
+  let ketua = data.leader
+  let anggota = data.non-leader-members
+  let defaults = data.defaults.member
+  let filter-authorship(arr) = {
+    arr
+      .map(v => {
+        let authorship = access-field(v, "authorship")
+        if authorship == "first" {
+          v.sebagai = [First Author]
+        } else if authorship == "corresponding" {
+          v.sebagai = [Corresponding Author]
+        } else {
+          v.sebagai = none
+        }
+        return v
+      })
+      .filter(v => v.sebagai != none)
+  }
+
+
+  [
+    #set align(center)
+    #set text(weight: "bold")
+    LEMBAR IDENTITAS PROPOSAL NON-KONSORSIUM \
+    RISET PENUGASAN ITS \
+    SKEMA STRATEGIC RESEARCH GRANT (SRG) TIPE #data.srg.type \
+    DANA ITS \
+    TAHUN 2026
+  ]
+
+  v(1em)
+
+  // Helper for field with aligned colon
+  let field(label, value, width: 10em) = grid(
+    columns: (width, auto, 1fr),
+    column-gutter: 0.3em,
+    [#label], [:], [#value],
+  )
+
+  // Helper for subfields with letter numbering
+  let subfields(width: 10em, ..items) = {
+    set enum(numbering: "a.")
+    enum(..items
+      .pos()
+      .map(item => {
+        if type(item) == array and item.len() == 2 {
+          field(item.at(0), item.at(1), width: width)
+        } else {
+          item
+        }
+      }))
+  }
+
+  enum(
+    field([Judul Penelitian], data.title),
+    field([Bidang Pusdi], data.srg.pusdi),
+    field([Topik Frontiers Pusdi], data.srg.frontiers),
+    field([Topik SDGs], data.sdgs),
+    [Ketua Peneliti
+      #subfields(
+        ([Nama], ketua.name),
+        ([NUPTK], ketua.at("nuptk", default: "-")),
+        ([Scopus ID], ketua.at("scopus-id", default: "-")),
+        ([H-Indeks Scopus], ketua.at("h-index", default: "-")),
+        ([Fakultas/Departemen], [#defaults.faculty / #defaults.department]),
+        ([Email Address], ketua.email),
+      )
+    ],
+    field([Usulan Dana], print-rp(data.budget-total)),
+    [Target Luaran
+      #subfields(
+        [Artikel Jurnal Internasional terindeks Scopus #data.target.scopus],
+        ([Nama Jurnal], data.target.journal-name),
+      )
+    ],
+    [Pengalaman Publikasi sebagai First Author dan/atau Corresponding Author dalam 5 (lima) tahun terakhir:
+      #table(
+        columns: 3,
+        table.header([*Judul Publikasi*], [*Link Artikel*], [*Sebagai*]),
+        ..filter-authorship(ketua.at("publication-history", default: ()))
+          .map(v => (
+            v.title,
+            render-if(access-field(v, "link"))[#link-b(access-field(v, "link"))[]][-],
+            [#v.sebagai],
+          ))
+          .flatten(),
+        ..filter-authorship(ketua.at("seminar-history", default: ()))
+          .map(v => (
+            v.title,
+            render-if(access-field(v, "link"))[#link-b(access-field(v, "link"))[]][-],
+            [#v.sebagai],
+          ))
+          .flatten(),
+      )
+    ],
+    [Anggota:
+      #table(
+        columns: (auto, 1fr, auto, auto),
+        align: (center, left, center, center),
+        table.header([*No*], [*Nama Anggota*], [*Departemen*], [*Fakultas*]),
+        ..anggota
+          .enumerate()
+          .map(((i, m)) => (
+            str(i + 1),
+            m.name,
+            m.at("department", default: defaults.department),
+            m.at("faculty", default: defaults.faculty),
+          ))
+          .flatten(),
+      )
+    ],
+  )
+}
+
 #let drpm-research-proposal(
   abstract-page: [],
   introduction-page: [],
@@ -19,6 +134,9 @@
   ])
 
   #cover-white(data); #pagebreak(weak: true);
+  #if data.is-srg {
+    srg-identity-page(data)
+  }
   #set page(numbering: "i")
   #outline-page(); #pagebreak(weak: true);
   #abstract-page; #pagebreak(weak: true);
