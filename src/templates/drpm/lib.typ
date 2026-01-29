@@ -515,7 +515,7 @@
           table.header([], ..s-keys.map(((_, col)) => [#col])),
           ..(
             (
-              ([Nama Perguruan Tinggi], "instition-name"),
+              ([Nama Perguruan Tinggi], "institution-name"),
               ([Bidang Ilmu], "major"),
               ([Tahun Masuk-Lulus], "start-end-year"),
               ([Judul Skripsi / \ Tesis / Disertasi], "thesis-title"),
