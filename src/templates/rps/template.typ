@@ -50,7 +50,7 @@
 
 #let rps-template(
   init-fn: it => {
-    set text(font: "FreeSerif", size: 10pt)
+    set text(font: "Calibri", size: 10pt)
     it
   },
   data,
@@ -72,7 +72,7 @@
 
   grid(
     table(
-      columns: (auto, 1fr, auto),
+      columns: (auto, 8fr, 1fr),
       fill: blue-color,
       image("logo.png", width: 60pt),
       [
@@ -88,8 +88,8 @@
       ],
       [
         #show: s-center
-        #set text(weight: "bold", size: 12pt)
-        Kode \ Dokumen
+        #set text(weight: "bold", size: 16pt)
+        RPS
       ],
       table.cell(colspan: 3)[
         #show: s-center
@@ -211,8 +211,8 @@
       ],
     ),
     table(
-      // columns: (1fr, 3fr, 3fr, 2fr, 2fr, 2fr, 3fr, 1fr),
-      columns: (1fr, ..(2.5fr,) * 6, 1fr),
+      columns: (1fr, 3fr, 3fr, 2fr, 2fr, 2fr, 3fr, 1fr),
+      // columns: (1fr, ..(2.5fr,) * 6, 1fr),
       align: (x, y) => if y < 3 {
         center + horizon
       } else if x == 0 {
@@ -250,8 +250,8 @@
         ],
         text(weight: "bold")[Indikator],
         text(weight: "bold")[Kriteria & Teknik],
-        text(weight: "bold")[Tatap Muka],
-        text(weight: "bold")[Daring],
+        text(weight: "bold")[Luring (_offline_)],
+        text(weight: "bold")[Daring (_online_)],
       ),
       ..range(1, 9).map(i => [*(#i)*]),
       ..data
@@ -318,7 +318,13 @@
                 parbreak()
                 time-template(rps, "daring", "bm", [BM], 60)
               },
-              [#list(..rps.materi)],
+              [
+                #if type(rps.materi) == str {
+                  rps.materi
+                } else {
+                  list(..rps.materi)
+                }
+              ],
               {
                 if rps.bobot > 0 {
                   [#rps.bobot%]
