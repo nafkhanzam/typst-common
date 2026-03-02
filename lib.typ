@@ -1,7 +1,9 @@
 #import "@preview/gentle-clues:1.2.0" as clues
+#import "@preview/nerd-icons:0.2.0": *
 
 #import "src/common/answer.typ": *
 #import "src/common/binary.typ": *
+#import "src/common/code.typ": *
 #import "src/common/currency.typ": *
 #import "src/common/data.typ": *
 #import "src/common/dates.typ": *

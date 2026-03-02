@@ -47,10 +47,35 @@
 }
 
 #let sl2(percent, ..args) = sl(composer: (percent, 1fr), ..args)
+#let slc2(percent, ..args, body1, body2) = {
+  sl2(percent, ..args)[
+    #show: block.with(width: 100%, height: 100%)
+    #set align(center + horizon)
+    #show: block
+    #set align(left + top)
+    #body1
+  ][
+    #show: block.with(width: 100%, height: 100%)
+    #set align(center + horizon)
+    #show: block
+    #set align(left + top)
+    #body2
+  ]
+}
 
 #let slc(..args, body) = {
   sl(..args)[
     #set align(center + horizon)
+    #show: block
+    #set align(left + top)
+    // #show: pad.with(top: -2em)
+    #body
+  ]
+}
+
+#let slh(..args, body) = {
+  sl(..args)[
+    #set align(horizon)
     #show: block
     #set align(left + top)
     // #show: pad.with(top: -2em)
