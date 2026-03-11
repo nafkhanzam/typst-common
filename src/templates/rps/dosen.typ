@@ -49,4 +49,6 @@
   HM: "Dr.Eng. Muhamad Hilmil Muchtar Aditya Pradana, S. Kom., M. Sc..",
   MK: "Imam Mustafa Kamal, S.ST., Ph.D.",
   IG: "Ilham Gurat Adillion, S.Kom., M.Eng.",
+  AF: "Muhammad 'Arif Faizin, S.Kom., M.Kom.",
+  MA: "Dr. Muhammad Alfian, S.Tr.Kom., M.Tr.Kom.",
 )
