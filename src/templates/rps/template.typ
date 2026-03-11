@@ -144,10 +144,7 @@
         (
           2,
           [
-            #show: s-center
-            #v(3em)
-
-            Tanda tangan
+            #dosen.at(data.kaprodi)
           ],
         ),
       ).map(((sp, v)) => table.cell(colspan: sp)[#v]),
@@ -168,26 +165,141 @@
         .flatten(),
       table.cell(colspan: 2)[*Capaian Pembelajaran Mata Kuliah (CPMK)*],
       ..data.cpmk.enumerate().map(((i, v)) => ([CPMK #(i+1)], [#bilingual(v.text)])).flatten(),
-      [*Peta CPL-CPMK*],
+      [*Peta CPL-CPMK-Sub-CPMK*],
       table.cell(
         inset: 0pt,
         colspan: 2,
         table(
-          columns: (6em,) + cpl-filtered.len() * (auto,),
-          [], ..cpl-filtered.map(((cpl-i, v)) => text(weight: "bold")[CPL #cpl-i]),
+          columns: (5em, 6.5em,) + cpl-filtered.len() * (auto,) + (auto,),
+          align: center + horizon,
+          [], [*Sub-CPMK*], ..cpl-filtered.map(((cpl-i, v)) => text(weight: "bold")[CPL #cpl-i]), [*Prosentase*],
           ..data
             .cpmk
             .enumerate()
-            .map(((i, cpmk-v)) => (
-              [CPMK #(i+1)],
-              ..cpl-filtered.map(((cpl-i, v)) => {
-                show: s-center
-                if cpmk-v.cpl.contains(cpl-i) {
-                  sym.checkmark
-                } else { }
-              }),
-            ))
+            .map(((cpmk-i, cpmk-v)) => {
+              let sub-cpmks = if "sub-cpmk" in data and data.sub-cpmk.len() > 0 {
+                data.sub-cpmk.filter(s => s.cpmk == cpmk-i + 1)
+              } else { () }
+              
+              if sub-cpmks.len() > 0 {
+                // Get total percentage for this CPMK
+                let total-pct = sub-cpmks.fold(0, (acc, s) => {
+                  let cpl-map = s.at("cpl-mapping", default: (:))
+                  acc + cpl-map.values().fold(0, (a, v) => a + int(str(v).replace("%", "")))
+                })
+                
+                (
+                  // First row with CPMK label and first Sub-CPMK
+                  table.cell(rowspan: sub-cpmks.len())[CPMK #(cpmk-i+1)],
+                  [Sub-CPMK #sub-cpmks.at(0).id],
+                  ..cpl-filtered.map(((cpl-i, v)) => {
+                    let cpl-map = sub-cpmks.at(0).at("cpl-mapping", default: (:))
+                    if str(cpl-i) in cpl-map {
+                      str(cpl-map.at(str(cpl-i)))
+                    } else { [-] }
+                  }),
+                  table.cell(rowspan: sub-cpmks.len())[#total-pct%],
+                  // Remaining Sub-CPMKs
+                  ..sub-cpmks.slice(1).map(s => (
+                    [Sub-CPMK #s.id],
+                    ..cpl-filtered.map(((cpl-i, v)) => {
+                      let cpl-map = s.at("cpl-mapping", default: (:))
+                      if str(cpl-i) in cpl-map {
+                        str(cpl-map.at(str(cpl-i)))
+                      } else { [-] }
+                    }),
+                  )).flatten()
+                )
+              } else {
+                // Fallback to old behavior if no sub-cpmk defined
+                (
+                  [CPMK #(cpmk-i+1)],
+                  [-],
+                  ..cpl-filtered.map(((cpl-i, v)) => {
+                    if cpmk-v.cpl.contains(cpl-i) {
+                      sym.checkmark
+                    } else { }
+                  }),
+                  [-],
+                )
+              }
+            })
             .flatten(),
+          // Total row
+          table.cell(colspan: 2)[*Total*],
+          ..cpl-filtered.map(((cpl-i, v)) => {
+            let total = if "sub-cpmk" in data and data.sub-cpmk.len() > 0 {
+              data.sub-cpmk.fold(0, (acc, s) => {
+                let cpl-map = s.at("cpl-mapping", default: (:))
+                if str(cpl-i) in cpl-map {
+                  acc + int(str(cpl-map.at(str(cpl-i))).replace("%", ""))
+                } else { acc }
+              })
+            } else { 0 }
+            [*#total%*]
+          }),
+          [*#{
+            if "sub-cpmk" in data and data.sub-cpmk.len() > 0 {
+              data.sub-cpmk.fold(0, (acc, s) => {
+                let cpl-map = s.at("cpl-mapping", default: (:))
+                acc + cpl-map.values().fold(0, (a, v) => a + int(str(v).replace("%", "")))
+              })
+            } else { 0 }
+          }%*],
+        ),
+      ),
+      [*Peta Evaluasi-CPMK*],
+      table.cell(
+        inset: 0pt,
+        colspan: 2,
+        table(
+          columns: (13em,) + data.cpmk.len() * (auto,) + (auto,),
+          align: center + horizon,
+          table.header(
+            [*Evaluasi*],
+            ..data.cpmk.enumerate().map(((i, _)) => text(weight: "bold")[CPMK-#(i+1)]),
+            [*Bobot*],
+          ),
+          ..if "evaluasi" in data {
+            data.evaluasi.map(eval => {
+              let total = eval.at("cpmk-mapping", default: (:))
+                .values()
+                .fold(0, (acc, v) => acc + int(str(v).replace("%", "")))
+              (
+                [#eval.name _(#eval.jenis)_],
+                ..data.cpmk.enumerate().map(((i, _)) => {
+                  let mapping = eval.at("cpmk-mapping", default: (:))
+                  if str(i + 1) in mapping {
+                    str(mapping.at(str(i + 1)))
+                  } else { [-] }
+                }),
+                [#total%],
+              )
+            }).flatten()
+          } else { () },
+          // Total row
+          [*Total*],
+          ..data.cpmk.enumerate().map(((cpmk-i, _)) => {
+            let total = if "evaluasi" in data {
+              data.evaluasi.fold(0, (acc, eval) => {
+                let mapping = eval.at("cpmk-mapping", default: (:))
+                if str(cpmk-i + 1) in mapping {
+                  acc + int(str(mapping.at(str(cpmk-i + 1))).replace("%", ""))
+                } else { acc }
+              })
+            } else { 0 }
+            [*#total%*]
+          }),
+          [*#{
+            if "evaluasi" in data {
+              data.evaluasi.fold(0, (acc, eval) => {
+                let eval-total = eval.at("cpmk-mapping", default: (:))
+                  .values()
+                  .fold(0, (a, v) => a + int(str(v).replace("%", "")))
+                acc + eval-total
+              })
+            } else { 0 }
+          }%*],
         ),
       ),
       [*Deskripsi Singkat MK*],
@@ -211,7 +323,7 @@
       ],
     ),
     table(
-      columns: (1fr, 3fr, 3fr, 2fr, 2fr, 2fr, 3fr, 1fr),
+      columns: (1fr, 2fr, 3fr, 4fr, 2fr, 2fr, 3fr, 1fr),
       // columns: (1fr, ..(2.5fr,) * 6, 1fr),
       align: (x, y) => if y < 3 {
         center + horizon
@@ -236,9 +348,9 @@
         ],
         table.cell(colspan: 2)[
           #set text(weight: "bold")
-          Bentuk Pembelajaran; \
-          Metode Pembelajaran; \
-          Penugasan Mahasiswa; \
+          Bentuk Pembelajaran, \
+          Metode Pembelajaran, dan \
+          Penugasan Mahasiswa \
         ],
         table.cell(rowspan: 2)[
           #set text(weight: "bold")
@@ -260,7 +372,7 @@
         .map(((i, rps)) => {
           let week = get-week(data, rps, i)
           let span = get-span(rps)
-          let if-span = if span > 1 [#span #sym.times]
+          let if-span = if span > 1 [#span#sym.times]
           let time-template(rps, key1, key2, label, length) = {
             let content = access-field(rps, key1, key2, "content")
             if content != none {
@@ -268,7 +380,7 @@
               linebreak()
             }
             if access-field(rps, key1, key2, "time", default: false) [
-              *#label:* #if-span #data.sks #sym.times #length" = #{span * data.sks * length}"
+              [*#label:* #if-span\(#data.sks#sym.times#length\)" = #{span * data.sks * length}"]
             ]
           }
           if rps.at("test-only", default: false) {
@@ -289,26 +401,46 @@
             return (
               [#week],
               [#rps.kemampuan],
-              [#rps.penilaian.indikator],
               {
-                let method = access-field(rps, "penilaian", "kriteria", "method")
-                if method != none [
-                  *#method*
-                ]
+                if access-field(rps, "penilaian") != none {
+                  if type(rps.penilaian.indikator) == str {
+                    rps.penilaian.indikator
+                  } else {
+                    list(..rps.penilaian.indikator)
+                  }
+                }
+              },
+              {
+                if access-field(rps, "penilaian") != none {
+                  let method = access-field(rps, "penilaian", "kriteria", "method")
+                  if method != none [
+                    *#method*
+                  ]
 
-                parbreak()
+                  parbreak()
 
-                let non-tests = access-field(rps, "penilaian", "kriteria", "non-tests")
-                if non-tests != none [
-                  *Non-Tes:*
-                  #list(..non-tests)
-                ]
+                  let non-tests = access-field(rps, "penilaian", "kriteria", "non-tests")
+                  if non-tests != none [
+                    *Non-Tes:* \
+                    #non-tests.map((v) => {
+                      let name = access-field(v, "name", default: "Non-Tes")
+                      let method = access-field(v, "method")
+                      let materials = access-field(v, "materials", default: ())
+                      [*#name:* #emph(method) #list(..materials)]
+                    }).join()
+                  ]
 
-                let tests = access-field(rps, "penilaian", "kriteria", "tests")
-                if tests != none [
-                  *Tes:*
-                  #list(..tests)
-                ]
+                  let tests = access-field(rps, "penilaian", "kriteria", "tests")
+                  if tests != none [
+                    *Tes:* \
+                    #tests.map((v) => {
+                      let name = access-field(v, "name", default: "Tes")
+                      let method = access-field(v, "method")
+                      let materials = access-field(v, "materials", default: ())
+                      [*#name:* #emph(method) #list(..materials)]
+                    }).join()
+                  ]
+                }
               },
               {
                 time-template(rps, "tatap-muka", "tm", [TM], 50)
@@ -342,7 +474,7 @@
 
 #let rae-template(
   init-fn: it => {
-    set text(font: "FreeSerif", size: 10pt)
+    set text(font: "Calibri", size: 10pt)
     it
   },
   data,
@@ -416,13 +548,12 @@
   )
 
   table(
-    columns: (auto, 1.1fr, 2fr, 3fr, auto),
+    columns: (0.7fr, 2fr, 3fr, auto),
     table.header(
       ..(
-        [*No*],
-        [*Jadwal (Minggu ke-)*],
-        [*Bentuk Asesmen*],
+        [*Minggu ke-*],
         [*Sub-CPMK*],
+        [*Bentuk Asesmen _(Penilaian)_*],
         [*Bobot (%)*],
       ).map(v => table.cell(fill: gray-color, align(center, v))),
     ),
@@ -432,37 +563,92 @@
       .filter(((i, v)) => v.keys().contains("assessment") or get-bobot(v) > 0)
       .enumerate()
       .map(((i, (rps-i, rps))) => {
-        (
-          [#{ i + 1 }],
-          [#get-week(data, rps, rps-i)],
-          [#coalesce(
-              access-field(rps, "assessment", "content"),
-              list(..access-field(rps, "penilaian", "kriteria", "tests", default: ())),
-            )],
-          // [#(
-          //     data
-          //       .cpmk
-          //       .enumerate()
-          //       .filter(((i-cpmk, cpmk)) => access-field(rps, "cpmk", default: ()).contains(i-cpmk + 1))
-          //       .map(((i-cpmk, cpmk)) => [
-          //         *CPMK #{i-cpmk + 1}* \
-          //         #cpmk.text.at(0)
-          //       ])
-          //       .join(parbreak())
-          //   )],
-          [
-            #rps.kemampuan
-          ],
-          [#{ coalesce(access-field(rps, "assessment", "weight"), get-bobot(rps)) }%],
-        )
+        let assessments = access-field(rps, "penilaian", "assessment", default: ())
+        if assessments.len() > 0 {
+          // New structured format with method and jenis - merge cells
+          let week-val = get-week(data, rps, rps-i)
+          let sub-cpmk-id = rps.at("sub-cpmk", default: "-")
+          let sub-cpmk-text = rps.kemampuan
+          (
+            // First assessment gets the merged cells for week and sub-cpmk
+            table.cell(rowspan: assessments.len())[
+              #show: s-center
+              #week-val
+            ],
+            table.cell(rowspan: assessments.len())[
+              *Sub-CPMK #sub-cpmk-id:* \
+              #sub-cpmk-text
+            ],
+            [
+              *#assessments.at(0).method* _(#assessments.at(0).jenis)_ \
+              #assessments.at(0).deskripsi
+            ],
+            table.cell[
+              #show: s-center
+              #assessments.at(0).at("bobot", default: "-")%
+            ],
+            // Remaining assessments only have assessment and bobot columns
+            ..assessments.slice(1).map(assess => (
+              [
+                *#assess.method* _(#assess.jenis)_ \
+                #assess.deskripsi
+              ],
+              table.cell[
+                #show: s-center
+                #assess.at("bobot", default: "-")%
+              ],
+            )).flatten()
+          )
+        } else {
+          // Fallback to old format
+          (
+            table.cell[
+              #show: s-center
+              #get-week(data, rps, rps-i)
+            ],
+            [
+              #rps.kemampuan
+            ],
+            [#coalesce(
+                access-field(rps, "assessment", "content"),
+                list(..access-field(rps, "penilaian", "assessment", default: ())),
+              )],
+            table.cell[
+              #show: s-center
+              #{ coalesce(
+                  access-field(rps, "assessment", "weight"), 
+                  get-bobot(rps)) }%
+            ],
+          )
+        }
       })
-      .flatten()
+      .flatten(),
+    // Total row
+    table.cell(colspan: 3, fill: gray-color)[
+      #show: s-center
+      *Total*
+    ],
+    table.cell(fill: gray-color)[
+      #show: s-center
+      *#{
+        data.rps
+          .filter(rps => rps.keys().contains("assessment") or get-bobot(rps) > 0)
+          .fold(0, (acc, rps) => {
+            let assessments = access-field(rps, "penilaian", "assessment", default: ())
+            if assessments.len() > 0 {
+              acc + assessments.fold(0, (a, assess) => a + assess.at("bobot", default: 0))
+            } else {
+              acc + get-bobot(rps)
+            }
+          })
+      }%*
+    ],
   )
 }
 
 #let rtm-template(
   init-fn: it => {
-    set text(font: "FreeSerif", size: 10pt)
+    set text(font: "Calibri", size: 10pt)
     it
   },
   data,
@@ -510,7 +696,7 @@
       inset: 0pt,
       table(
         columns: (20em, auto, 1fr, auto, 1fr),
-        [#data.kode], table.cell(fill: gray-color)[*sks*], [#{ data.sks + data.sks-prak }], table.cell(
+        [#data.kode], table.cell(fill: gray-color)[*SKS*], [#{ data.sks + data.sks-prak }], table.cell(
           fill: gray-color,
         )[*SEMESTER*], [#data.semester],
       ),
