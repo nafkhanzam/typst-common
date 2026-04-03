@@ -109,6 +109,8 @@
   show link: text.with(fill: rgb(0, 0, 238))
   // show par: set block(spacing: 2em)
   set heading(numbering: "1.", supplement: "Section")
+  set figure(placement: top)
+  set math.equation(numbering: "(1)")
   // show heading: it => block({
   //   if it.numbering != none {
   //     grid(
@@ -152,11 +154,11 @@
   show raw.where(block: true): set text(size: .8em)
   show raw.where(block: false): it => {
     set text(font: "Noto Sans Mono", fallback: false)
-    show: highlight.with(
-      extent: .1em,
-      fill: none,
-      stroke: .5pt + blue,
-    )
+    // show: highlight.with(
+    //   extent: .1em,
+    //   fill: none,
+    //   stroke: .5pt + blue,
+    // )
     // set text(size: .95em)
     it
   }
@@ -169,7 +171,7 @@
     #set par(spacing: .6em)
 
     #grid(
-      columns: (1fr, 60%, 1fr),
+      columns: (20%, 1fr, auto),
       if logo != none {
         set align(left + top)
         if type(logo) == str {
