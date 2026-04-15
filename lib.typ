@@ -29,4 +29,5 @@
 #import "src/templates/formal.typ" as t-formal //? t = Template
 #import "src/templates/general.typ" as t-general //? t = Template
 #import "src/templates/drpm/lib.typ" as t-drpm //? t = Template
+#import "src/templates/drpm/template.typ" as t-drpm-template //? t = Template
 #import "src/templates/rps/lib.typ" as t-rps //? t = Template

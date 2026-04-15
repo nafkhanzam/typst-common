@@ -246,11 +246,16 @@
     SKEMA #upper(data.schema) DANA #upper(data.funding-source)
   ],
   [
-    #render-if(data.is-srg, [NON KONSORSIUM RISET PENUGASAN ITS], [SKEMA PENELITIAN #upper(data.schema)]) \
     #render-if(
       data.is-srg,
-      [SKEMA STRATEGIC RESEARCH GRANT (SRG) TIPE #data.srg.type],
-      [SUMBER DANA #upper(data.funding-source)],
+      () => [NON KONSORSIUM RISET PENUGASAN ITS],
+      () => [SKEMA PENELITIAN #upper(data.schema)
+      ],
+    ) \
+    #render-if(
+      data.is-srg,
+      () => [SKEMA STRATEGIC RESEARCH GRANT (SRG) TIPE #data.srg.type],
+      () => [SUMBER DANA #upper(data.funding-source)],
     ) \
     TAHUN #display-year
   ],
@@ -467,9 +472,9 @@
 ]
 
 #let bio-page(data) = [
-  #headz[BIODATA]
+  #headz[BIODATA#if-abmas[ TIM PENGABDI][]]
 
-  #let bio(index, member, show-on-zero: true, extend: true) = [
+  #let research-bio(index, member, show-on-zero: true, extend: true) = [
     #let label = if index == 0 {
       [Ketua]
     } else {
@@ -694,11 +699,97 @@
     // #pagebreak(weak: true)
   ]
 
+  #let abmas-bio(index, member, show-on-zero: true, extend: true) = [
+    #let label = if index == 0 {
+      [Ketua]
+    } else {
+      [Anggota #numbering("I", index)]
+    }
+
+    == #label
+
+    #[
+      #{
+        show table.cell.where(x: 0): strong
+        table(
+          columns: (auto, 1fr),
+          [Nama Lengkap], [#member.name],
+          [Jenis Kelamin], [#member.gender],
+          [NIP], [#member.id-number],
+          [Fungsional/Pangkat/Gol.], [#member.functional],
+          [Bidang Keahlian], [#member.expertise],
+          [Departemen/Fakultas], [#member.department/#member.faculty],
+          [Perguruan Tinggi], [#member.institution-long],
+          // [Alamat Rumah dan No. Telp.], [#member.address / #member.phone],
+        )
+      }
+
+      #show table.cell.where(y: 0): strong
+
+      #let rest-args = (:)
+      #let empty-message = access-field(member, "empty-message")
+      #if empty-message != none {
+        rest-args += (empty-message: empty-message)
+      }
+
+      #let arr = member.at("abmas-history", default: ())
+      #let col-n = 4
+      #if arr.len() > 0 or show-on-zero [
+        // #show: block.with(breakable: false)
+        Riwayat pengabdian (2 terakhir yang didanai ITS atau nasional, sebutkan sebagai Ketua atau Anggota)
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header([No], [Judul Pengabdian kepada Masyarakat], [Penyandang Dana], [Tahun]),
+          ..gen-rows(arr, ("title", "funding-source", "year"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("publication-history", default: ())
+      #let col-n = 3
+      #if arr.len() > 0 or show-on-zero [
+        // #show: block.with(breakable: false)
+        Publikasi ilmiah (2 terakhir dalam bentuk makalah atau buku)
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header([No], [Judul Artikel Pengabdian kepada Masyarakat], [URL Artikel]),
+          ..gen-rows(arr, ("title", "url"), ..rest-args),
+        )
+      ]
+
+      #let arr = member.at("intellectual-property-history", default: ())
+      #let col-n = 4
+      #if arr.len() > 0 or show-on-zero [
+        // #show: block.with(breakable: false)
+        HKI (2 terakhir)
+        #table(
+          columns: if (extend and arr.len() == 0) {
+            (auto, ..((col-n - 1) * (1fr,)))
+          } else {
+            col-n
+          },
+          table.header([No], [Judul Hak Kekayaan Intelektual], [Jenis HKI], [No. HKI]),
+          ..gen-rows(arr, ("title", "type", "number"), ..rest-args),
+        )
+      ]
+    ]
+  ]
+
   #let show-on-zero = access-field(data, "show-bio-on-zero", default: true)
   #for (i, member) in (
     data.bio-members.enumerate()
   ) {
-    bio(i, member, show-on-zero: show-on-zero)
+    if-abmas(
+      () => abmas-bio(i, member, show-on-zero: show-on-zero),
+      () => research-bio(i, member, show-on-zero: show-on-zero),
+    )
   }
 
   #if-abmas(
