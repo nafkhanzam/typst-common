@@ -9,6 +9,7 @@
   title: [],
   title-align: left,
   logo: "res/its-logo.png",
+  right-logo: none,
   event: [],
   author: [],
   author-desc: [],
@@ -26,6 +27,7 @@
   ),
   font-size: 10pt,
   fill-defaults: false,
+  indonesian: false,
   body,
 ) = {
   // ~ Argument Validations
@@ -43,6 +45,9 @@
     author = if author != [] { author } else [Moch. Nafkhan Alzamzami, S.T., M.T.]
     author-desc = if author-desc != [] { author-desc } else [Department of Informatics]
     affiliation = if affiliation != [] { affiliation } else [Institut Teknologi Sepuluh Nopember]
+  }
+  if type(author) == array {
+    author = author.join([, ])
   }
   let args = arguments((
     title: title,
@@ -136,6 +141,13 @@
     v(0.25em)
   }
   // show figure.where(kind: "table"): set text(size: .8em)
+  show: it => if indonesian {
+    show figure.where(kind: image): set figure(placement: top, supplement: [Gambar])
+    show figure.where(kind: table): set figure(placement: top, supplement: [Tabel])
+    it
+  } else {
+    it
+  }
   show figure.caption: it => [
     #set text(size: .9em)
     #grid(
@@ -171,7 +183,8 @@
     #set par(spacing: .6em)
 
     #grid(
-      columns: (20%, 1fr, auto),
+      columns: (auto, 1fr, auto),
+      column-gutter: 2em,
       if logo != none {
         set align(left + top)
         if type(logo) == str {
@@ -204,15 +217,23 @@
           short-desc
         }
       },
-      if with-date {
-        set align(right + top)
-        set text(size: 1.0em)
-
-        date-display
+      if right-logo != none {
+        set align(left + top)
+        if type(right-logo) == str {
+          image(right-logo, height: 6em)
+        } else {
+          right-logo
+        }
       },
     )
 
     #line(length: 100%)
+    #if with-date {
+      set align(right + top)
+      set text(size: 1.0em)
+
+      [#date-display]
+    }
   ]
 
   // ~ Content
