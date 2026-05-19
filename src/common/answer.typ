@@ -30,3 +30,10 @@
     body
   }
 }
+
+#let answer-box(body, bg: blue.lighten(80%)) = {
+  if ANS {
+    show: highlight.with(fill: bg)
+    body
+  }
+}
