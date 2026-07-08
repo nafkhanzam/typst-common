@@ -11,7 +11,7 @@
     ),
   )
   set par(justify: true, spacing: 1.5em, linebreaks: "optimized")
-  set text(font: "FreeSerif", size: 12pt, fallback: false, hyphenate: false)
+  set text(font: ("FreeSerif", "Segoe UI Emoji"), size: 12pt, fallback: false, hyphenate: false)
 
   show heading.where(level: 1): it => {
     set align(center)

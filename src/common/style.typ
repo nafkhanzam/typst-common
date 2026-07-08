@@ -29,7 +29,8 @@
 #let inline-enum(
   join-sym: [,],
   last-join: [and],
-  prefix-fn: i => [(#{i+1}) ],
+  prefix-fn: i => [(#{ i + 1 }) ],
+  join-sym-on-two: false,
   ..entries,
 ) = {
   entries = entries.pos()
@@ -39,10 +40,10 @@
   }
   for (i, v) in entries.enumerate() {
     if i > 0 {
-      [#join-sym ]
-    }
-    if n != 0 and i == n - 1 and last-join != none {
-      [#last-join ]
+      if n != 2 and not join-sym-on-two [#join-sym ]
+      if n != 0 and i == n - 1 {
+        if last-join != none [#last-join ]
+      }
     }
     let prefix = if prefix-fn != none {
       prefix-fn(i)
