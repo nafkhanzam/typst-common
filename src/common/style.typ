@@ -40,7 +40,7 @@
   }
   for (i, v) in entries.enumerate() {
     if i > 0 {
-      if n != 2 and not join-sym-on-two [#join-sym ]
+      if n != 2 and not join-sym-on-two or last-join == none [#join-sym ]
       if n != 0 and i == n - 1 {
         if last-join != none [#last-join ]
       }
